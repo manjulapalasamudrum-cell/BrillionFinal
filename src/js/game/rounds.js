@@ -14,6 +14,7 @@ import { CATEGORIES } from '../data/categories.js';
 import { DAILY_SHOWS, findShow } from '../data/dailies.js';
 import { scheduleFor } from '../data/schedule.js';
 import { computeEraBuckets } from './eras.js';
+import { violatesConstraint } from './constraints.js';
 import { article, eraSpec, viableTypes, assignTypes, ROUND_FLAVORS } from './question-types.js';
 import {
   mulberry32, seededShuffle, dateSeed, puzzleDate, dateFromKey, formatPuzzleKey,
@@ -76,14 +77,28 @@ export function buildRoundPlan(cat) {
    Daily shows — five packs, one constraint, seeded so everyone plays the same
 --------------------------------------------------------------------------- */
 
-/** How many answers a pack must have under a constraint to be worth asking. */
-const MIN_VIABLE_ANSWERS = 3;
+/**
+ * How many answers a pack must have under a constraint to be worth asking.
+ * Matches MIN_TYPE_ANSWERS in question-types.js: three valid answers behind a
+ * prompt is a guess, not a question, whichever code path chose the prompt.
+ */
+const MIN_VIABLE_ANSWERS = 6;
 
-/** Can this pack host a round under this constraint at all? */
+/**
+ * Can this pack host a round under this constraint at all?
+ *
+ * The era test asks two things: can the pack be cut into thirds, and is the
+ * third THIS show wants big enough to answer. Checking only the first let a
+ * ten-answer pack onto an era show with three valid answers behind the prompt —
+ * the same hole `viableTypes` had, for the same reason. Every other constraint
+ * counts what it would accept, so era has to as well.
+ */
 function isEligible(constraint, cat) {
   if (constraint.type === 'era') {
-    // Needs enough year-tagged answers to split into thirds meaningfully.
-    return computeEraBuckets(cat) != null;
+    const buckets = computeEraBuckets(cat);
+    if (!buckets) return false;
+    const spec = eraSpec(cat, buckets, constraint.value);
+    return cat.answers.filter((a) => !violatesConstraint(spec, a)).length >= MIN_VIABLE_ANSWERS;
   }
   if (constraint.type === 'rarity') {
     return cat.answers.filter((a) => a.tier >= constraint.minTier).length >= MIN_VIABLE_ANSWERS;

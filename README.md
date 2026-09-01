@@ -216,7 +216,13 @@ migration — only three optional pack fields for phrasing (`noun`, `yearIs`,
 two rules worth keeping:
 
 - **`MIN_TYPE_ANSWERS` (6)** — a round with three valid answers is a guess, not
-  a question. The clock is 40 seconds and the player cannot see the bank.
+  a question. The clock is 40 seconds and the player cannot see the bank. Every
+  type counts what it would actually accept before offering itself. **`era` did
+  not**, and that was a real bug: it checked only whether a pack had six dated
+  answers to cut into thirds, then offered all three thirds however small they
+  came out, so the ten-film `bhansali` pack was asked for "up to 2005" with
+  three valid answers behind it. Both places that pick an era round — the type
+  catalogue and the daily shows' `isEligible` — now count the bucket.
 - **`NARROWING_SHARE` (0.75)** — a constraint admitting more than three
   quarters of the pack is not asking anything. This is what stops "a *Dil*
   movie whose title begins with D" (48 of 53) and "a 1990s movie released in

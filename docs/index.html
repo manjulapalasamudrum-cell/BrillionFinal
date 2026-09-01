@@ -3181,6 +3181,9 @@ take(byTier[byTier.length - 1]);                 // the rarest still available
 take(byTier[Math.floor(byTier.length / 2)]);     // something in between
 return picks.sort((a, b) => a.tier - b.tier).slice(0, limit || 3);
 }
+function countSatisfying(answers, spec) {
+return answers.filter((e) => !violatesConstraint(spec, e)).length;
+}
 function article(t) {
 return /^[aeiou]/i.test(t) ? 'an' : 'a';
 }
@@ -3291,10 +3294,10 @@ label: (cat.yearIs === 'debut' ? 'Broke through' : 'Released') + ' in the ' + d 
 if (decadeSpecs.length) groups.push({ id: 'decade', specs: decadeSpecs });
 const buckets = computeEraBuckets(cat);
 if (buckets) {
-groups.push({
-id: 'era',
-specs: ['early', 'mid', 'late'].map((value) => eraSpec(cat, buckets, value)),
-});
+const eraSpecs = ['early', 'mid', 'late']
+.map((value) => eraSpec(cat, buckets, value))
+.filter((spec) => countSatisfying(answers, spec) >= MIN_TYPE_ANSWERS);
+if (eraSpecs.length) groups.push({ id: 'era', specs: eraSpecs });
 }
 // Only the villain pack tags role, so only it can ask this.
 if (answers.some((a) => a.role)) {
@@ -3353,11 +3356,13 @@ return { rounds: ROUND_FLAVORS.map((f) => ({ type: 'open', text: f(cat.title) })
 const ordered = groups.filter((g) => g.id !== 'open').concat(groups.filter((g) => g.id === 'open'));
 return { rounds: ordered.slice(0, THEMED_ROUNDS).map((g) => g.specs[0]) };
 }
-const MIN_VIABLE_ANSWERS = 3;
+const MIN_VIABLE_ANSWERS = 6;
 function isEligible(constraint, cat) {
 if (constraint.type === 'era') {
-// Needs enough year-tagged answers to split into thirds meaningfully.
-return computeEraBuckets(cat) != null;
+const buckets = computeEraBuckets(cat);
+if (!buckets) return false;
+const spec = eraSpec(cat, buckets, constraint.value);
+return cat.answers.filter((a) => !violatesConstraint(spec, a)).length >= MIN_VIABLE_ANSWERS;
 }
 if (constraint.type === 'rarity') {
 return cat.answers.filter((a) => a.tier >= constraint.minTier).length >= MIN_VIABLE_ANSWERS;

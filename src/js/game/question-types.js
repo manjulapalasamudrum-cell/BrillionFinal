@@ -13,7 +13,14 @@
  */
 
 import { computeEraBuckets, eraLabelText } from './eras.js';
-import { firstLetter, wordCount, LONG_TITLE_WORDS } from './constraints.js';
+import {
+  firstLetter, wordCount, LONG_TITLE_WORDS, violatesConstraint,
+} from './constraints.js';
+
+/** How many of a pack's answers a finished spec would actually accept. */
+function countSatisfying(answers, spec) {
+  return answers.filter((e) => !violatesConstraint(spec, e)).length;
+}
 
 export function article(t) {
   return /^[aeiou]/i.test(t) ? 'an' : 'a';
@@ -201,12 +208,21 @@ export function viableTypes(cat) {
   }));
   if (decadeSpecs.length) groups.push({ id: 'decade', specs: decadeSpecs });
 
+  /*
+    Era is the one type that could slip past MIN_TYPE_ANSWERS. Every other type
+    counts the answers that satisfy it before offering itself; era only asked
+    whether the pack had enough dated answers to CUT into thirds, and then
+    offered all three thirds however small they came out. A ten-answer pack
+    yields buckets of three, which is a guess rather than a question — exactly
+    what the minimum exists to prevent. Each bucket now has to earn its place
+    on the same terms as everything else.
+  */
   const buckets = computeEraBuckets(cat);
   if (buckets) {
-    groups.push({
-      id: 'era',
-      specs: ['early', 'mid', 'late'].map((value) => eraSpec(cat, buckets, value)),
-    });
+    const eraSpecs = ['early', 'mid', 'late']
+      .map((value) => eraSpec(cat, buckets, value))
+      .filter((spec) => countSatisfying(answers, spec) >= MIN_TYPE_ANSWERS);
+    if (eraSpecs.length) groups.push({ id: 'era', specs: eraSpecs });
   }
 
   // Only the villain pack tags role, so only it can ask this.
