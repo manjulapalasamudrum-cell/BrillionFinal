@@ -1,0 +1,589 @@
+/* Layout specific to the three screens: start, game, result. */
+
+/* ======================================================================
+   START — the hoarding
+   ====================================================================== */
+
+/*
+  The card's sections arrive in sequence rather than all at once — a bill being
+  pasted up, top to bottom. Short and small-amplitude on purpose: it should
+  register as the page settling, not as an animation you have to sit through.
+  The reduced-motion rule in base.css collapses all of it.
+*/
+#screen-start > * {
+  animation: paste-up .34s var(--ease-press) both;
+}
+#screen-start > *:nth-child(1) { animation-delay: .02s; }
+#screen-start > *:nth-child(2) { animation-delay: .07s; }
+#screen-start > *:nth-child(3) { animation-delay: .12s; }
+#screen-start > *:nth-child(4) { animation-delay: .17s; }
+#screen-start > *:nth-child(5) { animation-delay: .22s; }
+#screen-start > *:nth-child(6) { animation-delay: .27s; }
+@keyframes paste-up {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: none; }
+}
+
+.howto {
+  margin: var(--s-3) 0 0;
+  font-size: var(--t-body);
+  color: var(--on-paper);
+  line-height: 1.65;
+  max-width: 54ch;
+}
+.howto b { font-weight: 600; }
+/* Highlighted the way a marker pen picks a line out of a printed bill. */
+.howto em { font-style: normal; background: #D8E7FB; padding: 0 3px; }
+
+/* --- The rarity ladder: the page's thesis, built from real answers ------ */
+
+.ladder { margin-top: var(--s-5); }
+
+.ladder-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-3);
+  padding-bottom: var(--s-2);
+  border-bottom: var(--rule);
+}
+.ladder-axis {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--on-paper-dim);
+}
+
+.ladder-rows { list-style: none; margin: 0; padding: 0; }
+
+.ladder-row {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 9px 0;
+  border-bottom: var(--rule-thin);
+}
+.ladder-row:last-child { border-bottom: none; }
+
+.lr-bar { height: 12px; background: var(--ink-deep); display: block; }
+.lr-bar i {
+  display: block;
+  height: 100%;
+  transform-origin: left center;
+  animation: bar-draw .7s var(--ease-press) both;
+}
+@keyframes bar-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+.lr-name {
+  font-weight: 600;
+  font-size: 14.5px;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lr-tier {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  color: var(--on-paper-dim);
+  letter-spacing: .04em;
+}
+.lr-pts {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.ladder-foot {
+  margin: var(--s-3) 0 0;
+  font-size: var(--t-small);
+  color: var(--on-paper-dim);
+}
+.ladder-foot b { color: var(--on-paper); font-weight: 600; }
+
+/* --- Today's programme --------------------------------------------------
+   Set as a cinema's schedule rather than a grid of tiles: the shows listed in
+   order, ruled off from each other like a printed listing.
+-------------------------------------------------------------------------- */
+
+/* Numbered off a CSS counter rather than markup — the listing is ordered, so
+   the number is real information, and nothing in StartScreen needs to know. */
+.programme { margin-top: var(--s-6); counter-reset: show; }
+
+.show-btn {
+  counter-increment: show;
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-3);
+  width: 100%;
+  text-align: left;
+  padding: var(--s-3) var(--s-2) var(--s-3) 0;
+  background: transparent;
+  border: none;
+  border-bottom: var(--rule-thin);
+  color: var(--on-paper);
+  font-family: var(--font-body);
+  transition: background .14s var(--ease-press), color .14s var(--ease-press),
+              padding-left .14s var(--ease-press);
+}
+
+/* The show number, set as a printed schedule would set it. */
+.show-btn::before {
+  content: counter(show, decimal-leading-zero);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  letter-spacing: .06em;
+  color: var(--paper-rule);
+  padding-left: var(--s-2);
+  transition: color .14s var(--ease-press);
+}
+
+/* A coloured spine per show, cycling the four process inks. It is the only
+   thing distinguishing the shows at a glance, so it does real work. */
+.show-btn::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  background: var(--peacock);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform .18s var(--ease-press);
+}
+.show-btn:nth-child(2)::after { background: var(--magenta); }
+.show-btn:nth-child(3)::after { background: var(--marigold); }
+.show-btn:nth-child(4)::after { background: var(--violet); }
+
+.show-btn:last-child { border-bottom: var(--rule); }
+.show-btn:hover,
+.show-btn:focus-visible { background: var(--ink); padding-left: var(--s-2); }
+.show-btn:hover::after,
+.show-btn:focus-visible::after { transform: scaleY(1); }
+.show-btn:hover::before,
+.show-btn:focus-visible::before { color: var(--peacock); }
+.show-btn:hover .sb-blurb, .show-btn:hover .sb-rounds { color: var(--on-paper-dim); }
+
+.sb-main { min-width: 0; }
+.sb-name {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1.15;
+}
+.sb-blurb {
+  display: block;
+  font-size: var(--t-small);
+  color: var(--on-paper-dim);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+.sb-rounds {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--on-paper-dim);
+  white-space: nowrap;
+}
+
+/* --- Pack picker -------------------------------------------------------- */
+
+.pack-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-2); }
+
+@media (max-width: 520px) {
+  .pack-grid { grid-template-columns: 1fr; }
+  .card { padding: var(--s-4) var(--s-4) var(--s-5); }
+  .ladder-row { grid-template-columns: 52px minmax(0, 1fr) auto; }
+  .sb-name { font-size: 19px; }
+  /* On a phone the Play stub and a 30px title cannot share a row, so the
+     panel stacks and the button goes full width under the text. */
+  .hero-btn { grid-template-columns: 1fr; gap: var(--s-4); padding: var(--s-5) var(--s-4); }
+  .hb-go { display: block; text-align: center; padding: 13px var(--s-4); }
+}
+
+/* ======================================================================
+   GAME — lights down
+   ====================================================================== */
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--on-ink-dim);
+  margin-bottom: var(--s-3);
+}
+.hud b { color: var(--peacock); font-weight: 500; }
+
+/* The clock is a strip of film: it depletes, and the perforations show how
+   many seconds are left without you having to read the number. */
+.timer { display: flex; align-items: center; gap: var(--s-3); margin-bottom: var(--s-5); }
+.timer-track {
+  position: relative;
+  flex: 1;
+  height: 14px;
+  background: var(--ink-sunk);
+  border: 1px solid var(--paper-rule);
+  overflow: hidden;
+}
+.timer-fill {
+  height: 100%;
+  background: var(--peacock);
+  transition: width 1s linear, background-color .3s ease;
+}
+/* One perforation per second — one goes dark each tick, so the strip can be
+   counted as well as read. `--tick` is 100/ROUND_SECONDS, set inline by
+   GameScreen, so this stays correct if the clock length changes. */
+.timer-track::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(90deg,
+    transparent 0 calc(var(--tick) - 2px), var(--paper) calc(var(--tick) - 2px) var(--tick));
+  pointer-events: none;
+}
+.timer-count {
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  color: var(--on-ink-dim);
+  min-width: 4ch;
+  text-align: right;
+}
+.timer--low .timer-fill { background: var(--vermilion); }
+.timer--low .timer-count { color: var(--vermilion); }
+
+.cat-label { text-align: center; }
+.cat-label .cl-kicker {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--peacock);
+}
+.cat-label h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--t-prompt);
+  line-height: 1.2;
+  letter-spacing: -.01em;
+  margin: var(--s-3) 0 var(--s-2);
+  color: var(--on-paper);
+}
+/*
+  The round's restriction, given its own line and the accent colour. This is
+  the single most-missed thing on the screen: without it a player reads the
+  pack's "Any film..." hint, types a film that is genuinely valid for the pack
+  but wrong for this round, and concludes the game does not know it.
+*/
+.cat-label .cl-limit {
+  display: inline-block;
+  margin: 0 auto var(--s-2);
+  padding: 5px var(--s-3);
+  border-radius: 999px;
+  background: #E7F0FE;
+  color: var(--peacock-deep);
+  font-size: var(--t-small);
+  font-weight: 700;
+}
+.cat-label .cl-hint { color: var(--on-paper-dim); font-size: var(--t-small); }
+
+.answer-row { display: flex; gap: var(--s-2); margin-top: var(--s-5); }
+.skip-row { text-align: center; margin-top: var(--s-3); }
+
+.retry-note {
+  margin-top: var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-left: 3px solid var(--vermilion);
+  background: #FDE7EA;
+  color: var(--magenta-deep);
+  font-size: var(--t-small);
+  line-height: 1.5;
+  animation: nudge .3s var(--ease-press);
+}
+@keyframes nudge {
+  0% { transform: translateX(-5px); }
+  60% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+/* --- Feedback ----------------------------------------------------------- */
+
+.feedback {
+  margin-top: var(--s-5);
+  padding: var(--s-4);
+  background: var(--ink-sunk);
+  border: 1px solid var(--paper-rule);
+  animation: settle .35s var(--ease-press) both;
+}
+@keyframes settle { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.fb-top { display: flex; justify-content: space-between; align-items: center; gap: var(--s-3); }
+.fb-tier {
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  font-weight: 500;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 5px var(--s-3);
+  color: var(--ink);
+}
+.fb-points {
+  font-family: var(--font-display);
+  font-size: 34px;
+  line-height: 1;
+  color: var(--marigold);
+}
+.fb-matched { margin-top: var(--s-3); font-size: var(--t-body); line-height: 1.6; }
+.fb-matched span {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--on-ink-dim);
+}
+.fb-correction {
+  margin-top: var(--s-3);
+  font-size: var(--t-small);
+  border-left: 3px solid var(--marigold);
+  background: #FEF5DC;
+  padding: var(--s-2) var(--s-3);
+  color: #8A6100;
+  line-height: 1.5;
+}
+.fb-correction b { color: var(--on-paper); }
+.fb-actions { text-align: center; margin-top: var(--s-4); }
+
+/* --- Progress ----------------------------------------------------------- */
+
+.progress-dots { display: flex; justify-content: center; gap: var(--s-1); margin-top: var(--s-5); }
+.pdot { width: 22px; height: 4px; border-radius: 2px; background: var(--ink-deep); }
+.pdot.done { background: var(--peacock); }
+.pdot.now { background: var(--magenta); }
+
+.back-row { text-align: center; margin-top: var(--s-4); }
+
+/* ======================================================================
+   RESULT — the depth gauge
+   ====================================================================== */
+
+.result-head { text-align: center; }
+.result-head .rh-game {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--magenta);
+}
+
+/*
+  The signature: 113 years of Hindi cinema as a vertical rail you descend.
+  Score is abstract; a year on a timeline is not — this is the payoff.
+*/
+.gauge {
+  display: flex;
+  gap: var(--s-5);
+  align-items: stretch;
+  margin: var(--s-5) 0 var(--s-4);
+}
+
+.gauge-rail {
+  position: relative;
+  width: 66px;
+  flex-shrink: 0;
+  border-left: 2px solid var(--paper-rule);
+}
+.gauge-travelled {
+  position: absolute;
+  left: -2px;
+  top: 0;
+  width: 14px;
+  background: var(--magenta);
+  /* Perforated like film leader. */
+  -webkit-mask-image: repeating-linear-gradient(180deg, #000 0 9px, transparent 9px 13px);
+  mask-image: repeating-linear-gradient(180deg, #000 0 9px, transparent 9px 13px);
+  animation: descend .9s var(--ease-press) both;
+}
+/* No `to` block: the animation lands on the inline height set from the score. */
+@keyframes descend { from { height: 0; } }
+
+/* Ticks start clear of the filmstrip so their leader dashes stay visible. */
+.gauge-tick {
+  position: absolute;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  color: var(--on-paper-dim);
+  white-space: nowrap;
+}
+.gauge-tick::before { content: ""; width: 10px; height: 1px; background: var(--paper-rule); }
+
+/* Where you stopped. This is the answer to the whole game, so it is drawn
+   as a hard cut across the strip rather than a tick like any other. */
+.gauge-marker {
+  position: absolute;
+  left: -6px;
+  z-index: 2;
+  width: 34px;
+  height: 4px;
+  background: var(--vermilion);
+  transform: translateY(-50%);
+  animation: descend-marker .9s var(--ease-press) both;
+}
+.gauge-marker::after {
+  content: "";
+  position: absolute;
+  right: -5px;
+  top: -3px;
+  border: 5px solid transparent;
+  border-left-color: var(--vermilion);
+}
+@keyframes descend-marker { from { top: 0; opacity: 0; } }
+
+.gauge-readout { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+.depth-year {
+  font-family: var(--font-display);
+  font-size: var(--t-colossal);
+  line-height: .84;
+  letter-spacing: -.02em;
+  color: var(--on-paper);
+}
+.depth-era { font-size: var(--t-body); font-weight: 600; margin-top: var(--s-2); line-height: 1.3; }
+.depth-note { font-size: var(--t-small); color: var(--on-paper-dim); margin-top: var(--s-2); line-height: 1.5; }
+.depth-note b { font-family: var(--font-mono); font-weight: 500; color: var(--on-paper); }
+
+/* --- The total ----------------------------------------------------------
+   Ruled off above and below like the total on a printed ticket. Magenta,
+   because that is the ink the filmstrip uses to draw the distance this score
+   bought you — the number and the strip are the same fact twice.
+-------------------------------------------------------------------------- */
+
+.score-band {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  column-gap: var(--s-3);
+  margin-top: var(--s-5);
+  padding: var(--s-3) 0 var(--s-2);
+  border-top: var(--rule);
+  border-bottom: var(--rule);
+}
+.score-max {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--on-paper-dim);
+  text-align: right;
+  white-space: nowrap;
+}
+.score-value {
+  grid-column: 1 / -1;
+  font-family: var(--font-display);
+  font-size: clamp(38px, 10vw, 54px);
+  line-height: 1.05;
+  color: var(--magenta-deep);
+}
+.score-unit {
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--on-paper-dim);
+  margin-left: 6px;
+}
+
+/* --- Breakdown ---------------------------------------------------------- */
+
+/* No top rule: the section label above already draws one. */
+.breakdown { margin-top: var(--s-2); }
+/* Aligned to the top rather than centred: rows now carry a third line of
+   alternatives and vary in height, so a centred swatch would drift. */
+.bd-row {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--s-3);
+  padding: 10px 0;
+  border-bottom: var(--rule-thin);
+}
+.bd-sq { width: 12px; height: 12px; border-radius: 2px; margin-top: 3px; }
+
+/*
+  What else would have counted, colour-coded by tier. This is the one place the
+  game explains its own scoring after the fact: seeing that the answer you gave
+  was worth +10 while two others in the same round were worth +40 and +50 makes
+  the rarity model concrete in a way the rules text never does.
+*/
+.bd-alts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  margin-top: 5px;
+}
+.bd-alts-label {
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  color: var(--on-paper-dim);
+}
+.bd-alt {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--t-small);
+  color: var(--on-paper-dim);
+  white-space: nowrap;
+}
+.bd-alt i {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.bd-alt b {
+  font-weight: 600;
+  color: var(--on-paper);
+  font-variant-numeric: tabular-nums;
+}
+.bd-main { min-width: 0; }
+.bd-cat {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  color: var(--on-paper-dim);
+  letter-spacing: .04em;
+}
+.bd-ans { font-size: 14.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bd-pts { font-family: var(--font-mono); font-size: 15px; white-space: nowrap; }
+
+/* --- Share -------------------------------------------------------------- */
+
+.share-box {
+  margin-top: var(--s-5);
+  padding: var(--s-4);
+  background: var(--paper-shade);
+  border: var(--rule-thin);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  white-space: pre-wrap;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+.actions { display: flex; gap: var(--s-2); margin-top: var(--s-4); flex-wrap: wrap; }
+.actions > * { flex: 1 1 160px; text-align: center; }

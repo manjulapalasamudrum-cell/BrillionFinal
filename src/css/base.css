@@ -1,0 +1,172 @@
+/* Reset, the ground, the header, the footer. */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+/*
+  The ground, with a soft vertical gradient — light at the top where the page
+  "catches" light, settling darker toward the bottom. Flat colour at this
+  lightness reads as a blank fill; the gradient is what gives it depth without
+  putting any pattern behind the cards to compete with them. The hue itself is
+  three tokens in tokens.css, so it can be changed without touching this.
+
+  `background-attachment: fixed` keeps the gradient anchored to the viewport
+  rather than stretching over the full scroll height, which would flatten it
+  back out on a long page.
+*/
+body {
+  min-height: 100vh;
+  font-family: var(--font-body);
+  font-size: var(--t-body);
+  color: var(--on-ink);
+  background-color: var(--ink);
+  background-image: linear-gradient(
+    170deg,
+    var(--ink-tint-top) 0%,
+    var(--ink) 45%,
+    var(--ink-tint-bottom) 100%
+  );
+  background-attachment: fixed;
+  display: flex;
+  justify-content: center;
+  padding: var(--s-5) var(--s-4) var(--s-7);
+  position: relative;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 620px;
+  position: relative;
+  z-index: 1;
+}
+
+/* --- Header ------------------------------------------------------------ */
+
+header.top {
+  position: relative;
+  text-align: center;
+  margin-bottom: var(--s-4);
+  padding: var(--s-5) var(--s-5) var(--s-4);
+  background: var(--paper);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+
+/* The lamp rail belonged to the marquee; there is no marquee now. */
+.bulbs { display: none; }
+
+.sound-toggle {
+  position: absolute;
+  top: var(--s-3);
+  right: var(--s-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: var(--ink-deep);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--on-paper);
+  font-family: var(--font-body);
+  font-size: var(--t-small);
+  font-weight: 600;
+  transition: background .14s var(--ease-press);
+}
+.sound-toggle:hover { background: var(--paper-rule); }
+.sound-toggle svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+@media (max-width: 520px) {
+  .sound-toggle .st-label { display: none; }
+}
+
+.kicker {
+  font-size: var(--t-small);
+  color: var(--on-paper-dim);
+  display: block;
+}
+
+/* One weight, one colour. The three-pass off-register print is gone with the
+   rest of the hoarding; the ghost spans are left in the markup but hidden so
+   Chrome.js needs no change. */
+.wordmark {
+  position: relative;
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--t-mega);
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  margin: var(--s-2) 0 var(--s-2);
+  color: var(--peacock);
+}
+.wm-ghost { display: none; }
+.wm-main { position: static; text-shadow: none; }
+
+.tagline {
+  color: var(--on-paper-dim);
+  font-size: var(--t-body);
+  line-height: 1.5;
+  margin: 0 auto;
+  max-width: 46ch;
+}
+.tagline b { color: var(--on-paper); font-weight: 600; }
+
+/* --- Footer ------------------------------------------------------------ */
+
+footer.about {
+  margin-top: var(--s-4);
+  padding: var(--s-4);
+  background: var(--paper);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+  font-size: var(--t-small);
+  color: var(--on-paper-dim);
+  line-height: 1.5;
+}
+
+.hidden { display: none !important; }
+
+/* --- Quality floor ------------------------------------------------------ */
+
+:focus-visible {
+  outline: 2px solid var(--peacock);
+  outline-offset: 2px;
+}
+
+/*
+  Windows High Contrast replaces every colour with the system palette. Right
+  for text and chrome — but the rarity ramp and the depth gauge encode the
+  score itself, and a swatch stripped of its colour says nothing at all.
+*/
+@media (forced-colors: active) {
+  .lr-bar i,
+  .fb-tier,
+  .bd-sq,
+  .timer-fill,
+  .pdot.done,
+  .pdot.now,
+  .gauge-travelled,
+  .gauge-marker,
+  .gauge-marker::after {
+    forced-color-adjust: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}

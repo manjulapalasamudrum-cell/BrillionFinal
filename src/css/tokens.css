@@ -1,0 +1,117 @@
+/*
+  Design tokens — "Social".
+  --------------------------------------------------------------------------
+  A light, card-based interface in the register Facebook made familiar: a grey
+  ground, white cards floating on it with small radii and soft shadows, one
+  blue for anything actionable, and a system font stack so the page renders in
+  whatever the reader's OS already uses.
+
+  The two surface tokens keep their old names but have swapped roles, so read
+  them as surfaces rather than as literal colours:
+    ink   = the ground the cards sit on (now light grey)
+    paper = a raised card surface (now white)
+
+  What is deliberately NOT neutralised: the rarity ramp below. Those five
+  colours are the scoring model made visible — they are information, not
+  decoration, and flattening them to greys would delete the thing the game is
+  actually about.
+*/
+
+:root {
+  /* --- Ground and surfaces --------------------------------------------
+     The ground is a warm greige rather than the flat blue-grey this style
+     usually uses. A neutral grey next to a saturated blue reads clinical —
+     the two cool tones sharpen each other. Warming the ground very slightly
+     (a few points toward yellow, saturation kept under 10%) settles it, and
+     has the useful side effect of making the white cards read as genuinely
+     white and lit rather than as merely a brighter grey. */
+  /* A light grey with a very slight cool bias — a dead-neutral grey next to a
+     saturated blue tends to look muddy, a few points toward blue keeps it
+     clean. Deep enough that the white cards still read as lit rather than as
+     merely a brighter shade of the ground. */
+  --ink: #EAEAEE;              /* the app ground — light grey */
+  --ink-tint-top: #F5F5F8;     /* the ground's lit edge, for its gradient */
+  --ink-tint-bottom: #DCDCE3;  /* and the shaded one */
+  --ink-raised: #FFFFFF;       /* a card */
+  --ink-sunk: #F4F4F7;         /* inset wells: inputs, quiet panels */
+  --ink-deep: #DEDEE4;         /* dividers and pressed states */
+
+  --paper: #FFFFFF;
+  --paper-shade: #F0F0F4;
+  --paper-rule: #C9C9D2;
+
+  /* --- Accents ---------------------------------------------------------
+     One blue carries every action. The rest appear only where colour is
+     carrying meaning, never as decoration. */
+  /* Deliberately a shade darker than the familiar #1877F2. That blue carries
+     white text at only 4.23:1 — under the 4.5 needed for normal-size text, so
+     the Play panel's description and every filled button would have been
+     marginal. This clears it at 5.25:1 and reads identically. */
+  --peacock: #1567D8;          /* the primary action blue */
+  --peacock-deep: #0B5ED7;     /* its pressed/hover state */
+  --magenta: #E41E3F;          /* destructive / urgent only */
+  --magenta-deep: #B3162F;
+  --marigold: #F7B928;         /* highlight, used sparingly */
+  --violet: #7B5CFF;
+  --vermilion: #E41E3F;        /* the clock running out */
+
+  /* --- Text ------------------------------------------------------------ */
+  --on-paper: #050505;         /* primary text on a card */
+  --on-paper-dim: #65676B;     /* secondary text */
+  --on-ink: #050505;           /* primary text on the ground */
+  --on-ink-dim: #65676B;
+
+  /* The lamps are gone with the marquee; these remain only so any stray
+     reference resolves to something sane rather than to nothing. */
+  --bulb: transparent;
+  --bulb-halo: transparent;
+
+  /*
+    Rarity ramp — untouched in spirit, retuned for a light ground. Still runs
+    drab to loud: the answer everyone gives looks dull, the one nobody
+    remembers is the strongest colour on the page. Order matches TIERS in
+    js/data/tiers.js.
+  */
+  --tier-common: #8A8D91;      /* grey — no colour spent on it */
+  --tier-known: #1877F2;
+  --tier-solid: #7B5CFF;
+  --tier-deepcut: #F7B928;
+  --tier-legendary: #E41E3F;
+  --tier-miss: #BCC0C4;
+
+  /* --- Type ------------------------------------------------------------
+     The system stack, so the interface renders in the reader's own OS font
+     the way a native app would. */
+  --font-display: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, monospace;
+
+  --t-mega: clamp(30px, 6vw, 42px);
+  --t-prompt: clamp(22px, 4.6vw, 30px);
+  --t-colossal: clamp(44px, 11vw, 72px);
+  --t-body: 15px;
+  --t-small: 13px;
+  --t-micro: 12px;
+
+  /* --- Shape -----------------------------------------------------------
+     Soft corners and a shadow rather than a border is the whole visual
+     grammar of this style. */
+  --radius: 8px;
+  --radius-sm: 6px;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, .2);
+  --shadow-raised: 0 4px 12px rgba(0, 0, 0, .15);
+  --rule: 1px solid var(--paper-rule);
+  --rule-thin: 1px solid var(--ink-deep);
+
+  /* --- Rhythm ---------------------------------------------------------- */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+
+  /* --- Motion ---------------------------------------------------------- */
+  --ease-press: cubic-bezier(.2, .8, .2, 1);
+}

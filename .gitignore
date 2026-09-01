@@ -1,0 +1,14 @@
+# Python leaves these behind whenever check-bank.py is imported rather than run.
+__pycache__/
+*.pyc
+
+# Editor and OS noise.
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+
+# dist/ is deliberately NOT ignored: dist/site/index.html is what GitHub Pages
+# and Netlify Drop actually serve, so the built page has to be in the repo.
+# Rerun environment\build.ps1 and commit the result after changing anything
+# under src/.
