@@ -69,6 +69,10 @@ REUSED_TITLES = {
     "aankhen",   # 1993 Govinda comedy; 2002 Amitabh heist
     "pukar",     # 1983 Amitabh; 2000 Anil Kapoor, scored by Rahman
     "saudagar",  # 1973 Amitabh; 1991 Subhash Ghai, Dilip Kumar and Raaj Kumar
+    "dostana",   # 1980 Amitabh and Shatrughan Sinha; 2008 Abhishek and John
+    "barsaat",   # 1995 Bobby Deol debut; 2005 Bobby Deol and Priyanka Chopra
+    "baaghi",    # 1990 Salman Khan; 2016 Tiger Shroff, from the Telugu Varsham
+    "coolie no 1",  # 1995 Govinda; 2020 Varun Dhawan remake of the 1995 film
 }
 
 
@@ -78,7 +82,11 @@ def normalize(s):
     s = "".join(c for c in s if unicodedata.category(c) != "Mn")
     s = re.sub(r"[^a-z0-9 ]", " ", s)
     s = re.sub(r"^(the|a|an)\s+", "", s)
-    return re.sub(r"\s+", " ", s).strip()
+    s = re.sub(r"\s+", " ", s).strip()
+    # Re-join a spelt-out initialism: "d d l j" -> "ddlj". Keep in step with the
+    # same rule in text-match.js, or this check stops seeing collisions the game
+    # would actually hit.
+    return re.sub(r"\b(?:[a-z] ){1,}[a-z]\b", lambda m: m.group(0).replace(" ", ""), s)
 
 
 def loose_key(s):

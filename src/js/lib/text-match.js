@@ -13,7 +13,14 @@ export function normalize(s) {
     .replace(/[^a-z0-9 ]/g, ' ')
     .replace(/^(the|a|an)\s+/, '')
     .replace(/\s+/g, ' ')
-    .trim();
+    .trim()
+    // Re-join a spelt-out initialism. Stripping punctuation above turns
+    // "D.D.L.J." into "d d l j", which then matches nothing: the alias is
+    // "ddlj", and four one-letter words are four edits away from it. People do
+    // type initialisms with stops, and it is the short form itself they are
+    // reaching for, so gluing runs of single letters back together is the whole
+    // fix. Multi-letter words are untouched, so "Dil Se" cannot be affected.
+    .replace(/\b(?:[a-z] ){1,}[a-z]\b/g, (run) => run.replace(/ /g, ''));
 }
 
 /**

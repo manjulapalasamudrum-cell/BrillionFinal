@@ -90,7 +90,7 @@ src/css/
 src/js/
   main.js                   entry point; mounts <App> into #root
   data/tiers.js             the five rarity tiers and their point values
-  data/categories.js        the answer bank — 17 packs, ~860 answers
+  data/categories.js        the answer bank — 17 packs, ~1,120 answers
   data/dailies.js           the daily shows and their constraints
   data/schedule.js          hand-picked prompts for particular dates
   data/bank.js              facts read off the bank: counts, the rarity ladder
@@ -395,6 +395,18 @@ and keep their ink. A colourless tier swatch would say nothing at all.
   and still rejected `jab tak jaan`, four edits away. Every multi-word title
   should carry the short forms people actually type, plus its initialism.
 
+  **A film's aliases must be the same in every pack it appears in.** They were
+  not: `dilwale dulhania` reached DDLJ in the `srk` pack and nothing in
+  `nineties`, purely because one entry listed the alias and the other did not.
+  To a player that is indistinguishable from the game not knowing the film. 46
+  entries were out of step; all now carry the union of what any copy had.
+  Reused titles are the deliberate exception — `don 1978` and `don 2006` exist
+  precisely to tell two different films apart and must not be merged.
+
+  Punctuated initialisms are handled by the matcher, not by aliases: `normalize`
+  re-joins runs of single letters, so `D.D.L.J.` folds to `ddlj`. Before that it
+  became `d d l j` and matched nothing.
+
 **A rejected valid answer is the worst bug this game can have** — it tells the
 player they are wrong when they are right. Prefer over-inclusion: the packs
 cover full filmographies rather than the hits.
@@ -422,23 +434,51 @@ with a film they were not in, a Best Film *nominee* listed as a winner.
 | `nineties` `diltitle` | Wikidata SPARQL (IMDb returned 403) | clean, 196 entries |
 | `villain` | Wikipedia film and actor articles | clean, 41 entries |
 | `biopic` | Wikipedia biographical-film categories | checked when written |
-| `bhansali` | — | **written from knowledge, not yet audited** |
-| `actress` `triangle` `noughties` | — | **not yet audited** |
-| `wedding` `cop` `remake` | — | **not yet audited** |
+| `noughties` | Wikidata SPARQL, 125 entries | swept, spot-checked |
+| `remake` | Wikipedia remake categories, 111 entries | swept, spot-checked |
+| `actress` | Wikidata SPARQL, 57 entries | swept, spot-checked |
+| `bhansali` | — | exhaustive, written from knowledge |
+| `triangle` `wedding` `cop` | — | **judgement packs; no source exists** |
 
-**The seven newest packs have not been through the audit above**, and should be
-before the game is treated as finished. What can be checked mechanically has
-been: every year in the four film packs agrees with entries already audited
-elsewhere, which the cross-pack release-year check now enforces for them.
+Three of the newest packs were **swept from raw data rather than written**:
 
-Two of them are *judgements* rather than lookups — `triangle` and `wedding` ask
-whether a film "has a love triangle" or "a famous wedding", which no source
-settles. Both err wide on purpose, per the over-inclusion rule above. `cop` is
-the thinnest: it asserts that each actor has played a policeman, and the
-weakest entry is noted in the data itself.
+- `noughties` — Wikidata SPARQL for Hindi films with a publication date in the
+  window, ranked by how many Wikipedia editions carry the film.
+- `remake` — Wikipedia's own `Hindi remakes of {Tamil,Telugu,Malayalam,Kannada}
+  films` categories, via the API.
+- `actress` — Wikidata, grouped by the earliest Hindi film recorded for each
+  woman in a Hindi film's cast.
 
-`bhansali` is the safest shape a pack can have — *exhaustive* rather than
-curated, all ten features he has directed, so it cannot reject a valid answer.
+**Ranking by sitelink count is what makes the tier defensible.** The tier is
+"how likely is a player to name this", and the number of language editions that
+bothered to write the film up is the closest thing to a measurement of that
+which exists. Tiers are assigned by *rank band* within the pack, not by an
+absolute cutoff — an absolute threshold calibrated on the full result set put
+four fifths of a trimmed pack into the middle tiers and left tier 4 empty.
+
+The other three cannot be swept from anything. "Has a love triangle", "is
+remembered for its wedding", and "has played a policeman" are not recorded as
+data anywhere, so `triangle`, `wedding` and `cop` are hand-written, err wide per
+the over-inclusion rule, and name the qualifying role in a comment where the
+claim is thin. `bhansali` is the safest shape a pack can have — exhaustive
+rather than curated, so it cannot reject a valid answer.
+
+### What sweeping taught, which the next sweep should assume
+
+- **`P364 = Hindi` is not "is a Bollywood film".** It returned *Lust, Caution*
+  (Mandarin), *After the Wedding* (Danish), *Slumdog Millionaire* and *Bend It
+  Like Beckham*. Every sweep needs a by-name exclusion pass.
+- **Citizenship is the wrong proxy for "works in Hindi cinema".** Filtering the
+  actress roster on `P27 = India` to keep Hollywood names out silently dropped
+  Katrina Kaif (British passport) and Jacqueline Fernandez (Sri Lankan). Both
+  had to be restored by hand.
+- **An enwiki disambiguator beats P577.** "Dostana (2008 film)" states which
+  film the article is about; P577's earliest date is a festival premiere often
+  enough to matter — it dates *Paan Singh Tomar* to 2010 against a 2012 release.
+- **The cross-pack year check finds reused titles, not errors.** Every
+  disagreement it raised during these sweeps was two different films sharing a
+  name: *Dostana*, *Barsaat*, *Baaghi*, *Coolie No. 1*. All four are now in
+  `REUSED_TITLES`.
 
 ### `remake` points the other way round
 
