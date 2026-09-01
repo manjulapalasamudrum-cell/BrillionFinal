@@ -25,7 +25,13 @@ PRESENT = 2026
 # Packs whose title is itself a claim about the year. An answer outside the
 # window is not a rarity judgement the maintainer can make either way — it is
 # simply wrong, and the game would award points for it.
-YEAR_WINDOWS = {"nineties": (1990, 1999)}
+YEAR_WINDOWS = {"nineties": (1990, 1999), "noughties": (2000, 2010)}
+
+# Packs of people whose `year` would be a fact the pack does not have. An actor
+# who played a policeman in 1973 played another in 2015, so there is no one year
+# to record; inventing one to satisfy the check below would be worse than having
+# none. Undated packs simply generate no era or decade rounds.
+UNDATED_PACKS = {"villain", "cop"}
 
 # Packs where `year` identifies the answer rather than describing it: an annual
 # award has exactly one winner per ceremony, so a repeated year means an entry
@@ -50,7 +56,8 @@ NAME_RULES = {
 # year later; `director` because its year is a representative film, not a
 # release. A disagreement means one of the two is simply wrong.
 RELEASE_YEAR_PACKS = {"srk", "ab", "nineties", "deepika", "biopic", "rahman",
-                      "diltitle", "bhansali"}
+                      "diltitle", "bhansali", "triangle", "noughties", "wedding",
+                      "remake"}
 
 # Titles Hindi cinema has genuinely used more than once. A year disagreement on
 # these is two different films, not a mistake, so the cross-pack check skips
@@ -153,6 +160,8 @@ def main():
             if pid == "villain":
                 if e["role"] not in ("actor", "character"):
                     problems.append("%s: %r has role %r" % (pid, e["name"], e["role"]))
+            elif pid in UNDATED_PACKS:
+                pass  # carries no year on purpose — see UNDATED_PACKS
             elif pid == "director":
                 pass  # a director's `year` is a representative film, not a release
             else:
@@ -204,7 +213,7 @@ def main():
 
         # eras.js needs enough year-tagged answers to cut into three buckets.
         dated = [e for e in entries if e["year"] is not None]
-        if pid != "villain" and len(dated) < 6:
+        if pid not in UNDATED_PACKS and len(dated) < 6:
             problems.append("%s: only %d dated answers; era rounds need 6+"
                             % (pid, len(dated)))
 

@@ -90,7 +90,7 @@ src/css/
 src/js/
   main.js                   entry point; mounts <App> into #root
   data/tiers.js             the five rarity tiers and their point values
-  data/categories.js        the answer bank — 11 packs, ~730 answers
+  data/categories.js        the answer bank — 17 packs, ~860 answers
   data/dailies.js           the daily shows and their constraints
   data/schedule.js          hand-picked prompts for particular dates
   data/bank.js              facts read off the bank: counts, the rarity ladder
@@ -423,14 +423,32 @@ with a film they were not in, a Best Film *nominee* listed as a winner.
 | `villain` | Wikipedia film and actor articles | clean, 41 entries |
 | `biopic` | Wikipedia biographical-film categories | checked when written |
 | `bhansali` | — | **written from knowledge, not yet audited** |
+| `actress` `triangle` `noughties` | — | **not yet audited** |
+| `wedding` `cop` `remake` | — | **not yet audited** |
 
-`bhansali` is the one pack that has not been through the audit above. It is
-deliberately *exhaustive* rather than curated — all ten features he has
-directed — which is the safest shape a pack can have, since an exhaustive pack
-cannot reject a valid answer. Its years all agree with entries already audited
-in other packs (the cross-pack release-year check enforces that), but the
-claim that these ten are his complete filmography still wants a source before
-it is treated as settled.
+**The seven newest packs have not been through the audit above**, and should be
+before the game is treated as finished. What can be checked mechanically has
+been: every year in the four film packs agrees with entries already audited
+elsewhere, which the cross-pack release-year check now enforces for them.
+
+Two of them are *judgements* rather than lookups — `triangle` and `wedding` ask
+whether a film "has a love triangle" or "a famous wedding", which no source
+settles. Both err wide on purpose, per the over-inclusion rule above. `cop` is
+the thinnest: it asserts that each actor has played a policeman, and the
+weakest entry is noted in the data itself.
+
+`bhansali` is the safest shape a pack can have — *exhaustive* rather than
+curated, all ten features he has directed, so it cannot reject a valid answer.
+
+### `remake` points the other way round
+
+The prompt is "a Hindi film that **is a remake of** a film in another language",
+not "a Hindi film later **remade into** another language". The distinction
+matters and is easy to lose: *Ghajini*, *Drishyam*, *Kabir Singh*, *Singham*,
+*Wanted* and *Bhool Bhulaiyaa* are all Hindi versions of southern originals.
+The opposite direction — *Don* (1978), remade in Tamil as *Billa* — is a good
+pack too, but a different one needing different films, which is why *Don* is
+not in this one.
 
 Two lessons from that audit are worth keeping:
 

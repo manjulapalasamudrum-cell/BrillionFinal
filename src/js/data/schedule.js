@@ -25,7 +25,7 @@
  */
 export const SCHEDULE = {
   '2026-09-02': {
-    note: 'Requested set. Four of the ten are live; see PENDING for the rest.',
+    note: 'Requested set, all ten rounds, in the order they were given.',
     prompts: [
       {
         pack: 'nineties',
@@ -38,8 +38,33 @@ export const SCHEDULE = {
         spec: { type: 'open' },
       },
       {
+        pack: 'actress',
+        text: 'Name a Bollywood actress who made her debut in the 2000s.',
+        spec: { type: 'open' },
+      },
+      {
+        pack: 'triangle',
+        text: 'Name a Bollywood movie featuring a love triangle.',
+        spec: { type: 'open' },
+      },
+      {
         pack: 'bhansali',
         text: 'Name a Bollywood movie directed by Sanjay Leela Bhansali.',
+        spec: { type: 'open' },
+      },
+      {
+        pack: 'noughties',
+        text: 'Name a Bollywood movie released between 2000 and 2010.',
+        spec: { type: 'open' },
+      },
+      {
+        pack: 'wedding',
+        text: 'Name a Bollywood movie featuring a famous wedding scene.',
+        spec: { type: 'open' },
+      },
+      {
+        pack: 'cop',
+        text: 'Name a Bollywood actor who has played a police officer.',
         spec: { type: 'open' },
       },
       {
@@ -47,33 +72,21 @@ export const SCHEDULE = {
         text: 'Name a Bollywood movie with the word “Dil” in its title.',
         spec: { type: 'open' },
       },
+      {
+        // Reworded from "a Bollywood movie that has been remade in another
+        // language". Every answer supplied for it — Ghajini, Drishyam, Kabir
+        // Singh, Singham, Wanted, Bhool Bhulaiyaa — is a Hindi film remade FROM
+        // a southern original, which is the opposite direction. The prompt
+        // follows the answers; the other direction is a good pack too, but a
+        // different one, needing different films.
+        pack: 'remake',
+        text: 'Name a Bollywood movie that is a remake of a film in another language.',
+        spec: { type: 'open' },
+      },
     ],
   },
 };
 
-/**
- * Requested prompts that cannot be asked yet, each with the pack it needs.
- *
- * These are not wired to any date and nothing reads this list — it is here so
- * the work is recorded next to the schedule it belongs to rather than in a
- * ticket somewhere. Every one of them needs the same thing: a list of correct
- * answers, each with a rarity tier and a year. The game cannot generate those,
- * and guessing them would be the one failure this bank is built to avoid — a
- * player told they are wrong when they are right.
- *
- *   'Name a Bollywood actress who made her debut in the 2000s.'
- *       needs a pack of actresses with `yearIs:'debut'`
- *   'Name a Bollywood movie featuring a love triangle.'
- *       needs a curated pack; membership is a judgement, so it needs a source
- *   'Name a Bollywood movie released between 2000 and 2010.'
- *       needs a pack of 2000s films, the way `nineties` covers its decade
- *   'Name a Bollywood movie featuring a famous wedding scene.'
- *       needs a curated pack
- *   'Name a Bollywood actor who has played a police officer.'
- *       needs a pack of actors, with the film that makes each one qualify
- *   'Name a Bollywood movie that has been remade in another language.'
- *       needs a curated pack; the remake claim is the part that needs checking
- */
 export function scheduleFor(key) {
   return SCHEDULE[key] || null;
 }

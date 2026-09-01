@@ -919,6 +919,16 @@ export const CATEGORIES = [
       {name:'Dil Pardesi Ho Gayaa', aliases:['dil pardesi ho gaya'], tier:4, year:2003},
       {name:'Dil Bole Hadippa', aliases:['dil bole hadipa'], tier:4, year:2009},
       {name:'Dil Jo Bhi Kahey', aliases:['dil jo bhi kahe'], tier:4, year:2005},
+
+      /*
+        These three were in other packs but missing here, so the game knew the
+        films and still rejected them for the one prompt they most obviously
+        answer. Found by scanning every pack for the diltitle name rule rather
+        than by reading — which is how the next three will be found too.
+      */
+      {name:'Hum Dil De Chuke Sanam', aliases:['hddcs','hum dil de chuke'], tier:1, year:1999},
+      {name:'Phir Bhi Dil Hai Hindustani', aliases:['pbdhh','phir bhi dil hai'], tier:2, year:2000},
+      {name:'Lekar Hum Deewana Dil', aliases:['lhdd'], tier:4, year:2014},
     ]
   },
   {
@@ -951,6 +961,252 @@ export const CATEGORIES = [
       {name:'Guzaarish', aliases:['guzarish'], tier:3, year:2010},
 
       {name:'Khamoshi The Musical', aliases:['khamoshi'], tier:4, year:1996},
+    ]
+  },
+  {
+    id:'actress', kicker:'Name one…', title:'Bollywood actress who debuted in the 2000s', hint:'Her first Hindi film released between 2000 and 2009.', icon:'🌟',
+    packDesc:'Name a 2000s debutante. 5 rounds — no repeats.',
+    shortTitle:'2000s debut actress',
+    // People, and `year` is her first Hindi release — not a film's release date.
+    noun:'name', yearIs:'debut',
+    domainHint:['actress','bollywood','debut','hindi'],
+    /*
+      `year` is the HINDI debut throughout, which is the only reading that makes
+      the pack self-consistent: several of these worked in Tamil, Telugu or
+      Bengali first, and mixing the two would put the same person in two
+      different decades depending on which career you counted.
+    */
+    answers:[
+      {name:'Priyanka Chopra', aliases:['priyanka'], tier:0, year:2003},
+      {name:'Deepika Padukone', aliases:['deepika'], tier:0, year:2007},
+      {name:'Katrina Kaif', aliases:['katrina'], tier:0, year:2003},
+      {name:'Anushka Sharma', aliases:['anushka'], tier:0, year:2008},
+
+      {name:'Kareena Kapoor', aliases:['kareena','bebo'], tier:1, year:2000},
+      {name:'Vidya Balan', aliases:['vidya'], tier:1, year:2005},
+      {name:'Kangana Ranaut', aliases:['kangana'], tier:1, year:2006},
+      {name:'Sonam Kapoor', aliases:['sonam'], tier:1, year:2007},
+
+      {name:'Bipasha Basu', aliases:['bipasha'], tier:2, year:2001},
+      {name:'Lara Dutta', aliases:['lara'], tier:2, year:2003},
+      {name:'Asin', aliases:['asin thottumkal'], tier:2, year:2008},
+      {name:'Dia Mirza', aliases:['diya mirza'], tier:2, year:2001},
+
+      {name:'Amrita Rao', aliases:['amrita'], tier:3, year:2002},
+      {name:'Esha Deol', aliases:['esha'], tier:3, year:2002},
+      {name:'Ayesha Takia', aliases:['ayesha'], tier:3, year:2004},
+      {name:'Shruti Haasan', aliases:['shruti'], tier:3, year:2009},
+
+      {name:'Sameera Reddy', aliases:['sameera'], tier:4, year:2002},
+      {name:'Celina Jaitly', aliases:['celina'], tier:4, year:2003},
+      {name:'Minissha Lamba', aliases:['minissha'], tier:4, year:2005},
+      {name:'Mugdha Godse', aliases:['mugdha'], tier:4, year:2008},
+    ]
+  },
+  {
+    id:'triangle', kicker:'Name one…', title:'Bollywood love triangle', hint:'A film whose romance is built on three people, not two.', icon:'💔',
+    packDesc:'Name a love triangle. 5 rounds — no repeats.',
+    shortTitle:'love-triangle film',
+    domainHint:['film','romance','love triangle','bollywood'],
+    /*
+      Membership here is a reading of a plot rather than a fact you can look up,
+      so this pack errs wide on purpose: a player who names a film with a real
+      third corner should never be told they are wrong. Anything where the
+      triangle is a subplot rather than the engine has been left out instead —
+      that is the line, and it is the only one available.
+    */
+    answers:[
+      {name:'Kuch Kuch Hota Hai', aliases:['kkhh','kuch kuch'], tier:0, year:1998},
+      {name:'Sangam', aliases:[], tier:0, year:1964},
+      {name:'Saajan', aliases:['sajan'], tier:0, year:1991},
+      {name:'Devdas', aliases:[], tier:0, year:2002},
+
+      {name:'Silsila', aliases:[], tier:1, year:1981},
+      {name:'Hum Dil De Chuke Sanam', aliases:['hddcs','hum dil de chuke'], tier:1, year:1999},
+      {name:'Kal Ho Naa Ho', aliases:['khnh','kal ho na ho'], tier:1, year:2003},
+      {name:'Ae Dil Hai Mushkil', aliases:['adhm','ae dil'], tier:1, year:2016},
+
+      {name:'Dil To Pagal Hai', aliases:['dtph','dil to pagal'], tier:2, year:1997},
+      {name:'Veer-Zaara', aliases:['veer zaara','veer zara'], tier:2, year:2004},
+      {name:'Kabhi Alvida Naa Kehna', aliases:['kank','kabhi alvida'], tier:2, year:2006},
+      {name:'Cocktail', aliases:[], tier:2, year:2012},
+      {name:'Student of the Year', aliases:['soty'], tier:2, year:2012},
+
+      {name:'Deewana', aliases:[], tier:3, year:1992},
+      {name:'Jab Tak Hai Jaan', aliases:['jthj','jab tak jaan'], tier:3, year:2012},
+      {name:'Raanjhanaa', aliases:['ranjhana','raanjhana'], tier:3, year:2013},
+      {name:'Barfi', aliases:['barfi!'], tier:3, year:2012},
+
+      {name:'Judaai', aliases:['judai'], tier:4, year:1997},
+      {name:'Mujhse Dosti Karoge', aliases:['mdk'], tier:4, year:2002},
+      {name:'Tanu Weds Manu Returns', aliases:['twmr','tanu weds manu 2'], tier:4, year:2015},
+      // Borderline: the film is a marriage under strain, and the third corner
+      // (Priya's former fiance) is a subplot rather than the engine. Kept
+      // because over-inclusion is the right error here — a player who reads it
+      // as a triangle is not wrong enough to be told they are.
+      {name:'Chalte Chalte', aliases:[], tier:4, year:2003},
+    ]
+  },
+  {
+    id:'noughties', kicker:'Name one…', title:'Bollywood movie from 2000–2010', hint:'Released in 2000 or later and 2010 or earlier.', icon:'📀',
+    packDesc:'Name a 2000s film. 5 rounds — no repeats.',
+    shortTitle:'2000s Bollywood movie',
+    domainHint:['film','bollywood','2000','2005','2010'],
+    /*
+      The decade pack `nineties` never had a sequel, and the era rounds could
+      not stand in for one: those cut a pack into thirds of its own answers, so
+      they can say "the older third of Shah Rukh's films" but never "any Hindi
+      film from the 2000s". The window is inclusive at both ends, matching how
+      the prompt is worded and enforced by YEAR_WINDOWS in check-bank.py.
+    */
+    answers:[
+      {name:'Lagaan', aliases:[], tier:0, year:2001},
+      {name:'3 Idiots', aliases:['three idiots'], tier:0, year:2009},
+      {name:'Kabhi Khushi Kabhie Gham', aliases:['k3g','kabhi khushi'], tier:0, year:2001},
+      {name:'Om Shanti Om', aliases:['oso'], tier:0, year:2007},
+      {name:'Dil Chahta Hai', aliases:['dch'], tier:0, year:2001},
+
+      {name:'Rang De Basanti', aliases:['rdb'], tier:1, year:2006},
+      {name:'Jab We Met', aliases:['jwm'], tier:1, year:2007},
+      {name:'Taare Zameen Par', aliases:['tzp','taare zameen'], tier:1, year:2007},
+      {name:'Dhoom', aliases:[], tier:1, year:2004},
+      {name:'Munna Bhai MBBS', aliases:['munna bhai','munnabhai mbbs'], tier:1, year:2003},
+      {name:'Chak De India', aliases:['chak de! india','chak de'], tier:1, year:2007},
+
+      {name:'Swades', aliases:['swadesh'], tier:2, year:2004},
+      {name:'Lage Raho Munna Bhai', aliases:['lrmb'], tier:2, year:2006},
+      {name:'Jodhaa Akbar', aliases:['jodha akbar'], tier:2, year:2008},
+      {name:'Bunty Aur Babli', aliases:['bunty babli'], tier:2, year:2005},
+      {name:'Ghajini', aliases:['gajini'], tier:2, year:2008},
+
+      {name:'Rock On', aliases:['rock on!!','rockon'], tier:3, year:2008},
+      {name:'Wake Up Sid', aliases:['wakeup sid'], tier:3, year:2009},
+      {name:'Jaane Tu Ya Jaane Na', aliases:['jtyjn','jaane tu'], tier:3, year:2008},
+      {name:'Udaan', aliases:[], tier:3, year:2010},
+
+      {name:'Dev D', aliases:['dev.d','devd'], tier:4, year:2009},
+      {name:'Ishqiya', aliases:[], tier:4, year:2010},
+      {name:'Peepli Live', aliases:['peepli'], tier:4, year:2010},
+      {name:'Khosla Ka Ghosla', aliases:['khosla'], tier:4, year:2006},
+    ]
+  },
+  {
+    id:'wedding', kicker:'Name one…', title:'Bollywood movie with a famous wedding', hint:'A film remembered for its shaadi — the sangeet, the mandap, the baraat.', icon:'💒',
+    packDesc:'Name a big-wedding film. 5 rounds — no repeats.',
+    shortTitle:'Bollywood wedding film',
+    domainHint:['film','wedding','shaadi','marriage','bollywood'],
+    /*
+      Like `triangle`, this is a judgement rather than a lookup, so it errs wide.
+      The test applied was whether the wedding is something the film is
+      remembered FOR — a set piece the audience can picture — not merely whether
+      a wedding happens, which would take in most of Hindi cinema.
+    */
+    answers:[
+      {name:'Hum Aapke Hain Koun', aliases:['hahk','hum aapke hain kaun'], tier:0, year:1994},
+      {name:'Dilwale Dulhania Le Jayenge', aliases:['ddlj','dilwale dulhania'], tier:0, year:1995},
+      {name:'Kabhi Khushi Kabhie Gham', aliases:['k3g','kabhi khushi'], tier:0, year:2001},
+      {name:'Band Baaja Baaraat', aliases:['bbb','band baja baraat'], tier:0, year:2010},
+
+      {name:'Yeh Jawaani Hai Deewani', aliases:['yjhd'], tier:1, year:2013},
+      {name:'2 States', aliases:['two states'], tier:1, year:2014},
+      {name:'Monsoon Wedding', aliases:[], tier:1, year:2001},
+      {name:'Vivah', aliases:[], tier:1, year:2006},
+
+      {name:'Hum Saath Saath Hain', aliases:['hssh','hum saath saath'], tier:2, year:1999},
+      {name:'Rab Ne Bana Di Jodi', aliases:['rnbdj','rab ne'], tier:2, year:2008},
+      {name:'Tanu Weds Manu', aliases:['twm'], tier:2, year:2011},
+      {name:'Mujhse Shaadi Karogi', aliases:['msk'], tier:2, year:2004},
+
+      {name:'Namastey London', aliases:['namaste london'], tier:3, year:2007},
+      {name:'Prem Ratan Dhan Payo', aliases:['prdp'], tier:3, year:2015},
+      {name:'Badrinath Ki Dulhania', aliases:['bkd','badrinath'], tier:3, year:2017},
+      {name:'Veere Di Wedding', aliases:['vdw'], tier:3, year:2018},
+
+      {name:'Dolly Ki Doli', aliases:[], tier:4, year:2015},
+      {name:'Shubh Mangal Saavdhan', aliases:['shubh mangal savdhan'], tier:4, year:2017},
+    ]
+  },
+  {
+    id:'cop', kicker:'Name one…', title:'Bollywood actor who has played a police officer', hint:'Any actor who has worn the khaki on screen.', icon:'👮',
+    packDesc:'Name an on-screen cop. 5 rounds — no repeats.',
+    shortTitle:'actor who played a cop',
+    // People, and no useful year: an actor who played a cop in 1973 played
+    // another in 2015. Dating them would invent a fact the pack does not have,
+    // so this carries none — like `villain`, which is undated for the same
+    // reason. That also means no era or decade round can be built here, which
+    // is correct: there is nothing for one to cut on.
+    noun:'name',
+    domainHint:['actor','police','cop','inspector','bollywood'],
+    answers:[
+      {name:'Ajay Devgn', aliases:['ajay devgan','ajay'], tier:0},
+      {name:'Salman Khan', aliases:['salman','bhaijaan'], tier:0},
+      {name:'Amitabh Bachchan', aliases:['amitabh','big b','bachchan'], tier:0},
+      {name:'Akshay Kumar', aliases:['akshay','akki'], tier:0},
+
+      {name:'Ranveer Singh', aliases:['ranveer'], tier:1},
+      {name:'Aamir Khan', aliases:['aamir','amir khan'], tier:1},
+      {name:'Abhishek Bachchan', aliases:['abhishek'], tier:1},
+
+      {name:'Sanjay Dutt', aliases:['sanjay','sanju'], tier:2},
+      {name:'Nawazuddin Siddiqui', aliases:['nawazuddin','nawaz'], tier:2},
+      {name:'John Abraham', aliases:['john'], tier:2},
+      {name:'Ayushmann Khurrana', aliases:['ayushmann'], tier:2},
+
+      {name:'Nana Patekar', aliases:['nana'], tier:3},
+      {name:'Sunny Deol', aliases:['sunny'], tier:3},
+      {name:'Vivek Oberoi', aliases:['vivek'], tier:3},
+      {name:'Manoj Bajpayee', aliases:['manoj','bajpai'], tier:3},
+
+      {name:'Om Puri', aliases:['om'], tier:4},
+      {name:'Naseeruddin Shah', aliases:['naseeruddin','naseer'], tier:4},
+      {name:'Anil Kapoor', aliases:['anil'], tier:4},
+      // Qualifies on One 2 Ka 4 (2001), where he plays Inspector Arun Verma —
+      // a real police role but nobody's first thought, hence the tier. Worth
+      // checking against a source: it is the thinnest claim in this pack.
+      {name:'Shah Rukh Khan', aliases:['srk','shahrukh','shah rukh'], tier:4},
+    ]
+  },
+  {
+    id:'remake', kicker:'Name one…', title:'Bollywood remake of another-language film', hint:'A Hindi film remade from a Tamil, Telugu, Malayalam or Kannada original.', icon:'🔁',
+    packDesc:'Name a Hindi remake. 5 rounds — no repeats.',
+    shortTitle:'Hindi remake',
+    domainHint:['film','remake','tamil','telugu','malayalam','bollywood'],
+    /*
+      NOTE ON THE PROMPT. This pack answers "a Hindi film that IS a remake of a
+      film in another language", which is the opposite direction from the
+      question as originally worded ("a Bollywood movie that has been remade in
+      another language"). The answers supplied were all of this kind — Ghajini,
+      Drishyam, Kabir Singh and the rest are Hindi versions of southern
+      originals, not Hindi films later remade elsewhere — so the prompt follows
+      the answers rather than the other way round. The original direction is a
+      perfectly good pack too; it is simply a different one, and would need
+      different films.
+    */
+    answers:[
+      {name:'Ghajini', aliases:['gajini'], tier:0, year:2008},
+      {name:'Drishyam', aliases:[], tier:0, year:2015},
+      {name:'Singham', aliases:[], tier:0, year:2011},
+      {name:'Kabir Singh', aliases:[], tier:0, year:2019},
+
+      {name:'Bhool Bhulaiyaa', aliases:['bhul bhulaiya','bhool bhulaiya'], tier:1, year:2007},
+      {name:'Wanted', aliases:[], tier:1, year:2009},
+      {name:'Bodyguard', aliases:[], tier:1, year:2011},
+      {name:'Hera Pheri', aliases:[], tier:1, year:2000},
+
+      {name:'Rowdy Rathore', aliases:['rowdy rathod'], tier:2, year:2012},
+      {name:'Ready', aliases:[], tier:2, year:2011},
+      {name:'Holiday', aliases:[], tier:2, year:2014},
+      {name:'Vikram Vedha', aliases:[], tier:2, year:2022},
+
+      {name:'Force', aliases:[], tier:3, year:2011},
+      {name:'Gabbar Is Back', aliases:['gabbar is back'], tier:3, year:2015},
+      {name:'Jersey', aliases:[], tier:3, year:2022},
+      {name:'Saathiya', aliases:['sathiya'], tier:3, year:2002},
+
+      {name:'Nayak', aliases:['nayak the real hero'], tier:4, year:2001},
+      {name:'Billu', aliases:['billu barber'], tier:4, year:2009},
+      {name:'Sadma', aliases:[], tier:4, year:1983},
+      {name:'Chachi 420', aliases:['chachi420'], tier:4, year:1997},
     ]
   },
 ];
