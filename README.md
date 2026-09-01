@@ -280,6 +280,35 @@ starts one use in the hole — left level with the others it wins early ties and
 the game opens on the exact prompt this whole mechanism exists to stop being
 the entire game.
 
+### Not asking the same thing two days running
+
+Both remaining choices — which type, and which parameter within it — **rotate
+with the day number** rather than being drawn from the seeded rng, and the pack
+draw rotates a fixed shuffled ring by the same counter. Random is the wrong tool
+here: a coin flip is free to land the same way two days running, and it did.
+Rotation cannot. A pack that comes round on consecutive days advances one step
+through its own list of questions, so it is asked something different *by
+construction* rather than by luck.
+
+Crucially this keeps the plan a **pure function of the date**. The first attempt
+compared today's candidates against yesterday's plan, which sounds equivalent
+and is not: building yesterday's plan needs the day before it, so the comparison
+ran against a differently-built plan than the one players were actually served,
+and silently missed most repeats. It cut 22 repeats to 20. Rotation cut them to
+6.
+
+The one thing rotation cannot see is a **hand-picked day**, because scheduled
+prompts never go through it. `yesterdaysFixedAsks` covers that — a static
+dictionary lookup on yesterday's key, no plan built and nothing recursive.
+
+**What is left is a data limit, not a logic one.** All six remaining repeats are
+packs too small to hold a second question: `bhansali` is ten films, his whole
+filmography, which supports no letter, no decade, no era bucket and no rarity
+floor — only "Name a Sanjay Leela Bhansali film". Drawn on consecutive days it
+must repeat. Growing the pack is impossible (it is already exhaustive); the
+options are to accept it, or to drop such packs from the Dive and keep them for
+the schedule and themed games.
+
 Internally it is still `mode === 'practice'`, which is now a misleading name —
 it dates from when the draw really was random and unconstrained. `pickSession()`
 in `game/rounds.js` is the only place that matters.

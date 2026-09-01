@@ -2,6 +2,11 @@ export const PACK_NOUGHTIES = {
   id:'noughties', kicker:'Name one…', title:'Bollywood movie from 2000–2010', hint:'Released in 2000 or later and 2010 or earlier.', icon:'📀',
   packDesc:'Name a 2000s film. 5 rounds — no repeats.',
   shortTitle:'2000s Bollywood movie',
+  // The pack IS a period, so no round asks for a decade within it, and every
+  // year is checked against this window. Without it the handful of 2010 films
+  // were a small enough slice to earn their own decade round, and the game
+  // asked for "a 2000s Bollywood movie released in the 2010s".
+  yearWindow:[2000, 2010],
   domainHint:['film','bollywood','2000','2005','2010'],
   /*
     The decade pack `nineties` never had a sequel, and the era rounds could

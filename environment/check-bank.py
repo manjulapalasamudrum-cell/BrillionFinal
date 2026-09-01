@@ -26,7 +26,17 @@ PRESENT = 2026
 # Packs whose title is itself a claim about the year. An answer outside the
 # window is not a rarity judgement the maintainer can make either way — it is
 # simply wrong, and the game would award points for it.
-YEAR_WINDOWS = {"nineties": (1990, 1999), "noughties": (2000, 2010)}
+#
+# Read from each pack's own `yearWindow` rather than listed here, so the window
+# the validator enforces and the window the game reads when deciding whether to
+# generate a decade round can never disagree.
+def year_windows(sources):
+    out = {}
+    for pid, body in sources:
+        m = re.search(r"yearWindow:\s*\[\s*(\d{4})\s*,\s*(\d{4})\s*\]", body)
+        if m:
+            out[pid] = (int(m.group(1)), int(m.group(2)))
+    return out
 
 # Packs of people whose `year` would be a fact the pack does not have. An actor
 # who played a policeman in 1973 played another in 2015, so there is no one year
@@ -165,6 +175,7 @@ def main():
     # rest of these checks would never see, because they only look at what the
     # index successfully resolved.
     _sources, orphans, missing = read_packs()
+    windows = year_windows(_sources)
     for pid in orphans:
         problems.append("packs/%s.js exists but categories.js does not import it" % pid)
     for pid in missing:
@@ -208,8 +219,8 @@ def main():
                 elif not CINEMA_START <= e["year"] <= PRESENT:
                     problems.append("%s: %r year %d is outside %d-%d"
                                     % (pid, e["name"], e["year"], CINEMA_START, PRESENT))
-                elif pid in YEAR_WINDOWS:
-                    lo, hi = YEAR_WINDOWS[pid]
+                elif pid in windows:
+                    lo, hi = windows[pid]
                     if not lo <= e["year"] <= hi:
                         problems.append("%s: %r is from %d, outside the pack's %d-%d"
                                         % (pid, e["name"], e["year"], lo, hi))

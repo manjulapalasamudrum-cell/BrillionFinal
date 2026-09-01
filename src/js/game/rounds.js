@@ -15,7 +15,9 @@ import { DAILY_SHOWS, findShow } from '../data/dailies.js';
 import { scheduleFor } from '../data/schedule.js';
 import { computeEraBuckets } from './eras.js';
 import { violatesConstraint } from './constraints.js';
-import { article, eraSpec, viableTypes, assignTypes, ROUND_FLAVORS } from './question-types.js';
+import {
+  article, eraSpec, viableTypes, assignTypes, specKey, ROUND_FLAVORS,
+} from './question-types.js';
 import {
   mulberry32, seededShuffle, dateSeed, puzzleDate, dateFromKey, formatPuzzleKey,
 } from '../lib/random.js';
@@ -201,13 +203,68 @@ export function buildDivePlan(date = new Date()) {
   const fixed = scheduledPrompts(puzzleDate(date));
   const spoken = new Set(fixed.map((f) => f.cat.id));
   const pool = CATEGORIES.filter((c) => !spoken.has(c.id));
-  const filler = seededShuffle(pool, rng).slice(0, MIXED_ROUNDS - fixed.length);
+
+  /*
+    Which packs rest, rotated rather than reshuffled.
+
+    A fresh shuffle each day is free to draw the same pack twice running, and
+    with seventeen packs and ten rounds that happens constantly. Rotating a
+    shuffled ring by the day number instead guarantees a pack that plays today
+    rests within a couple of days, and that the packs which rest change every
+    day. The ring itself is shuffled off a fixed seed, so the ORDER is arbitrary
+    but the ROTATION is regular — which is what makes the day-to-day overlap
+    small and predictable instead of random.
+
+    This matters most for a pack with only one question to give: `bhansali` is
+    ten films, his whole filmography, which supports no letter, no decade, no
+    era bucket and no rarity floor — just "Name a Sanjay Leela Bhansali film".
+    Nothing inside the pack can stop that repeating; only not drawing it two
+    days running can.
+  */
+  const ring = seededShuffle(pool, mulberry32(RING_SEED));
+  const turn = dayNumber(date);
+  const need = MIXED_ROUNDS - fixed.length;
+  const filler = [];
+  for (let i = 0; i < need; i++) filler.push(ring[(turn * need + i) % ring.length]);
 
   return {
     list: fixed.map((f) => f.cat).concat(filler),
     total: fixed.length + filler.length,
-    rounds: fixed.map((f) => f.spec).concat(assignTypes(filler, rng)),
+    rounds: fixed.map((f) => f.spec)
+      .concat(assignTypes(filler, rng, turn, yesterdaysFixedAsks(date))),
   };
+}
+
+/**
+ * What a scheduled day asked yesterday, so today does not repeat it.
+ *
+ * Rotation handles the generated days on its own — a pack advances through its
+ * own questions as the day number advances. Hand-picked prompts sit outside
+ * that: they are written in data/schedule.js and never rotate, so the day after
+ * a scheduled one could land on the same pack and ask the same thing. That is
+ * exactly what happened after the 2026-09-02 set, which pins `cop` to its plain
+ * "Name a Bollywood actor who has played a police officer".
+ *
+ * This is cheap and stays pure because a schedule is static data: no plan is
+ * built, nothing recurses, it is a dictionary lookup on yesterday's key.
+ */
+function yesterdaysFixedAsks(date) {
+  const prevKey = puzzleDate(new Date(dateFromKey(puzzleDate(date)).getTime() - 86400000));
+  const day = scheduleFor(prevKey);
+  if (!day || !day.prompts) return new Set();
+  return new Set(day.prompts.map((p) => specKey(p.pack, p.spec)));
+}
+
+/*
+  A fixed seed for the pack ring. It is deliberately NOT the date: the ring's
+  order must be the same every day so that rotating it means something. Change
+  this and every day's pack order changes at once.
+*/
+const RING_SEED = 0x5f3759df;
+
+/** Whole days since the epoch, in puzzle-day terms — the rotation counter. */
+function dayNumber(date) {
+  return Math.floor(dateFromKey(puzzleDate(date)).getTime() / 86400000);
 }
 
 /* ---------------------------------------------------------------------------

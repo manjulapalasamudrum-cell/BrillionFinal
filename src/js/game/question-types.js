@@ -200,7 +200,14 @@ export function viableTypes(cat) {
   // reads differently even though both are built out of the year.
   const dated = answers.filter((e) => e.year != null);
   const decades = tally(dated, (e) => Math.floor(e.year / 10) * 10);
-  const decadeSpecs = askableKeys(decades, dated.length)
+  /*
+    A pack that already names a period in its own title gets no decade round.
+    `noughties` covers 2000-2010, so the 2010 films are a small enough slice to
+    pass the narrowing rule and it generated "Name a 2000s Bollywood movie
+    released in the 2010s" — a prompt that contradicts itself. The pack IS the
+    decade; asking for a decade within it can only confuse.
+  */
+  const decadeSpecs = (cat.yearWindow ? [] : askableKeys(decades, dated.length))
     // No prompt is built around a decade before the floor — see eras.js. The
     // films themselves stay in the bank and stay answerable; it is the question
     // "name one from the 1970s" that is gone.
@@ -256,25 +263,68 @@ export function viableTypes(cat) {
  * already took. Ties are broken by the seeded rng, which is what makes two
  * players on the same day get the same questions and not merely the same packs.
  */
-export function assignTypes(cats, rng) {
+/** Small stable hash, so each pack rotates on its own phase. */
+function packPhase(id) {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+/**
+ * Hand each pack a question, spreading the KINDS across the day and rotating
+ * the choice with the date so consecutive days do not ask the same thing.
+ *
+ * `turn` is the day number. It replaces the seeded rng in both choices that
+ * used to be random — which type, and which parameter within it — because
+ * random is exactly the wrong tool here: a coin flip is free to land the same
+ * way two days running, and it did. Rotation cannot. A pack drawn on
+ * consecutive days advances one step through its own list of questions, so it
+ * is asked something different by construction rather than by luck.
+ *
+ * This also keeps the plan a PURE function of the date. The first attempt at
+ * this compared against yesterday's plan, which sounds equivalent and is not:
+ * building yesterday's plan needs the day before it, so the comparison ran
+ * against a differently-built plan than the one players were served, and
+ * silently missed most repeats.
+ */
+export function assignTypes(cats, rng, turn, avoid) {
   // 'open' starts one use in the hole, so it is only reached once a pack's
   // real questions have been. Left level with the others it wins ties early
   // and the game opens on "Name an Amitabh Bachchan movie" — the exact prompt
   // the type catalogue exists to stop being the whole game.
   const typeUse = { open: 1 };
   const specUse = {};
+  const day = turn || 0;
+  // Questions a hand-picked day asked yesterday. Rotation cannot see those,
+  // because they never went through it.
+  const stale = avoid || new Set();
 
   return cats.map((cat) => {
     const groups = viableTypes(cat);
+    const phase = day + packPhase(cat.id);
     let best = null;
-    groups.forEach((g) => {
-      // Within a type, prefer a parameter this game has not used either, so a
-      // second `initial` round asks for a different letter than the first.
-      const fresh = g.specs.filter((s) => !specUse[specKey(cat.id, s)]);
-      const pool = fresh.length ? fresh : g.specs;
-      const score = (typeUse[g.id] || 0) + rng() * 0.5;
+    groups.forEach((g, gi) => {
+      // Within a type, prefer a parameter this game has not used, so a second
+      // `initial` round asks for a different letter than the first; then one
+      // yesterday's schedule did not pin.
+      const unused = g.specs.filter((s) => !specUse[specKey(cat.id, s)]);
+      const candidates = unused.length ? unused : g.specs;
+      const novel = candidates.filter((s) => !stale.has(specKey(cat.id, s)));
+      const pool = novel.length ? novel : candidates;
+
+      // A type with nothing left to ask that yesterday did not already ask is
+      // a worse choice than one that has something — but only a preference, so
+      // a pack whose every question is stale can still be asked rather than
+      // dropping out of the game.
+      const repeatPenalty = novel.length ? 0 : 1;
+
+      // Spread the kinds across today, then rotate to break the tie. The
+      // rotation term is always < 1 so it can only order equally-used types,
+      // never override the spread or the penalty.
+      const score = (typeUse[g.id] || 0) + repeatPenalty +
+        ((phase + gi) % groups.length) / groups.length;
       if (!best || score < best.score) {
-        best = { score, group: g, spec: pool[Math.floor(rng() * pool.length)] };
+        best = { score, group: g, spec: pool[phase % pool.length] };
       }
     });
 
@@ -284,6 +334,15 @@ export function assignTypes(cats, rng) {
   });
 }
 
-function specKey(catId, spec) {
+/**
+ * Identifies one question: which pack, asked which way, with which parameter.
+ *
+ * Exported because rounds.js builds the same key for yesterday's questions so
+ * today can avoid repeating one. It must be the ONE definition — a second copy
+ * that formatted an absent parameter as '' rather than 'undefined' would agree
+ * on every other type and silently disagree on `open`, which is precisely the
+ * type the thin packs fall back to.
+ */
+export function specKey(catId, spec) {
   return catId + '|' + spec.type + '|' + (spec.value != null ? spec.value : spec.minTier);
 }

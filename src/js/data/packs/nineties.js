@@ -10,6 +10,9 @@ export const PACK_NINETIES = {
   id:'nineties', kicker:'Name one…', title:'Bollywood movie from the 1990s', hint:'Released between 1990 and 1999 — including the Tamil crossovers everyone saw in Hindi.', icon:'📼',
   packDesc:'Name a 90s hit. 5 rounds — no repeats.',
   shortTitle:'90s Bollywood movie',
+  // The pack IS a period: no round asks for a decade within it, and this is the
+  // window check-bank.py enforces every year against.
+  yearWindow:[1990, 1999],
   domainHint:['film','bollywood','1990','1991','1992','1993','1994','1995','1996','1997','1998','1999'],
   answers:[
     {name:'Dilwale Dulhania Le Jayenge', aliases:['ddlj','dilwale dulhania'], tier:0, year:1995},
