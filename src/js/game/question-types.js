@@ -12,7 +12,7 @@
  * `role`), so none of them needed a data migration.
  */
 
-import { computeEraBuckets, eraLabelText } from './eras.js';
+import { computeEraBuckets, eraLabelText, PROMPT_FLOOR_YEAR } from './eras.js';
 import {
   firstLetter, wordCount, LONG_TITLE_WORDS, violatesConstraint,
 } from './constraints.js';
@@ -200,7 +200,12 @@ export function viableTypes(cat) {
   // reads differently even though both are built out of the year.
   const dated = answers.filter((e) => e.year != null);
   const decades = tally(dated, (e) => Math.floor(e.year / 10) * 10);
-  const decadeSpecs = askableKeys(decades, dated.length).map((d) => ({
+  const decadeSpecs = askableKeys(decades, dated.length)
+    // No prompt is built around a decade before the floor — see eras.js. The
+    // films themselves stay in the bank and stay answerable; it is the question
+    // "name one from the 1970s" that is gone.
+    .filter((d) => Number(d) >= PROMPT_FLOOR_YEAR)
+    .map((d) => ({
     type: 'decade',
     value: Number(d),
     text: 'Name ' + a + ' ' + yearVerb(cat) + ' in the ' + d + 's.',

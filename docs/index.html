@@ -3074,8 +3074,11 @@ if (year >= 1950) return 'The Classic Studio Era';
 if (year >= 1931) return 'The Early Talkies Era';
 return 'The Dawn of Indian Cinema (Raja Harishchandra, 1913)';
 }
+const PROMPT_FLOOR_YEAR = 1990;
 function computeEraBuckets(cat) {
-const withYear = cat.answers.filter((a) => a.year != null);
+const withYear = cat.answers.filter(
+(a) => a.year != null && a.year >= PROMPT_FLOOR_YEAR
+);
 if (withYear.length < 6) return null;
 const sorted = withYear.slice().sort((a, b) => a.year - b.year);
 const n = sorted.length;
@@ -3285,7 +3288,12 @@ if (raritySpecs.length) groups.push({ id: 'rarity', specs: raritySpecs });
 // reads differently even though both are built out of the year.
 const dated = answers.filter((e) => e.year != null);
 const decades = tally(dated, (e) => Math.floor(e.year / 10) * 10);
-const decadeSpecs = askableKeys(decades, dated.length).map((d) => ({
+const decadeSpecs = askableKeys(decades, dated.length)
+// No prompt is built around a decade before the floor — see eras.js. The
+// films themselves stay in the bank and stay answerable; it is the question
+// "name one from the 1970s" that is gone.
+.filter((d) => Number(d) >= PROMPT_FLOOR_YEAR)
+.map((d) => ({
 type: 'decade',
 value: Number(d),
 text: 'Name ' + a + ' ' + yearVerb(cat) + ' in the ' + d + 's.',

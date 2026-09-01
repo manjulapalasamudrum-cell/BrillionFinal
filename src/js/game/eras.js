@@ -26,12 +26,31 @@ export function eraLabel(year) {
 }
 
 /**
+ * The earliest year any PROMPT may be built around.
+ *
+ * The bank still holds Sholay, Mughal-e-Azam and Sangam, and they still count
+ * as answers — this floor governs what the game ASKS, not what it accepts. No
+ * round says "released in the 1970s" or "up to 1981" any more.
+ *
+ * Nothing older is lost by it. Buckets are cut over 1990-and-later answers, so
+ * the earliest bucket comes out as "up to <some year in the 1990s>" — and a
+ * 1975 film satisfies "up to 1998" perfectly well, so the old titles remain
+ * reachable through exactly the round where they belong.
+ */
+export const PROMPT_FLOOR_YEAR = 1990;
+
+/**
  * Split a category's year-tagged answers into three buckets of roughly equal
  * COUNT (not equal calendar span), so each bucket is actually answerable.
  * Returns null when there isn't enough year data to make that meaningful.
+ *
+ * Only answers at or after PROMPT_FLOOR_YEAR shape the cut, which is what keeps
+ * every boundary — and so every prompt built from one — inside the modern era.
  */
 export function computeEraBuckets(cat) {
-  const withYear = cat.answers.filter((a) => a.year != null);
+  const withYear = cat.answers.filter(
+    (a) => a.year != null && a.year >= PROMPT_FLOOR_YEAR
+  );
   if (withYear.length < 6) return null;
   const sorted = withYear.slice().sort((a, b) => a.year - b.year);
   const n = sorted.length;

@@ -237,6 +237,26 @@ Every one reads a field the bank already carried, so adding them needed no data
 migration — only three optional pack fields for phrasing (`noun`, `yearIs`,
 `shortTitle`, all defaulted; see `data/categories.js`).
 
+### `PROMPT_FLOOR_YEAR` — what the game asks vs. what it accepts
+
+No prompt is built around a year before **1990** (`eras.js`). The two year-based
+types respect it in different ways:
+
+- `decade` simply drops any decade below the floor. There is no "name one from
+  the 1970s" round.
+- `era` cuts its thirds over 1990-and-later answers only, so every boundary
+  lands in the modern era.
+
+**This governs what the game ASKS, not what it accepts, and the distinction is
+the whole point.** All 153 pre-1990 films are still in the bank and still score:
+*Sholay*, *Mughal-e-Azam*, *Sangam*, Yash Chopra. Because era's earliest bucket
+reads "up to 1998", a 1975 film satisfies it exactly as it should — every one of
+those answers remains reachable through the round where it belongs. Deleting
+them instead would have made *Sholay* a wrong answer to "name an Amitabh
+Bachchan movie", which is the failure this bank exists to prevent.
+
+Raising or lowering the floor is a one-line change in `eras.js`.
+
 `viableTypes(cat)` in `game/rounds.js` decides which types a pack can host, on
 two rules worth keeping:
 
