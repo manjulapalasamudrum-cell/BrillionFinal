@@ -25,33 +25,54 @@ the folder deploys as-is to any static host — there is no build step.
 
 ## Sharing it
 
-`.\environment\build.ps1` flattens the whole game into one self-contained file:
+`.\environment\build.ps1` flattens the whole game into **two** files:
 
 ```
-dist\bollybuzz.html            complete standalone page, no server needed
+docs\index.html                complete standalone page, no server needed
 dist\bollybuzz.artifact.html   same content minus the document wrapper
-dist\site\index.html          the same page, named for a web root
 ```
 
-`dist\bollybuzz.html` is the one to share by hand: a single file with React, the
-CSS and the answer bank all inlined. It has no dependency except Google Fonts,
-and falls back to Georgia / system sans without them. Open it by double-clicking
-or email it. Rebuild after changing anything under `assets/`.
+`docs\index.html` is the one to share by hand: a single file with React, the CSS
+and the answer bank all inlined. It has no dependency except Google Fonts, and
+falls back to Georgia / system sans without them. Open it by double-clicking,
+email it, drag the folder onto a host, or let GitHub Pages serve it — it is the
+same file in every case. Rebuild after changing anything under `src/`.
+
+It used to write four files, three of which were byte-identical: the standalone
+page, a copy named for a web root, and a copy for GitHub Pages. One file serves
+all three, and the artifact body is the only output that genuinely differs.
 
 ## Putting it on a public URL
 
-`dist\site\` is a deploy-ready web root — one `index.html`, nothing else, no
-build step and no server-side anything. Drag that **folder** (not the file) onto
-either of these and it is live in under a minute, free, on `https://`:
+### GitHub Pages
+
+`docs/` is a deploy-ready web root — one `index.html`, nothing else, no build
+step and no server-side anything. In the repo: **Settings → Pages → Deploy from
+a branch → `main` / `/docs`**. Live at
+`https://<user>.github.io/<repo>/` in a minute or two.
+
+Pages serves either the repo root or a folder named exactly `docs/`, which is
+why the built page is written there and not somewhere tidier. The repo root has
+no `index.html` to give it — `public/index.html` is the dev shell and points at
+`/src/`, which would render a broken page for visitors.
+
+### Drag-and-drop hosts
+
+The same `docs/` folder works on either of these, free, on `https://`:
 
 - **Netlify Drop** — <https://app.netlify.com/drop>
 - **Cloudflare Pages** — <https://pages.cloudflare.com> → *Upload assets*
 
-Both hand back a URL like `something-random.netlify.app`, renameable in the site
-settings, and both let you attach a custom domain later if you register one.
-Both need you to be signed in, so this step cannot be automated from the repo.
+Drag the **folder**, not the file. Both hand back a URL like
+`something-random.netlify.app`, renameable in the site settings, and both let
+you attach a custom domain later. Both need you signed in, so this step cannot
+be automated from the repo.
 
-Rerun `.\build.ps1` and re-drop the folder to publish a change.
+**The built page is a committed artifact**, so the workflow after any change
+under `src/` is: rerun `.\environment\build.ps1`, commit, push. Skipping the
+rebuild publishes the previous game — that has happened once already, when
+`build.ps1` quietly stopped writing one of its outputs and a stale page sat in
+the repo for a day.
 
 ### As a Claude Artifact
 
@@ -78,7 +99,7 @@ public/
 server/
   serve.ps1                 dependency-free local static server
 environment/
-  build.ps1                 flattens src/ into dist/ (see Sharing it)
+  build.ps1                 flattens src/ into the two outputs (see Sharing it)
   check-bank.py             validates the answer bank; build.ps1 runs it
 src/vendor/
   mini-react.js             the renderer; sets window.React / ReactDOMClient
@@ -86,11 +107,14 @@ src/css/
   tokens.css                colours, type, shape, rhythm — everything reads these
   base.css                  reset, the ground, header, footer
   components.css            card surfaces, buttons, tiles, the input
-  screens.css               layout for the start / game / result screens
+  screen-start.css          masthead, rarity ladder, programme, archive
+  screen-game.css           the one dark surface: prompt, clock, feedback
+  screen-result.css         depth gauge, score band, breakdown, share box
 src/js/
   main.js                   entry point; mounts <App> into #root
   data/tiers.js             the five rarity tiers and their point values
-  data/categories.js        the answer bank — 17 packs, ~1,120 answers
+  data/categories.js        the running order; the packs themselves are next door
+  data/packs/*.js           one file per pack — 17 of them, ~1,120 answers
   data/dailies.js           the daily shows and their constraints
   data/schedule.js          hand-picked prompts for particular dates
   data/bank.js              facts read off the bank: counts, the rarity ladder
@@ -100,7 +124,9 @@ src/js/
   lib/text-match.js         normalization + fuzzy matching of typed answers
   lib/audio.js              the sound effects, synthesised — no audio files
   game/eras.js              era labelling and the early/mid/late bucketing
-  game/rounds.js            what each round asks and what counts for it
+  game/constraints.js       what a round ACCEPTS, and how the rule is worded
+  game/question-types.js    what a round ASKS: the seven types and their phrasing
+  game/rounds.js            which packs a game draws and in what order
   game/scoring.js           score → year, and the shareable result grid
   ui/dom.js                 the `h` (createElement) helper and focus utilities
   ui/Chrome.js              header and footer
@@ -108,13 +134,26 @@ src/js/
   ui/GameScreen.js          prompt, clock, answer box, feedback panel
   ui/ResultScreen.js        the depth gauge, breakdown, share box
   ui/App.js                 all game state and the round lifecycle
-dist/                       build output; safe to delete, regenerated
+docs/index.html             the built page — committed, and what Pages serves
+dist/                       the Artifact body; safe to delete, regenerated
 ```
+
+**Nothing here is over 300 lines**, and that is maintained deliberately. Three
+files had grown past it and were split along seams they already had:
+`categories.js` (1,507 lines) into `data/packs/`, `rounds.js` (629) into the
+ask/accept/choose split above, and `screens.css` (655) into one stylesheet per
+screen.
 
 Paths cross folders in exactly three places, so those are the ones to fix if
 anything moves again: `public/index.html` points at `src/`, `server/serve.ps1`
 resolves its root one level up, and `environment/build.ps1` reads from `src/`
-and writes to `dist/`.
+and writes `docs/index.html` and `dist/bollybuzz.artifact.html`.
+
+Two lists must stay in step with the files beside them, and both say so in
+place: the stylesheet links in `public/index.html` against `$cssFiles` in
+`build.ps1`, and the imports in `data/categories.js` against `data/packs/`
+(check-bank.py fails the build on a pack file nothing imports, or an import
+with no file).
 
 There is no JSX and no bundler — components call `h(...)` (React.createElement)
 directly, so the source you edit is exactly what the browser runs.

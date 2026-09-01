@@ -3,7 +3,7 @@
 import { h } from './dom.js';
 import { CATEGORIES } from '../data/categories.js';
 import { TIERS } from '../data/tiers.js';
-import { alternativesFor } from '../game/rounds.js';
+import { alternativesFor } from '../game/constraints.js';
 import { CINEMA_START_YEAR, eraLabel } from '../game/eras.js';
 import { depthYear, maxScore, buildShareText, PRESENT_YEAR } from '../game/scoring.js';
 

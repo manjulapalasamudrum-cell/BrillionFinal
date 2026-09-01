@@ -1,0 +1,45 @@
+export const PACK_DEEPIKA = {
+  id:'deepika', kicker:'Name one…', title:'Deepika Padukone movie', hint:'Any film starring Deepika Padukone.', icon:'💫',
+  packDesc:'Name a Deepika Padukone film. 5 rounds — no repeats.',
+  domainHint:['film','bollywood','deepika padukone','hindi'],
+  answers:[
+    {name:'Om Shanti Om', aliases:['oso'], tier:0, year:2007},
+    {name:'Chennai Express', aliases:[], tier:0, year:2013},
+    {name:'Padmaavat', aliases:['padmavat','padmavati'], tier:0, year:2018},
+    {name:'Piku', aliases:[], tier:0, year:2015},
+    {name:'Pathaan', aliases:['pathan'], tier:0, year:2023},
+    {name:'Bajirao Mastani', aliases:['bajirao'], tier:0, year:2015},
+    {name:'Yeh Jawaani Hai Deewani', aliases:['yjhd','ye jawani hai deewani'], tier:0, year:2013},
+
+    {name:'Goliyon Ki Raasleela Ram-Leela', aliases:['ram leela','ramleela','goliyon ki raasleela'], tier:1, year:2013},
+    {name:'Cocktail', aliases:[], tier:1, year:2012},
+    {name:'Tamasha', aliases:[], tier:1, year:2015},
+    {name:'Happy New Year', aliases:['hny'], tier:1, year:2014},
+    {name:'Love Aaj Kal', aliases:['love aj kal'], tier:1, year:2009},
+    {name:'83', aliases:['eighty three','83 the film'], tier:1, year:2021},
+    {name:'Jawan', aliases:[], tier:1, year:2023},
+    {name:'Fighter', aliases:[], tier:1, year:2024},
+
+    {name:'Finding Fanny', aliases:[], tier:2, year:2014},
+    {name:'Gehraiyaan', aliases:['gehraiyan'], tier:2, year:2022},
+    {name:'Chhapaak', aliases:['chapaak'], tier:2, year:2020},
+    {name:'Housefull', aliases:[], tier:2, year:2010},
+    {name:'Race 2', aliases:['race two'], tier:2, year:2013},
+    {name:'Bachna Ae Haseeno', aliases:['bachna ae haseno'], tier:2, year:2008},
+    {name:'Singham Again', aliases:[], tier:2, year:2024},
+    {name:'Kalki 2898 AD', aliases:['kalki','kalki 2898'], tier:2, year:2024},
+
+    {name:'Karthik Calling Karthik', aliases:['kck','kartik calling kartik'], tier:3, year:2010},
+    {name:'Break Ke Baad', aliases:[], tier:3, year:2010},
+    {name:'Desi Boyz', aliases:['desi boys'], tier:3, year:2011},
+    {name:'Billu', aliases:['billu barber'], tier:3, year:2009},
+    {name:'Chandni Chowk to China', aliases:['chandni chowk 2 china','cc2c'], tier:3, year:2009},
+    {name:'Aarakshan', aliases:['aarakshan 2011'], tier:3, year:2011},
+
+    {name:'Lafangey Parindey', aliases:['lafange parinde'], tier:4, year:2010},
+    {name:'Khelein Hum Jee Jaan Sey', aliases:['khelein hum jee jaan se'], tier:4, year:2010},
+    {name:'Dum Maaro Dum', aliases:['dum maro dum'], tier:4, year:2011},
+    {name:'xXx Return of Xander Cage', aliases:['xxx','return of xander cage'], tier:4, year:2017},
+    {name:'Kochadaiiyaan', aliases:['kochadaiyaan','kochadaiiyaan the legend'], tier:4, year:2014},
+  ]
+};

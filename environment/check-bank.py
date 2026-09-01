@@ -17,7 +17,8 @@ import sys
 import unicodedata
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SRC = os.path.join(ROOT, "src", "js", "data", "categories.js")
+PACKS = os.path.join(ROOT, "src", "js", "data", "packs")
+INDEX = os.path.join(ROOT, "src", "js", "data", "categories.js")
 
 CINEMA_START = 1913
 PRESENT = 2026
@@ -102,16 +103,35 @@ def loose_key(s):
     return re.sub(r"\s+", " ", s).strip()
 
 
-def parse():
-    text = open(SRC, encoding="utf-8").read()
-    packs = []
-    for m in re.finditer(r"id:'([a-z]+)'", text):
-        start = m.start()
-        end = text.find("\n  {\n", start + 1)
-        packs.append((m.group(1), text[start: end if end > 0 else len(text)]))
+def read_packs():
+    """
+    One pack per file under data/packs/, in the order categories.js lists them.
+
+    Reading the index rather than globbing the directory is deliberate: a pack
+    file that nothing imports is dead weight the game never sees, and checking a
+    pack the game does not play would be worse than not checking it. A file on
+    disk that the index does not name is reported below.
+    """
+    index = open(INDEX, encoding="utf-8").read()
+    ordered = re.findall(r"from '\./packs/([a-z]+)\.js'", index)
+
+    on_disk = {f[:-3] for f in os.listdir(PACKS) if f.endswith(".js")}
+    orphans = sorted(on_disk - set(ordered))
+    missing = [p for p in ordered if p not in on_disk]
 
     out = []
-    for pid, body in packs:
+    for pid in ordered:
+        path = os.path.join(PACKS, pid + ".js")
+        if not os.path.exists(path):
+            continue
+        out.append((pid, open(path, encoding="utf-8").read()))
+    return out, orphans, missing
+
+
+def parse():
+    sources, _orphans, _missing = read_packs()
+    out = []
+    for pid, body in sources:
         entries = []
         for e in re.finditer(
             r"\{name:'((?:[^'\\]|\\.)*)'\s*,\s*aliases:\[([^\]]*)\][^}]*\}", body
@@ -139,6 +159,16 @@ def main():
     problems = []
     notes = []
     total = 0
+
+    # A pack file nothing imports is invisible to the game; a name in the index
+    # with no file behind it is a broken import. Both are silent failures the
+    # rest of these checks would never see, because they only look at what the
+    # index successfully resolved.
+    _sources, orphans, missing = read_packs()
+    for pid in orphans:
+        problems.append("packs/%s.js exists but categories.js does not import it" % pid)
+    for pid in missing:
+        problems.append("categories.js imports packs/%s.js, which does not exist" % pid)
 
     for pid, entries in packs:
         total += len(entries)

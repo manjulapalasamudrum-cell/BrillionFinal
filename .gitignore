@@ -8,7 +8,7 @@ __pycache__/
 Thumbs.db
 desktop.ini
 
-# dist/ is deliberately NOT ignored: dist/site/index.html is what GitHub Pages
-# and Netlify Drop actually serve, so the built page has to be in the repo.
+# docs/index.html is deliberately NOT ignored: it is what GitHub Pages serves,
+# so the built page has to be in the repo. dist/ holds only the Artifact body.
 # Rerun environment\build.ps1 and commit the result after changing anything
 # under src/.

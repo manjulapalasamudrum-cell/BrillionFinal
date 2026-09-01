@@ -1,0 +1,172 @@
+/*
+   The game card. The only dark surface in the app: the lights are down
+   and the screen is lit.
+
+   Split out of a single 655-line screens.css. The cascade order in
+   public/index.html and environment/build.ps1 is start, game, result --
+   these three never overlap, but the order is kept meaningful anyway.
+*/
+
+/* ======================================================================
+   GAME — lights down
+   ====================================================================== */
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--on-ink-dim);
+  margin-bottom: var(--s-3);
+}
+.hud b { color: var(--peacock); font-weight: 500; }
+
+/* The clock is a strip of film: it depletes, and the perforations show how
+   many seconds are left without you having to read the number. */
+.timer { display: flex; align-items: center; gap: var(--s-3); margin-bottom: var(--s-5); }
+.timer-track {
+  position: relative;
+  flex: 1;
+  height: 14px;
+  background: var(--ink-sunk);
+  border: 1px solid var(--paper-rule);
+  overflow: hidden;
+}
+.timer-fill {
+  height: 100%;
+  background: var(--peacock);
+  transition: width 1s linear, background-color .3s ease;
+}
+/* One perforation per second — one goes dark each tick, so the strip can be
+   counted as well as read. `--tick` is 100/ROUND_SECONDS, set inline by
+   GameScreen, so this stays correct if the clock length changes. */
+.timer-track::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(90deg,
+    transparent 0 calc(var(--tick) - 2px), var(--paper) calc(var(--tick) - 2px) var(--tick));
+  pointer-events: none;
+}
+.timer-count {
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  color: var(--on-ink-dim);
+  min-width: 4ch;
+  text-align: right;
+}
+.timer--low .timer-fill { background: var(--vermilion); }
+.timer--low .timer-count { color: var(--vermilion); }
+
+.cat-label { text-align: center; }
+.cat-label .cl-kicker {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--peacock);
+}
+.cat-label h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--t-prompt);
+  line-height: 1.2;
+  letter-spacing: -.01em;
+  margin: var(--s-3) 0 var(--s-2);
+  color: var(--on-paper);
+}
+/*
+  The round's restriction, given its own line and the accent colour. This is
+  the single most-missed thing on the screen: without it a player reads the
+  pack's "Any film..." hint, types a film that is genuinely valid for the pack
+  but wrong for this round, and concludes the game does not know it.
+*/
+.cat-label .cl-limit {
+  display: inline-block;
+  margin: 0 auto var(--s-2);
+  padding: 5px var(--s-3);
+  border-radius: 999px;
+  background: #E7F0FE;
+  color: var(--peacock-deep);
+  font-size: var(--t-small);
+  font-weight: 700;
+}
+.cat-label .cl-hint { color: var(--on-paper-dim); font-size: var(--t-small); }
+
+.answer-row { display: flex; gap: var(--s-2); margin-top: var(--s-5); }
+.skip-row { text-align: center; margin-top: var(--s-3); }
+
+.retry-note {
+  margin-top: var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-left: 3px solid var(--vermilion);
+  background: #FDE7EA;
+  color: var(--magenta-deep);
+  font-size: var(--t-small);
+  line-height: 1.5;
+  animation: nudge .3s var(--ease-press);
+}
+@keyframes nudge {
+  0% { transform: translateX(-5px); }
+  60% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+/* --- Feedback ----------------------------------------------------------- */
+
+.feedback {
+  margin-top: var(--s-5);
+  padding: var(--s-4);
+  background: var(--ink-sunk);
+  border: 1px solid var(--paper-rule);
+  animation: settle .35s var(--ease-press) both;
+}
+@keyframes settle { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.fb-top { display: flex; justify-content: space-between; align-items: center; gap: var(--s-3); }
+.fb-tier {
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  font-weight: 500;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: 5px var(--s-3);
+  color: var(--ink);
+}
+.fb-points {
+  font-family: var(--font-display);
+  font-size: 34px;
+  line-height: 1;
+  color: var(--marigold);
+}
+.fb-matched { margin-top: var(--s-3); font-size: var(--t-body); line-height: 1.6; }
+.fb-matched span {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--on-ink-dim);
+}
+.fb-correction {
+  margin-top: var(--s-3);
+  font-size: var(--t-small);
+  border-left: 3px solid var(--marigold);
+  background: #FEF5DC;
+  padding: var(--s-2) var(--s-3);
+  color: #8A6100;
+  line-height: 1.5;
+}
+.fb-correction b { color: var(--on-paper); }
+.fb-actions { text-align: center; margin-top: var(--s-4); }
+
+/* --- Progress ----------------------------------------------------------- */
+
+.progress-dots { display: flex; justify-content: center; gap: var(--s-1); margin-top: var(--s-5); }
+.pdot { width: 22px; height: 4px; border-radius: 2px; background: var(--ink-deep); }
+.pdot.done { background: var(--peacock); }
+.pdot.now { background: var(--magenta); }
+
+.back-row { text-align: center; margin-top: var(--s-4); }

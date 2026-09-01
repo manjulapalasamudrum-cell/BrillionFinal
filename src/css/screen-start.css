@@ -1,0 +1,283 @@
+/*
+   The start card: masthead billing, the rarity ladder, today's programme
+   and the archive of previous dives.
+
+   Split out of a single 655-line screens.css. The cascade order in
+   public/index.html and environment/build.ps1 is start, game, result --
+   these three never overlap, but the order is kept meaningful anyway.
+*/
+
+/* ======================================================================
+   START — the hoarding
+   ====================================================================== */
+
+/*
+  The card's sections arrive in sequence rather than all at once — a bill being
+  pasted up, top to bottom. Short and small-amplitude on purpose: it should
+  register as the page settling, not as an animation you have to sit through.
+  The reduced-motion rule in base.css collapses all of it.
+*/
+#screen-start > * {
+  animation: paste-up .34s var(--ease-press) both;
+}
+#screen-start > *:nth-child(1) { animation-delay: .02s; }
+#screen-start > *:nth-child(2) { animation-delay: .07s; }
+#screen-start > *:nth-child(3) { animation-delay: .12s; }
+#screen-start > *:nth-child(4) { animation-delay: .17s; }
+#screen-start > *:nth-child(5) { animation-delay: .22s; }
+#screen-start > *:nth-child(6) { animation-delay: .27s; }
+@keyframes paste-up {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: none; }
+}
+
+.howto {
+  margin: var(--s-3) 0 0;
+  font-size: var(--t-body);
+  color: var(--on-paper);
+  line-height: 1.65;
+  max-width: 54ch;
+}
+.howto b { font-weight: 600; }
+/* Highlighted the way a marker pen picks a line out of a printed bill. */
+.howto em { font-style: normal; background: #D8E7FB; padding: 0 3px; }
+
+/* --- The rarity ladder: the page's thesis, built from real answers ------ */
+
+.ladder { margin-top: var(--s-5); }
+
+.ladder-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-3);
+  padding-bottom: var(--s-2);
+  border-bottom: var(--rule);
+}
+.ladder-axis {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--on-paper-dim);
+}
+
+.ladder-rows { list-style: none; margin: 0; padding: 0; }
+
+.ladder-row {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 9px 0;
+  border-bottom: var(--rule-thin);
+}
+.ladder-row:last-child { border-bottom: none; }
+
+.lr-bar { height: 12px; background: var(--ink-deep); display: block; }
+.lr-bar i {
+  display: block;
+  height: 100%;
+  transform-origin: left center;
+  animation: bar-draw .7s var(--ease-press) both;
+}
+@keyframes bar-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+.lr-name {
+  font-weight: 600;
+  font-size: 14.5px;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lr-tier {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  color: var(--on-paper-dim);
+  letter-spacing: .04em;
+}
+.lr-pts {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.ladder-foot {
+  margin: var(--s-3) 0 0;
+  font-size: var(--t-small);
+  color: var(--on-paper-dim);
+}
+.ladder-foot b { color: var(--on-paper); font-weight: 600; }
+
+/* --- Today's programme --------------------------------------------------
+   Set as a cinema's schedule rather than a grid of tiles: the shows listed in
+   order, ruled off from each other like a printed listing.
+-------------------------------------------------------------------------- */
+
+/* Numbered off a CSS counter rather than markup — the listing is ordered, so
+   the number is real information, and nothing in StartScreen needs to know. */
+.programme { margin-top: var(--s-6); counter-reset: show; }
+
+.show-btn {
+  counter-increment: show;
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-3);
+  width: 100%;
+  text-align: left;
+  padding: var(--s-3) var(--s-2) var(--s-3) 0;
+  background: transparent;
+  border: none;
+  border-bottom: var(--rule-thin);
+  color: var(--on-paper);
+  font-family: var(--font-body);
+  transition: background .14s var(--ease-press), color .14s var(--ease-press),
+              padding-left .14s var(--ease-press);
+}
+
+/* The show number, set as a printed schedule would set it. */
+.show-btn::before {
+  content: counter(show, decimal-leading-zero);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  letter-spacing: .06em;
+  color: var(--paper-rule);
+  padding-left: var(--s-2);
+  transition: color .14s var(--ease-press);
+}
+
+/* A coloured spine per show, cycling the four process inks. It is the only
+   thing distinguishing the shows at a glance, so it does real work. */
+.show-btn::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  background: var(--peacock);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform .18s var(--ease-press);
+}
+.show-btn:nth-child(2)::after { background: var(--magenta); }
+.show-btn:nth-child(3)::after { background: var(--marigold); }
+.show-btn:nth-child(4)::after { background: var(--violet); }
+
+.show-btn:last-child { border-bottom: var(--rule); }
+.show-btn:hover,
+.show-btn:focus-visible { background: var(--ink); padding-left: var(--s-2); }
+.show-btn:hover::after,
+.show-btn:focus-visible::after { transform: scaleY(1); }
+.show-btn:hover::before,
+.show-btn:focus-visible::before { color: var(--peacock); }
+.show-btn:hover .sb-blurb, .show-btn:hover .sb-rounds { color: var(--on-paper-dim); }
+
+.sb-main { min-width: 0; }
+.sb-name {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1.15;
+}
+.sb-blurb {
+  display: block;
+  font-size: var(--t-small);
+  color: var(--on-paper-dim);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+.sb-rounds {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--on-paper-dim);
+  white-space: nowrap;
+}
+
+/* --- Archive: previous days' dives -------------------------------------- */
+
+/* Deliberately quieter than .show-btn: these are back issues, and the
+   programme above them is what is on today. Same row idea, but no display
+   face and no coloured spine — the only accent marks a day already played. */
+
+.archive-list { list-style: none; margin: 0; padding: 0; }
+
+.archive-btn {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: baseline;
+  gap: var(--s-3);
+  width: 100%;
+  text-align: left;
+  padding: 10px var(--s-2);
+  background: transparent;
+  border: none;
+  border-bottom: var(--rule-thin);
+  color: var(--on-paper);
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background .14s var(--ease-press), padding-left .14s var(--ease-press);
+}
+
+.archive-list li:last-child .archive-btn { border-bottom: var(--rule); }
+
+.archive-btn:hover,
+.archive-btn:focus-visible { background: var(--ink); padding-left: var(--s-3); }
+
+.ab-date {
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  letter-spacing: .04em;
+}
+
+/* The score carries information, so it keeps its ink; "not played" is only a
+   status and stays dim. */
+.ab-score {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  color: var(--peacock);
+  white-space: nowrap;
+}
+
+.ab-new,
+.ab-go {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  color: var(--on-paper-dim);
+  white-space: nowrap;
+}
+
+.ab-go { letter-spacing: .08em; text-transform: uppercase; }
+
+.archive-btn:hover .ab-go,
+.archive-btn:focus-visible .ab-go { color: var(--peacock); }
+
+/* A played day is marked on the date itself rather than by tinting the whole
+   row, which would read as "selected" rather than "done". */
+.archive-btn.is-done .ab-date { color: var(--on-paper-dim); }
+
+/* --- Pack picker -------------------------------------------------------- */
+
+.pack-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-2); }
+
+@media (max-width: 520px) {
+  .pack-grid { grid-template-columns: 1fr; }
+  .card { padding: var(--s-4) var(--s-4) var(--s-5); }
+  .ladder-row { grid-template-columns: 52px minmax(0, 1fr) auto; }
+  .sb-name { font-size: 19px; }
+  /* Three columns will not fit. The verb is what the row can spare: tapping
+     it is self-evidently how you play it, and the score is the information. */
+  .archive-btn { grid-template-columns: minmax(0, 1fr) auto; }
+  .ab-go { display: none; }
+  /* On a phone the Play stub and a 30px title cannot share a row, so the
+     panel stacks and the button goes full width under the text. */
+  .hero-btn { grid-template-columns: 1fr; gap: var(--s-4); padding: var(--s-5) var(--s-4); }
+  .hb-go { display: block; text-align: center; padding: 13px var(--s-4); }
+}

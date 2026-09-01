@@ -1,0 +1,86 @@
+export const PACK_BIOPIC = {
+  /*
+    Scope: a film built around a real person's life. Mostly Hindi cinema, but
+    the big India-set biopics count too — Gandhi is a British production and
+    rejecting it would be pedantry a player has no way to anticipate. Films
+    about an event rather than a person (Uri, Airlift, Mission Mangal) are
+    deliberately out; the line is whose life the film is about.
+  */
+  id:'biopic', kicker:'Name one…', title:'Bollywood biopic', hint:'A film about a real person\'s life — Hindi cinema, and the big India-set biopics too.', icon:'📖',
+  packDesc:'Name a real-life story on screen. 5 rounds — no repeats.',
+  domainHint:['film','biographical','biopic','bollywood'],
+  answers:[
+    {name:'Dangal', aliases:[], tier:0, year:2016},
+    {name:'Sanju', aliases:[], tier:0, year:2018},
+    {name:'Bhaag Milkha Bhaag', aliases:['bmb'], tier:0, year:2013},
+    {name:'Mary Kom', aliases:['mary com'], tier:0, year:2014},
+    {name:'MS Dhoni The Untold Story', aliases:['ms dhoni','m s dhoni'], tier:0, year:2016},
+    {name:'Gangubai Kathiawadi', aliases:['gangubai'], tier:0, year:2022},
+    {name:'Gandhi', aliases:['gandhi 1982'], tier:0, year:1982},
+    {name:'83', aliases:['eighty three','83 the film'], tier:0, year:2021},
+
+    {name:'Neerja', aliases:['nerja'], tier:1, year:2016},
+    {name:'Shershaah', aliases:['shershah'], tier:1, year:2021},
+    {name:'Super 30', aliases:['super thirty'], tier:1, year:2019},
+    {name:'Padman', aliases:['pad man'], tier:1, year:2018},
+    {name:'Tanhaji', aliases:['tanaji','tanhaji the unsung warrior'], tier:1, year:2020},
+    {name:'12th Fail', aliases:['twelfth fail','12 fail'], tier:1, year:2023},
+    {name:'Sam Bahadur', aliases:[], tier:1, year:2023},
+    {name:'Soorma', aliases:['surma'], tier:1, year:2018},
+
+    {name:'Paan Singh Tomar', aliases:['pan singh tomar'], tier:2, year:2012},
+    {name:'The Dirty Picture', aliases:['dirty picture'], tier:2, year:2011},
+    {name:'Manikarnika', aliases:['manikarnika the queen of jhansi'], tier:2, year:2019},
+    {name:'Mangal Pandey The Rising', aliases:['mangal pandey','the rising'], tier:2, year:2005},
+    {name:'Guru', aliases:[], tier:2, year:2007},
+    {name:'Gunjan Saxena', aliases:['gunjan saxena the kargil girl'], tier:2, year:2020},
+    {name:'Sardar Udham', aliases:['sardar udham singh'], tier:2, year:2021},
+    {name:'Shakuntala Devi', aliases:[], tier:2, year:2020},
+    {name:'Azhar', aliases:['azhar 2016'], tier:2, year:2016},
+    {name:'Chandu Champion', aliases:[], tier:2, year:2024},
+    {name:'Bajirao Mastani', aliases:['bajirao'], tier:2, year:2015},
+    {name:'No One Killed Jessica', aliases:['no one killed jesica'], tier:2, year:2011},
+    {name:'Once Upon a Time in Mumbaai', aliases:['once upon a time in mumbai'], tier:2, year:2010},
+    {name:'Amar Singh Chamkila', aliases:['chamkila'], tier:2, year:2024},
+
+    {name:'Shahid', aliases:[], tier:3, year:2013},
+    {name:'The Legend of Bhagat Singh', aliases:['legend of bhagat singh'], tier:3, year:2002},
+    {name:'Manjhi The Mountain Man', aliases:['manjhi','mountain man'], tier:3, year:2015},
+    {name:'Sarbjit', aliases:['sarabjit'], tier:3, year:2016},
+    {name:'Thackeray', aliases:['thakre'], tier:3, year:2019},
+    {name:'Sachin A Billion Dreams', aliases:['sachin','billion dreams'], tier:3, year:2017},
+    {name:'Thalaivii', aliases:['thalaivi'], tier:3, year:2021},
+    {name:'Maidaan', aliases:['maidan'], tier:3, year:2024},
+    {name:'Haseena Parkar', aliases:['haseena'], tier:3, year:2017},
+    {name:'Emergency', aliases:[], tier:3, year:2025},
+
+    {name:'Gandhi My Father', aliases:['gandhi my father 2007'], tier:3, year:2007},
+    {name:'Srikanth', aliases:['shrikanth'], tier:3, year:2024},
+    {name:'Mrs Chatterjee vs Norway', aliases:['mrs chatterjee','chatterjee vs norway'], tier:3, year:2023},
+    {name:'Swatantrya Veer Savarkar', aliases:['veer savarkar','savarkar'], tier:3, year:2024},
+    {name:'Jhund', aliases:[], tier:3, year:2022},
+    {name:'Hawaizaada', aliases:['hawaizada'], tier:3, year:2015},
+    {name:'Sardar', aliases:['sardar 1993'], tier:3, year:1993},
+    {name:'Dr Babasaheb Ambedkar', aliases:['babasaheb ambedkar','ambedkar'], tier:3, year:2000},
+    {name:'Saina', aliases:[], tier:3, year:2021},
+
+    {name:'Bandit Queen', aliases:[], tier:4, year:1994},
+    {name:'Shabaash Mithu', aliases:['shabash mithu'], tier:4, year:2022},
+    {name:'Rocketry The Nambi Effect', aliases:['rocketry','nambi effect'], tier:4, year:2022},
+    {name:'Main Aur Charles', aliases:['main aur charless'], tier:4, year:2015},
+    {name:'Aligarh', aliases:[], tier:4, year:2016},
+    {name:'Bose The Forgotten Hero', aliases:['bose'], tier:4, year:2005},
+    {name:'Jhansi Ki Rani', aliases:[], tier:4, year:1953},
+    {name:'Bhumika', aliases:['bhoomika'], tier:4, year:1977},
+    {name:'Budhia Singh Born to Run', aliases:['budhia singh','budhia'], tier:4, year:2016},
+    {name:'Kaun Pravin Tambe', aliases:['pravin tambe'], tier:4, year:2022},
+    {name:'Ek Doctor Ki Maut', aliases:['ek doctor ki maut 1990'], tier:4, year:1990},
+    {name:'Godmother', aliases:[], tier:4, year:1999},
+    {name:'Veerappan', aliases:['veerapan'], tier:4, year:2016},
+    {name:'PM Narendra Modi', aliases:['narendra modi'], tier:4, year:2019},
+    {name:'The Making of the Mahatma', aliases:['making of the mahatma'], tier:4, year:1996},
+    {name:'Shaheed', aliases:['shahid 1965'], tier:4, year:1965},
+    {name:'Nanak Shah Fakir', aliases:[], tier:4, year:2015},
+    {name:'Malik Ek', aliases:[], tier:4, year:2010},
+  ]
+};

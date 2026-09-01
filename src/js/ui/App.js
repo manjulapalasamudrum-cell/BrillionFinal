@@ -9,10 +9,8 @@ import { normalize, matchInput } from '../lib/text-match.js';
 import { playAnswer, playReject, playMiss, playResult } from '../lib/audio.js';
 import { recordResult } from '../lib/history.js';
 import { eraLabelText } from '../game/eras.js';
-import {
-  pickSession, violatesConstraint, firstLetter, wordCount,
-  MIXED_ROUNDS, ROUND_SECONDS,
-} from '../game/rounds.js';
+import { pickSession, MIXED_ROUNDS, ROUND_SECONDS } from '../game/rounds.js';
+import { violatesConstraint, firstLetter, wordCount } from '../game/constraints.js';
 import { maxScore } from '../game/scoring.js';
 import { TopHeader, AboutFooter } from './Chrome.js';
 import { StartScreen } from './StartScreen.js';
@@ -112,7 +110,7 @@ export function App() {
 
   /**
    * Turn a constraint violation into the message the player sees. The rule
-   * itself lives in game/rounds.js so that this and the result screen's
+   * itself lives in game/constraints.js so that this and the result screen's
    * "could have said" suggestions can never disagree about what was allowed.
    */
   function constraintFailure(spec, entry) {

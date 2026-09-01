@@ -16,7 +16,7 @@
  *   pack — the pack id the answers come from; it must exist in categories.js
  *   text — the question, verbatim. Written out rather than generated, because
  *          the point of scheduling a day is to control the wording.
- *   spec — the constraint that validates an answer, exactly as in game/rounds.js
+ *   spec — the constraint that validates an answer, exactly as in game/constraints.js
  *          ({ type:'open' } accepts anything in the pack).
  *
  * A prompt naming a pack that does not exist is skipped rather than crashing

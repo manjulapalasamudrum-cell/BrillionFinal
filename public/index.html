@@ -14,10 +14,15 @@
 <!-- Paths are root-relative to the served tree, not to this file: serve.ps1
      serves the repo root and hands back public/index.html for "/", so these
      resolve to /src/... in the browser. -->
+<!-- Cascade order: tokens define, base grounds, components style the pieces,
+     then one stylesheet per screen. Keep in step with $cssFiles in build.ps1,
+     which flattens these in the same order. -->
 <link rel="stylesheet" href="src/css/tokens.css">
 <link rel="stylesheet" href="src/css/base.css">
 <link rel="stylesheet" href="src/css/components.css">
-<link rel="stylesheet" href="src/css/screens.css">
+<link rel="stylesheet" href="src/css/screen-start.css">
+<link rel="stylesheet" href="src/css/screen-game.css">
+<link rel="stylesheet" href="src/css/screen-result.css">
 </head>
 <body>
 <div class="wrap" id="root"><p class="boot">Loading Bollybuzz.io</p></div>

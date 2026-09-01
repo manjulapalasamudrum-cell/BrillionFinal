@@ -1,0 +1,223 @@
+/*
+   The result card: depth gauge, score band, round-by-round breakdown,
+   and the shareable grid.
+
+   Split out of a single 655-line screens.css. The cascade order in
+   public/index.html and environment/build.ps1 is start, game, result --
+   these three never overlap, but the order is kept meaningful anyway.
+*/
+
+/* ======================================================================
+   RESULT — the depth gauge
+   ====================================================================== */
+
+.result-head { text-align: center; }
+.result-head .rh-game {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--magenta);
+}
+
+/*
+  The signature: 113 years of Hindi cinema as a vertical rail you descend.
+  Score is abstract; a year on a timeline is not — this is the payoff.
+*/
+.gauge {
+  display: flex;
+  gap: var(--s-5);
+  align-items: stretch;
+  margin: var(--s-5) 0 var(--s-4);
+}
+
+.gauge-rail {
+  position: relative;
+  width: 66px;
+  flex-shrink: 0;
+  border-left: 2px solid var(--paper-rule);
+}
+.gauge-travelled {
+  position: absolute;
+  left: -2px;
+  top: 0;
+  width: 14px;
+  background: var(--magenta);
+  /* Perforated like film leader. */
+  -webkit-mask-image: repeating-linear-gradient(180deg, #000 0 9px, transparent 9px 13px);
+  mask-image: repeating-linear-gradient(180deg, #000 0 9px, transparent 9px 13px);
+  animation: descend .9s var(--ease-press) both;
+}
+/* No `to` block: the animation lands on the inline height set from the score. */
+@keyframes descend { from { height: 0; } }
+
+/* Ticks start clear of the filmstrip so their leader dashes stay visible. */
+.gauge-tick {
+  position: absolute;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  color: var(--on-paper-dim);
+  white-space: nowrap;
+}
+.gauge-tick::before { content: ""; width: 10px; height: 1px; background: var(--paper-rule); }
+
+/* Where you stopped. This is the answer to the whole game, so it is drawn
+   as a hard cut across the strip rather than a tick like any other. */
+.gauge-marker {
+  position: absolute;
+  left: -6px;
+  z-index: 2;
+  width: 34px;
+  height: 4px;
+  background: var(--vermilion);
+  transform: translateY(-50%);
+  animation: descend-marker .9s var(--ease-press) both;
+}
+.gauge-marker::after {
+  content: "";
+  position: absolute;
+  right: -5px;
+  top: -3px;
+  border: 5px solid transparent;
+  border-left-color: var(--vermilion);
+}
+@keyframes descend-marker { from { top: 0; opacity: 0; } }
+
+.gauge-readout { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+.depth-year {
+  font-family: var(--font-display);
+  font-size: var(--t-colossal);
+  line-height: .84;
+  letter-spacing: -.02em;
+  color: var(--on-paper);
+}
+.depth-era { font-size: var(--t-body); font-weight: 600; margin-top: var(--s-2); line-height: 1.3; }
+.depth-note { font-size: var(--t-small); color: var(--on-paper-dim); margin-top: var(--s-2); line-height: 1.5; }
+.depth-note b { font-family: var(--font-mono); font-weight: 500; color: var(--on-paper); }
+
+/* --- The total ----------------------------------------------------------
+   Ruled off above and below like the total on a printed ticket. Magenta,
+   because that is the ink the filmstrip uses to draw the distance this score
+   bought you — the number and the strip are the same fact twice.
+-------------------------------------------------------------------------- */
+
+.score-band {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  column-gap: var(--s-3);
+  margin-top: var(--s-5);
+  padding: var(--s-3) 0 var(--s-2);
+  border-top: var(--rule);
+  border-bottom: var(--rule);
+}
+.score-max {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--on-paper-dim);
+  text-align: right;
+  white-space: nowrap;
+}
+.score-value {
+  grid-column: 1 / -1;
+  font-family: var(--font-display);
+  font-size: clamp(38px, 10vw, 54px);
+  line-height: 1.05;
+  color: var(--magenta-deep);
+}
+.score-unit {
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--on-paper-dim);
+  margin-left: 6px;
+}
+
+/* --- Breakdown ---------------------------------------------------------- */
+
+/* No top rule: the section label above already draws one. */
+.breakdown { margin-top: var(--s-2); }
+/* Aligned to the top rather than centred: rows now carry a third line of
+   alternatives and vary in height, so a centred swatch would drift. */
+.bd-row {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--s-3);
+  padding: 10px 0;
+  border-bottom: var(--rule-thin);
+}
+.bd-sq { width: 12px; height: 12px; border-radius: 2px; margin-top: 3px; }
+
+/*
+  What else would have counted, colour-coded by tier. This is the one place the
+  game explains its own scoring after the fact: seeing that the answer you gave
+  was worth +10 while two others in the same round were worth +40 and +50 makes
+  the rarity model concrete in a way the rules text never does.
+*/
+.bd-alts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  margin-top: 5px;
+}
+.bd-alts-label {
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  color: var(--on-paper-dim);
+}
+.bd-alt {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--t-small);
+  color: var(--on-paper-dim);
+  white-space: nowrap;
+}
+.bd-alt i {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.bd-alt b {
+  font-weight: 600;
+  color: var(--on-paper);
+  font-variant-numeric: tabular-nums;
+}
+.bd-main { min-width: 0; }
+.bd-cat {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  color: var(--on-paper-dim);
+  letter-spacing: .04em;
+}
+.bd-ans { font-size: 14.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bd-pts { font-family: var(--font-mono); font-size: 15px; white-space: nowrap; }
+
+/* --- Share -------------------------------------------------------------- */
+
+.share-box {
+  margin-top: var(--s-5);
+  padding: var(--s-4);
+  background: var(--paper-shade);
+  border: var(--rule-thin);
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  white-space: pre-wrap;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+.actions { display: flex; gap: var(--s-2); margin-top: var(--s-4); flex-wrap: wrap; }
+.actions > * { flex: 1 1 160px; text-align: center; }

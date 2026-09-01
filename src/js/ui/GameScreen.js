@@ -1,7 +1,8 @@
 /** Lights down: prompt, clock, answer box, and the post-answer verdict. */
 
 import { h } from './dom.js';
-import { ROUND_SECONDS, constraintLabel } from '../game/rounds.js';
+import { ROUND_SECONDS } from '../game/rounds.js';
+import { constraintLabel } from '../game/constraints.js';
 
 /** Below this many seconds the clock turns red and reads as urgent. */
 const LOW_SECONDS = 5;

@@ -12,11 +12,19 @@
   its code point (see $EMDASH below). Content read from src/ is unaffected --
   that is decoded as UTF-8 explicitly.
 
-  Outputs into dist/:
-    bollybuzz.html         complete standalone page, double-click to play
-    bollybuzz.artifact.html  the same content without the <!doctype>/<html>/
-                          <head>/<body> wrapper, which Claude's Artifact host
-                          supplies itself
+  Two outputs, because there are exactly two shapes the page is ever needed in:
+
+    docs\index.html          the complete standalone page. Serves every
+                             destination at once -- GitHub Pages requires this
+                             exact path, drag-and-drop hosts take the folder,
+                             and it is still a file you can double-click or
+                             email. Committed on purpose; see .gitignore.
+    dist\bollybuzz.artifact.html
+                             the same content WITHOUT the <!doctype>/<html>/
+                             <head>/<body> wrapper, which Claude's Artifact host
+                             supplies itself. The only output that differs.
+
+  This once wrote four files, three of which were byte-identical.
 
   Usage:  .\build.ps1
 #>
@@ -52,7 +60,9 @@ $cssFiles = @(
   'src\css\tokens.css',
   'src\css\base.css',
   'src\css\components.css',
-  'src\css\screens.css'
+  'src\css\screen-start.css',
+  'src\css\screen-game.css',
+  'src\css\screen-result.css'
 )
 $css = ($cssFiles | ForEach-Object { "/* ===== $_ ===== */`n" + (Read-Text $_) }) -join "`n"
 
@@ -76,8 +86,23 @@ $css = Compact-Css $css
   ResultScreen in particular reads PRESENT_YEAR at top level, so scoring must
   precede it.
 #>
+
+<#
+  The answer packs, one file each. Globbed rather than listed, because a listed
+  file is a file somebody has to remember to add: two modules have already been
+  written, imported, and then silently left out of the bundle, which works
+  perfectly over the dev server and breaks only in the built page.
+
+  Order among the packs does not matter -- each is a standalone const with no
+  references to the others -- but they must all precede categories.js, which
+  collects them.
+#>
+$packFiles = Get-ChildItem (Join-Path $root 'src\js\data\packs') -Filter *.js |
+  Sort-Object Name | ForEach-Object { "src\js\data\packs\$($_.Name)" }
+
 $jsFiles = @(
-  'src\js\data\tiers.js',
+  'src\js\data\tiers.js'
+) + $packFiles + @(
   'src\js\data\categories.js',
   'src\js\data\dailies.js',
   'src\js\data\schedule.js',
@@ -87,6 +112,8 @@ $jsFiles = @(
   'src\js\lib\history.js',
   'src\js\game\eras.js',
   'src\js\data\bank.js',
+  'src\js\game\constraints.js',
+  'src\js\game\question-types.js',
   'src\js\game\rounds.js',
   'src\js\game\scoring.js',
   'src\js\ui\dom.js',
@@ -176,7 +203,22 @@ $payload
 </body>
 </html>
 "@
-[System.IO.File]::WriteAllText((Join-Path $root 'dist\bollybuzz.html'), $standalone, $utf8)
+
+<#
+  ONE deployable page, not three.
+
+  This wrote dist\bollybuzz.html, dist\site\index.html and docs\index.html --
+  three files with the same bytes and the same MD5, kept apart only because each
+  had been added for a different destination. docs\index.html serves all of
+  them: GitHub Pages requires that exact path, drag-and-drop hosts take the
+  folder, and the file itself is still just a page you can double-click or
+  attach to an email.
+
+  The artifact body below is the only output that genuinely differs, so it is
+  the only other one written.
+#>
+New-Item -ItemType Directory -Force -Path (Join-Path $root 'docs') | Out-Null
+[System.IO.File]::WriteAllText((Join-Path $root 'docs\index.html'), $standalone, $utf8)
 
 # --- 2. Artifact body --------------------------------------------------------
 # The Artifact host wraps this in its own document skeleton, so no <!doctype>,
@@ -192,25 +234,8 @@ $payload
 "@
 [System.IO.File]::WriteAllText((Join-Path $root 'dist\bollybuzz.artifact.html'), $artifact, $utf8)
 
-# --- 3. Deploy-ready web root ------------------------------------------------
-# The same standalone page under the name a web server looks for. This is the
-# folder you drag onto Netlify Drop, and the folder GitHub Pages serves. It is
-# written here rather than copied by hand because it was once left behind by a
-# build and a stale index.html shipped: the page a visitor sees must never be
-# older than the page you tested.
-New-Item -ItemType Directory -Force -Path (Join-Path $root 'dist\site') | Out-Null
-[System.IO.File]::WriteAllText((Join-Path $root 'dist\site\index.html'), $standalone, $utf8)
-
-# --- 4. GitHub Pages root ----------------------------------------------------
-# Pages serves either the repo root or a folder named exactly docs/, and the
-# repo root has no index.html to give it: public/index.html is the dev shell
-# and points at /src/, which is not what a visitor should get. So docs/ holds
-# the same self-contained page as dist/site/ under the one name Pages accepts.
-# Unlike dist/, this one is committed on purpose - see .gitignore.
-New-Item -ItemType Directory -Force -Path (Join-Path $root 'docs') | Out-Null
-[System.IO.File]::WriteAllText((Join-Path $root 'docs\index.html'), $standalone, $utf8)
-
-foreach ($out in @('dist\bollybuzz.html', 'dist\bollybuzz.artifact.html', 'dist\site\index.html', 'docs\index.html')) {
+"{0,-30} {1,9:N0} bytes" -f "bundled from $($jsFiles.Count) modules", ($css.Length + $payload.Length)
+foreach ($out in @('docs\index.html', 'dist\bollybuzz.artifact.html')) {
   $item = Get-Item (Join-Path $root $out)
   "{0,-30} {1,9:N0} bytes" -f $out, $item.Length
 }

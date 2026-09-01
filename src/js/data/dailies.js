@@ -10,7 +10,7 @@
  * Constraints:
  *   era    — the answer's year must sit in that third of the pack
  *   mixed  — no single constraint: every round draws a different KIND of
- *            question from the catalogue in game/rounds.js (a letter, a title
+ *            question from the catalogue in game/question-types.js (a letter, a title
  *            shape, a decade, a rarity floor). Varying the question is the
  *            show's identity, the way a date range is the era shows'.
  *   open   — anything in the pack counts. Nothing on the programme uses this
