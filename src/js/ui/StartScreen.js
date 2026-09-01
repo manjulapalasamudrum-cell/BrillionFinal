@@ -9,6 +9,7 @@
  */
 
 import { h } from './dom.js';
+import { CATEGORIES } from '../data/categories.js';
 import { DAILY_SHOWS } from '../data/dailies.js';
 import { rarityLadder } from '../data/bank.js';
 import { MIXED_ROUNDS, DAILY_ROUNDS, ROUND_SECONDS, ARCHIVE_DAYS } from '../game/rounds.js';
@@ -178,7 +179,11 @@ function TopBill({ onStart }) {
       h(
         'span',
         { className: 'hb-desc' },
-        MIXED_ROUNDS + ' prompts, one from every pack — the same set for everyone today.'
+        // Not "one from every pack" any more: there are more packs than rounds,
+        // so some sit out each day. Both numbers are read from the data so the
+        // sentence cannot quietly go stale the next time a pack is added.
+        MIXED_ROUNDS + ' prompts drawn from ' + CATEGORIES.length +
+          ' packs — the same set for everyone today.'
       )
     ),
     h('span', { className: 'hb-go' }, 'Play')

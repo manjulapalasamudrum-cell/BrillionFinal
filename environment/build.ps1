@@ -80,6 +80,7 @@ $jsFiles = @(
   'src\js\data\tiers.js',
   'src\js\data\categories.js',
   'src\js\data\dailies.js',
+  'src\js\data\schedule.js',
   'src\js\lib\random.js',
   'src\js\lib\text-match.js',
   'src\js\lib\audio.js',

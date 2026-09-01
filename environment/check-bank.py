@@ -49,7 +49,8 @@ NAME_RULES = {
 # same film appears. `award` is excluded because its year is the ceremony, one
 # year later; `director` because its year is a representative film, not a
 # release. A disagreement means one of the two is simply wrong.
-RELEASE_YEAR_PACKS = {"srk", "ab", "nineties", "deepika", "biopic", "rahman", "diltitle"}
+RELEASE_YEAR_PACKS = {"srk", "ab", "nineties", "deepika", "biopic", "rahman",
+                      "diltitle", "bhansali"}
 
 # Titles Hindi cinema has genuinely used more than once. A year disagreement on
 # these is two different films, not a mistake, so the cross-pack check skips

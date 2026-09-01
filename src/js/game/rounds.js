@@ -28,17 +28,22 @@
 
 import { CATEGORIES } from '../data/categories.js';
 import { DAILY_SHOWS, findShow } from '../data/dailies.js';
+import { scheduleFor } from '../data/schedule.js';
 import { computeEraBuckets, eraLabelText, eraOfYear } from './eras.js';
 import {
   mulberry32, seededShuffle, dateSeed, puzzleDate, dateFromKey, formatPuzzleKey,
 } from '../lib/random.js';
 
 /*
-  MIXED_ROUNDS is the Daily Dive. It is set to the number of packs on purpose:
-  the draw takes each pack exactly once, so no question can repeat within a
-  day — that is a property of the arithmetic, not a check that could be
-  forgotten. Adding an 11th pack means either raising this or accepting that
-  one pack sits out each day.
+  MIXED_ROUNDS is the Daily Dive. The draw takes each pack at most once, so no
+  question can repeat within a day — a property of the arithmetic rather than a
+  check somebody has to remember.
+
+  It was once exactly the number of packs, so every pack appeared every day.
+  With `bhansali` added there are eleven, and one now sits out each day: the
+  alternative was an eleven-round game, and the length of the main game should
+  not be decided by how many packs happen to exist. Which pack rests is seeded
+  off the date, so it is the same for everyone and rotates on its own.
 */
 export const MIXED_ROUNDS = 10;
 export const THEMED_ROUNDS = 5;
@@ -504,25 +509,59 @@ export function buildDailyPlan(show, date = new Date()) {
 }
 
 /**
- * The Daily Dive: ten packs, and now ten different kinds of question.
+ * Resolve a scheduled day into rounds, dropping anything unaskable.
+ *
+ * A prompt naming a pack that does not exist is skipped rather than throwing.
+ * That is what lets data/schedule.js record a set before every pack behind it
+ * has been built: the day degrades to fewer fixed rounds instead of breaking,
+ * and each new pack silently brings its prompt to life.
+ */
+function scheduledPrompts(dayKey) {
+  const day = scheduleFor(dayKey);
+  if (!day || !day.prompts) return [];
+
+  const out = [];
+  day.prompts.forEach((p) => {
+    const cat = CATEGORIES.find((c) => c.id === p.pack);
+    if (!cat) return;
+
+    const spec = Object.assign({}, p.spec, { text: p.text });
+    // Era buckets are a property of the pack, not something a schedule should
+    // have to write out by hand — and an era spec without them rejects every
+    // answer, which would be a silent, total failure of that round.
+    if (spec.type === 'era' && !spec.buckets) spec.buckets = computeEraBuckets(cat);
+    out.push({ cat, spec });
+  });
+  return out.slice(0, MIXED_ROUNDS);
+}
+
+/**
+ * The Daily Dive: ten packs, ten different kinds of question.
  *
  * Seeded off the calendar date, so every player gets the same ten prompts
  * today and a different ten tomorrow — which is what makes the shared result
- * grid worth pasting into a chat. The pack draw takes each pack exactly once
- * (MIXED_ROUNDS equals the pack count), so no question repeats within a day;
- * `assignTypes` then spends the type catalogue across those ten rounds so no
- * *kind* of question repeats needlessly either.
+ * grid worth pasting into a chat. `assignTypes` spends the type catalogue
+ * across the rounds so no *kind* of question repeats needlessly either.
+ *
+ * A day named in data/schedule.js takes its fixed prompts first, in order, and
+ * fills the rest from the ordinary draw with those packs excluded — so a day
+ * that specifies four rounds still plays ten, and no pack is asked twice.
  *
  * `total` comes from what was actually drawn rather than from the constant, so
  * removing a pack shortens the game instead of leaving a blank round.
  */
 export function buildDivePlan(date = new Date()) {
   const rng = mulberry32(seedFor('dive', date));
-  const picked = seededShuffle(CATEGORIES, rng).slice(0, MIXED_ROUNDS);
+
+  const fixed = scheduledPrompts(puzzleDate(date));
+  const spoken = new Set(fixed.map((f) => f.cat.id));
+  const pool = CATEGORIES.filter((c) => !spoken.has(c.id));
+  const filler = seededShuffle(pool, rng).slice(0, MIXED_ROUNDS - fixed.length);
+
   return {
-    list: picked,
-    total: picked.length,
-    rounds: assignTypes(picked, rng),
+    list: fixed.map((f) => f.cat).concat(filler),
+    total: fixed.length + filler.length,
+    rounds: fixed.map((f) => f.spec).concat(assignTypes(filler, rng)),
   };
 }
 

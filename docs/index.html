@@ -2231,6 +2231,24 @@ answers:[
 {name:'Dil Jo Bhi Kahey', aliases:['dil jo bhi kahe'], tier:4, year:2005},
 ]
 },
+{
+id:'bhansali', kicker:'Name one…', title:'Sanjay Leela Bhansali film', hint:'A film he directed — not one he only produced or scored.', icon:'🎭',
+packDesc:'Name a Bhansali film. 5 rounds — no repeats.',
+shortTitle:'Bhansali film',
+domainHint:['film','director','sanjay leela bhansali','bollywood'],
+answers:[
+{name:'Devdas', aliases:[], tier:0, year:2002},
+{name:'Bajirao Mastani', aliases:['bajirao'], tier:0, year:2015},
+{name:'Padmaavat', aliases:['padmavat','padmavati'], tier:0, year:2018},
+{name:'Black', aliases:[], tier:1, year:2005},
+{name:'Hum Dil De Chuke Sanam', aliases:['hddcs','hum dil de chuke'], tier:1, year:1999},
+{name:'Gangubai Kathiawadi', aliases:['gangubai'], tier:1, year:2022},
+{name:'Goliyon Ki Raasleela Ram-Leela', aliases:['ram leela','ramleela','goliyon ki raasleela'], tier:2, year:2013},
+{name:'Saawariya', aliases:['sawariya'], tier:3, year:2007},
+{name:'Guzaarish', aliases:['guzarish'], tier:3, year:2010},
+{name:'Khamoshi The Musical', aliases:['khamoshi'], tier:4, year:1996},
+]
+},
 ];
 const DAILY_SHOWS = [
 {
@@ -2260,6 +2278,36 @@ constraint: { type: 'mixed' },
 ];
 function findShow(id) {
 return DAILY_SHOWS.find((s) => s.id === id);
+}
+const SCHEDULE = {
+'2026-09-02': {
+note: 'Requested set. Four of the ten are live; see PENDING for the rest.',
+prompts: [
+{
+pack: 'nineties',
+text: 'Name a Bollywood movie released in the 1990s.',
+spec: { type: 'open' },
+},
+{
+pack: 'srk',
+text: 'Name a Bollywood movie starring Shah Rukh Khan.',
+spec: { type: 'open' },
+},
+{
+pack: 'bhansali',
+text: 'Name a Bollywood movie directed by Sanjay Leela Bhansali.',
+spec: { type: 'open' },
+},
+{
+pack: 'diltitle',
+text: 'Name a Bollywood movie with the word “Dil” in its title.',
+spec: { type: 'open' },
+},
+],
+},
+};
+function scheduleFor(key) {
+return SCHEDULE[key] || null;
 }
 function mulberry32(seed) {
 return function () {
@@ -2852,13 +2900,32 @@ rounds: show.constraint.type === 'mixed'
 : picked.map((cat) => buildDailyRound(show.constraint, cat)),
 };
 }
+function scheduledPrompts(dayKey) {
+const day = scheduleFor(dayKey);
+if (!day || !day.prompts) return [];
+const out = [];
+day.prompts.forEach((p) => {
+const cat = CATEGORIES.find((c) => c.id === p.pack);
+if (!cat) return;
+const spec = Object.assign({}, p.spec, { text: p.text });
+// Era buckets are a property of the pack, not something a schedule should
+// have to write out by hand — and an era spec without them rejects every
+// answer, which would be a silent, total failure of that round.
+if (spec.type === 'era' && !spec.buckets) spec.buckets = computeEraBuckets(cat);
+out.push({ cat, spec });
+});
+return out.slice(0, MIXED_ROUNDS);
+}
 function buildDivePlan(date = new Date()) {
 const rng = mulberry32(seedFor('dive', date));
-const picked = seededShuffle(CATEGORIES, rng).slice(0, MIXED_ROUNDS);
+const fixed = scheduledPrompts(puzzleDate(date));
+const spoken = new Set(fixed.map((f) => f.cat.id));
+const pool = CATEGORIES.filter((c) => !spoken.has(c.id));
+const filler = seededShuffle(pool, rng).slice(0, MIXED_ROUNDS - fixed.length);
 return {
-list: picked,
-total: picked.length,
-rounds: assignTypes(picked, rng),
+list: fixed.map((f) => f.cat).concat(filler),
+total: fixed.length + filler.length,
+rounds: fixed.map((f) => f.spec).concat(assignTypes(filler, rng)),
 };
 }
 function pickSession(mode, key) {
@@ -3125,7 +3192,11 @@ h('span', { className: 'hb-title' }, 'Daily Dive'),
 h(
 'span',
 { className: 'hb-desc' },
-MIXED_ROUNDS + ' prompts, one from every pack — the same set for everyone today.'
+// Not "one from every pack" any more: there are more packs than rounds,
+// so some sit out each day. Both numbers are read from the data so the
+// sentence cannot quietly go stale the next time a pack is added.
+MIXED_ROUNDS + ' prompts drawn from ' + CATEGORIES.length +
+' packs — the same set for everyone today.'
 )
 ),
 h('span', { className: 'hb-go' }, 'Play')

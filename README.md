@@ -90,8 +90,9 @@ src/css/
 src/js/
   main.js                   entry point; mounts <App> into #root
   data/tiers.js             the five rarity tiers and their point values
-  data/categories.js        the answer bank — 10 packs, ~720 answers
+  data/categories.js        the answer bank — 11 packs, ~730 answers
   data/dailies.js           the daily shows and their constraints
+  data/schedule.js          hand-picked prompts for particular dates
   data/bank.js              facts read off the bank: counts, the rarity ladder
   lib/random.js             seeded PRNG; the day runs midnight-to-midnight IST,
                             plus the archive's date keys
@@ -125,11 +126,29 @@ button on the page at that scale. `MIXED_ROUNDS` prompts, no per-round
 constraint, seeded off the calendar date so every player gets the same set
 today and a different one tomorrow.
 
-**`MIXED_ROUNDS` equals the number of packs, and that is the design.** The draw
-shuffles all ten packs and takes ten, so each pack appears exactly once and no
-question can repeat within a day — a property of the arithmetic rather than a
-check somebody has to remember. Add an eleventh pack and you must either raise
-`MIXED_ROUNDS` to match or accept that one pack sits out each day.
+**The draw takes each pack at most once**, so no question can repeat within a
+day — a property of the arithmetic rather than a check somebody has to
+remember. `MIXED_ROUNDS` was once exactly the pack count, so every pack
+appeared daily; with `bhansali` there are eleven and one now rests each day.
+The alternative was an eleven-round game, and the length of the main game
+should not be set by how many packs happen to exist. Which pack rests is seeded
+off the date, so it is the same for everyone and rotates by itself.
+
+### Pinning questions to a date
+
+`data/schedule.js` is the one place that overrides the generated draw: a date
+maps to a list of prompts, each naming a pack, the question verbatim, and the
+constraint that validates an answer.
+
+A day need not specify all ten rounds. What it lists is used first, in order,
+and the rest of the day is filled from the ordinary draw with those packs
+excluded — so a day specifying four rounds still plays ten. **A prompt naming a
+pack that does not exist is skipped rather than throwing**, which is what lets
+a requested set go in as soon as the first pack behind it is built, with each
+later pack quietly bringing its own prompt to life.
+
+Wording is written out rather than generated, because controlling the wording
+is the entire reason to schedule a day.
 
 ## What a round asks — the question types
 
@@ -403,6 +422,15 @@ with a film they were not in, a Best Film *nominee* listed as a winner.
 | `nineties` `diltitle` | Wikidata SPARQL (IMDb returned 403) | clean, 196 entries |
 | `villain` | Wikipedia film and actor articles | clean, 41 entries |
 | `biopic` | Wikipedia biographical-film categories | checked when written |
+| `bhansali` | — | **written from knowledge, not yet audited** |
+
+`bhansali` is the one pack that has not been through the audit above. It is
+deliberately *exhaustive* rather than curated — all ten features he has
+directed — which is the safest shape a pack can have, since an exhaustive pack
+cannot reject a valid answer. Its years all agree with entries already audited
+in other packs (the cross-pack release-year check enforces that), but the
+claim that these ten are his complete filmography still wants a source before
+it is treated as settled.
 
 Two lessons from that audit are worth keeping:
 
