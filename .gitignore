@@ -2,6 +2,12 @@
 __pycache__/
 *.pyc
 
+# A clone of the separate github.com/manjulapalasamudrum-cell/Brillion.io repo
+# sits in a subfolder of this one. Git saw its .git directory and recorded it as
+# a submodule gitlink, which would publish a link to a commit nobody else can
+# fetch. It is a different repository that happens to live here; ignore it.
+/Brillion.io/
+
 # Editor and OS noise.
 .vscode/
 .idea/
