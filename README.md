@@ -56,6 +56,31 @@ why the built page is written there and not somewhere tidier. The repo root has
 no `index.html` to give it — `public/index.html` is the dev shell and points at
 `/src/`, which would render a broken page for visitors.
 
+### Vercel, and the one deployment trap
+
+`vercel.json` exists for a single reason, and it is worth knowing because it
+will bite on any host that guesses:
+
+> **`public/` is NOT the folder to publish.** It holds the *dev shell* — an
+> `index.html` that loads `src/css/…` and `src/js/main.js` from the tree beside
+> it. Deployed on its own it renders the "Loading Bollybuzz.io" placeholder and
+> nothing else, because every path it points at 404s.
+
+Vercel, given a project with no framework, defaults its output directory to
+`public/` when that folder exists — so it published exactly that, and the page
+hung on the boot text forever. `vercel.json` overrides it:
+
+```json
+{ "framework": null, "outputDirectory": "docs" }
+```
+
+Nothing else is needed: no build command, no install step. `docs/index.html` is
+already the whole game in one self-contained file.
+
+If another host does the same thing, the fix is always the same — point it at
+**`docs/`**, never `public/`. The name is unfortunate and kept only because
+that is what the dev server and the shell have always been called.
+
 ### Drag-and-drop hosts
 
 The same `docs/` folder works on either of these, free, on `https://`:

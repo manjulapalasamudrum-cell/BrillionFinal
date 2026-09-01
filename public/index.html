@@ -14,7 +14,17 @@
 <!-- Paths are root-relative to the served tree, not to this file: serve.ps1
      serves the repo root and hands back public/index.html for "/", so these
      resolve to /src/... in the browser. -->
-<!-- Cascade order: tokens define, base grounds, components style the pieces,
+<!-- THIS FILE IS NOT THE ONE TO DEPLOY. It is the development shell: it loads
+     the modules under src/ from the tree beside it, so it only works behind a
+     server rooted at the REPO ROOT (server/serve.ps1 does that, and maps "/"
+     here). Published on its own it shows the boot line below and nothing else,
+     because every path it points at 404s.
+
+     Deploy docs/index.html instead - the whole game in one self-contained
+     file. Vercel defaults its output directory to public/ when that folder
+     exists, which is why vercel.json overrides it. See the README.
+
+     Cascade order: tokens define, base grounds, components style the pieces,
      then one stylesheet per screen. Keep in step with $cssFiles in build.ps1,
      which flattens these in the same order. -->
 <link rel="stylesheet" href="src/css/tokens.css">
