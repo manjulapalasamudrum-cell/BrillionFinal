@@ -23,11 +23,13 @@ export function depthYear(score, totalPrompts) {
 }
 
 /** The Wordle-style grid players paste into chats. */
-export function buildShareText({ gameName, score, year, log }) {
+export function buildShareText({ gameName, score, year, log, puzzleKey }) {
   const squares = log.map((r) => r.tier.sq).join('');
   // The puzzle's date, not the poster's — two people sharing the same game
-  // must stamp the same day even when their own clocks disagree.
-  const dateStr = puzzleDate();
+  // must stamp the same day even when their own clocks disagree. A dive
+  // replayed out of the archive stamps the day it belongs to, so a grid posted
+  // today for last Tuesday's puzzle is not mistaken for today's.
+  const dateStr = puzzleKey || puzzleDate();
   return (
     'Bollybuzz.io — ' + gameName + ' (' + dateStr + ')\n' +
     squares + '\n' +

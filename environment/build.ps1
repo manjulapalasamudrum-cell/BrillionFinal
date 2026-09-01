@@ -83,6 +83,7 @@ $jsFiles = @(
   'src\js\lib\random.js',
   'src\js\lib\text-match.js',
   'src\js\lib\audio.js',
+  'src\js\lib\history.js',
   'src\js\game\eras.js',
   'src\js\data\bank.js',
   'src\js\game\rounds.js',

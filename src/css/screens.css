@@ -194,6 +194,68 @@
   white-space: nowrap;
 }
 
+/* --- Archive: previous days' dives -------------------------------------- */
+
+/* Deliberately quieter than .show-btn: these are back issues, and the
+   programme above them is what is on today. Same row idea, but no display
+   face and no coloured spine — the only accent marks a day already played. */
+
+.archive-list { list-style: none; margin: 0; padding: 0; }
+
+.archive-btn {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: baseline;
+  gap: var(--s-3);
+  width: 100%;
+  text-align: left;
+  padding: 10px var(--s-2);
+  background: transparent;
+  border: none;
+  border-bottom: var(--rule-thin);
+  color: var(--on-paper);
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background .14s var(--ease-press), padding-left .14s var(--ease-press);
+}
+
+.archive-list li:last-child .archive-btn { border-bottom: var(--rule); }
+
+.archive-btn:hover,
+.archive-btn:focus-visible { background: var(--ink); padding-left: var(--s-3); }
+
+.ab-date {
+  font-family: var(--font-mono);
+  font-size: var(--t-small);
+  letter-spacing: .04em;
+}
+
+/* The score carries information, so it keeps its ink; "not played" is only a
+   status and stays dim. */
+.ab-score {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  color: var(--peacock);
+  white-space: nowrap;
+}
+
+.ab-new,
+.ab-go {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  color: var(--on-paper-dim);
+  white-space: nowrap;
+}
+
+.ab-go { letter-spacing: .08em; text-transform: uppercase; }
+
+.archive-btn:hover .ab-go,
+.archive-btn:focus-visible .ab-go { color: var(--peacock); }
+
+/* A played day is marked on the date itself rather than by tinting the whole
+   row, which would read as "selected" rather than "done". */
+.archive-btn.is-done .ab-date { color: var(--on-paper-dim); }
+
 /* --- Pack picker -------------------------------------------------------- */
 
 .pack-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-2); }
@@ -203,6 +265,10 @@
   .card { padding: var(--s-4) var(--s-4) var(--s-5); }
   .ladder-row { grid-template-columns: 52px minmax(0, 1fr) auto; }
   .sb-name { font-size: 19px; }
+  /* Three columns will not fit. The verb is what the row can spare: tapping
+     it is self-evidently how you play it, and the score is the information. */
+  .archive-btn { grid-template-columns: minmax(0, 1fr) auto; }
+  .ab-go { display: none; }
   /* On a phone the Play stub and a 30px title cannot share a row, so the
      panel stacks and the button goes full width under the text. */
   .hero-btn { grid-template-columns: 1fr; gap: var(--s-4); padding: var(--s-5) var(--s-4); }

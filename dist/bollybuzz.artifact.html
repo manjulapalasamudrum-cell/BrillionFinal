@@ -557,12 +557,56 @@ text-transform: uppercase;
 color: var(--on-paper-dim);
 white-space: nowrap;
 }
+.archive-list { list-style: none; margin: 0; padding: 0; }
+.archive-btn {
+display: grid;
+grid-template-columns: minmax(0, 1fr) auto auto;
+align-items: baseline;
+gap: var(--s-3);
+width: 100%;
+text-align: left;
+padding: 10px var(--s-2);
+background: transparent;
+border: none;
+border-bottom: var(--rule-thin);
+color: var(--on-paper);
+font-family: var(--font-body);
+cursor: pointer;
+transition: background .14s var(--ease-press), padding-left .14s var(--ease-press);
+}
+.archive-list li:last-child .archive-btn { border-bottom: var(--rule); }
+.archive-btn:hover,
+.archive-btn:focus-visible { background: var(--ink); padding-left: var(--s-3); }
+.ab-date {
+font-family: var(--font-mono);
+font-size: var(--t-small);
+letter-spacing: .04em;
+}
+.ab-score {
+font-family: var(--font-mono);
+font-size: var(--t-micro);
+color: var(--peacock);
+white-space: nowrap;
+}
+.ab-new,
+.ab-go {
+font-family: var(--font-mono);
+font-size: var(--t-micro);
+color: var(--on-paper-dim);
+white-space: nowrap;
+}
+.ab-go { letter-spacing: .08em; text-transform: uppercase; }
+.archive-btn:hover .ab-go,
+.archive-btn:focus-visible .ab-go { color: var(--peacock); }
+.archive-btn.is-done .ab-date { color: var(--on-paper-dim); }
 .pack-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-2); }
 @media (max-width: 520px) {
 .pack-grid { grid-template-columns: 1fr; }
 .card { padding: var(--s-4) var(--s-4) var(--s-5); }
 .ladder-row { grid-template-columns: 52px minmax(0, 1fr) auto; }
 .sb-name { font-size: 19px; }
+.archive-btn { grid-template-columns: minmax(0, 1fr) auto; }
+.ab-go { display: none; }
 .hero-btn { grid-template-columns: 1fr; gap: var(--s-4); padding: var(--s-5) var(--s-4); }
 .hb-go { display: block; text-align: center; padding: 13px var(--s-4); }
 }
@@ -2235,6 +2279,24 @@ let h = 0;
 for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
 return h;
 }
+function dateFromKey(key) {
+return new Date(key + 'T00:00:00Z');
+}
+function previousPuzzleKeys(count, from = new Date()) {
+const today = dateFromKey(puzzleDate(from));
+const keys = [];
+for (let i = 1; i <= count; i++) {
+keys.push(puzzleDate(new Date(today.getTime() - i * 86400000)));
+}
+return keys;
+}
+function formatPuzzleKey(key) {
+const d = dateFromKey(key);
+const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getUTCDay()];
+const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getUTCMonth()];
+return day + ' ' + d.getUTCDate() + ' ' + month;
+}
 function normalize(s) {
 return (s || '')
 .toLowerCase()
@@ -2409,6 +2471,39 @@ gain: 0.12,
 }
 tone(ac, { freq: DRONE, dur: 0.9 + ratio * 0.6, gain: 0.08, type: 'sine' });
 }
+const KEY = 'bollybuzz.history.v1';
+function read() {
+try {
+const raw = localStorage.getItem(KEY);
+const parsed = raw ? JSON.parse(raw) : null;
+// Anything other than a plain object means the value was written by an
+// older or broken build; discard rather than crash reading it.
+return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+} catch (e) {
+return {};
+}
+}
+function write(all) {
+try {
+localStorage.setItem(KEY, JSON.stringify(all));
+} catch (e) {
+}
+}
+function allResults() {
+return read();
+}
+function resultFor(key) {
+const rec = read()[key];
+return rec && typeof rec.score === 'number' ? rec : null;
+}
+function recordResult(key, score, total) {
+if (!key) return;
+const all = read();
+const prev = all[key];
+if (prev && typeof prev.score === 'number' && prev.score >= score) return;
+all[key] = { score, total };
+write(all);
+}
 const CINEMA_START_YEAR = 1913;
 function eraLabel(year) {
 if (year >= 2020) return 'The Streaming & Pan-India Era';
@@ -2474,6 +2569,7 @@ const MIXED_ROUNDS = 10;
 const THEMED_ROUNDS = 5;
 const DAILY_ROUNDS = 5;
 const ROUND_SECONDS = 40;
+const ARCHIVE_DAYS = 14;
 function article(t) {
 return /^[aeiou]/i.test(t) ? 'an' : 'a';
 }
@@ -2776,19 +2872,25 @@ roundPlan: buildRoundPlan(cat),
 label: cat.title,
 };
 }
-// The Daily Dive — see buildDivePlan for how the day's ten are chosen.
-const plan = buildDivePlan();
+const dayKey = key || puzzleDate();
+const plan = buildDivePlan(dateFromKey(dayKey));
 return {
 list: plan.list,
 total: plan.total,
+puzzleKey: dayKey,
 // This used to be null, which is what made the main game ten rounds of
 // "Name a <pack>": with no plan, GameScreen fell back to printing the
 // pack's own title as the prompt. The Dive now carries a plan like every
 // other mode.
 roundPlan: { rounds: plan.rounds },
 // 'practice' is what this mode *was* — random, unconstrained, replayable.
-// "Daily Dive" is what it is called on the hoarding: the main game.
-label: 'Daily Dive',
+// "Daily Dive" is what it is called on the hoarding: the main game. An
+// archived day says which day on screen, where there is nothing else to
+// tell you which run you are looking at...
+label: key ? 'Daily Dive · ' + formatPuzzleKey(dayKey) : 'Daily Dive',
+// ...but not in the shared grid, which stamps the puzzle's date on its own
+// line. "Daily Dive · Mon 31 Aug (2026-08-31)" says it twice.
+shareName: 'Daily Dive',
 };
 }
 const PRESENT_YEAR = 2026;
@@ -2800,11 +2902,13 @@ const span = PRESENT_YEAR - CINEMA_START_YEAR;
 const year = Math.round(PRESENT_YEAR - score * (span / maxScore(totalPrompts)));
 return Math.min(PRESENT_YEAR, Math.max(CINEMA_START_YEAR, year));
 }
-function buildShareText({ gameName, score, year, log }) {
+function buildShareText({ gameName, score, year, log, puzzleKey }) {
 const squares = log.map((r) => r.tier.sq).join('');
 // The puzzle's date, not the poster's — two people sharing the same game
-// must stamp the same day even when their own clocks disagree.
-const dateStr = puzzleDate();
+// must stamp the same day even when their own clocks disagree. A dive
+// replayed out of the archive stamps the day it belongs to, so a grid posted
+// today for last Tuesday's puzzle is not mistaken for today's.
+const dateStr = puzzleKey || puzzleDate();
 return (
 'Bollybuzz.io — ' + gameName + ' (' + dateStr + ')\n' +
 squares + '\n' +
@@ -2956,6 +3060,50 @@ h('span', { className: 'sb-rounds' }, DAILY_ROUNDS + ' rounds')
 )
 );
 }
+function Archive({ onStartArchived }) {
+const keys = previousPuzzleKeys(ARCHIVE_DAYS);
+const played = allResults();
+const best = maxScore(MIXED_ROUNDS);
+return h(
+'div',
+{ className: 'archive' },
+h(
+'div',
+{ className: 'section-label' },
+h('span', null, 'Previous dives'),
+h('div', { className: 'line' }),
+h('span', { className: 'sl-note' }, 'last ' + ARCHIVE_DAYS + ' days')
+),
+h(
+'ol',
+{ className: 'archive-list' },
+keys.map((key) => {
+const rec = played[key];
+const done = rec && typeof rec.score === 'number';
+return h(
+'li',
+{ key },
+h(
+'button',
+{
+className: 'archive-btn' + (done ? ' is-done' : ''),
+onClick: () => onStartArchived(key),
+// The visible label is a date alone, which says nothing about
+// what the button does to anyone not looking at the heading.
+'aria-label': 'Play the Daily Dive for ' + formatPuzzleKey(key) +
+(done ? ', already played, best ' + rec.score + ' points' : ', not yet played'),
+},
+h('span', { className: 'ab-date' }, formatPuzzleKey(key)),
+done
+? h('span', { className: 'ab-score' }, rec.score + ' / ' + best)
+: h('span', { className: 'ab-new' }, 'not played'),
+h('span', { className: 'ab-go' }, done ? 'replay' : 'play')
+)
+);
+})
+)
+);
+}
 function TopBill({ onStart }) {
 return h(
 'button',
@@ -2974,7 +3122,7 @@ MIXED_ROUNDS + ' prompts, one from every pack — the same set for everyone toda
 h('span', { className: 'hb-go' }, 'Play')
 );
 }
-function StartScreen({ onStartDaily, onStartPractice }) {
+function StartScreen({ onStartDaily, onStartPractice, onStartArchived }) {
 return h(
 'div',
 { id: 'screen-start', className: 'card' },
@@ -2989,7 +3137,8 @@ h('b', null, 'one'),
 ' answer before the ' + ROUND_SECONDS + '-second clock runs out. A wrong or repeated answer doesn’t end the round, it just costs you seconds, so keep guessing.'
 ),
 h(RarityLadder),
-h(Programme, { onStartDaily })
+h(Programme, { onStartDaily }),
+h(Archive, { onStartArchived })
 );
 }
 const LOW_SECONDS = 5;
@@ -3178,11 +3327,13 @@ year === CINEMA_START_YEAR
 );
 }
 function ResultScreen({
-mode, gameLabel, score, totalPrompts, log,
+mode, gameLabel, shareName, score, totalPrompts, log, puzzleKey,
 onReplay, onBackToMenu, copyLabel, onCopy,
 }) {
 const year = depthYear(score, totalPrompts);
-const shareText = buildShareText({ gameName: gameLabel, score, year, log });
+const shareText = buildShareText({
+gameName: shareName || gameLabel, score, year, log, puzzleKey,
+});
 return h(
 'div',
 { id: 'screen-result', className: 'card' },
@@ -3281,6 +3432,12 @@ const [mode, setMode] = useState(null);
 // 'themed', null for practice. Kept so "Play again" can repeat the same one.
 const [gameKey, setGameKey] = useState(null);
 const [gameLabel, setGameLabel] = useState('');
+// What the shared grid calls this game. Usually the same as gameLabel, but
+// an archived dive drops the date from it — the grid stamps the date itself.
+const [shareName, setShareName] = useState('');
+// Which puzzle day this game is, for the share stamp and the archive record.
+// Only the Daily Dive sets it; a themed game belongs to no particular day.
+const [puzzleKey, setPuzzleKey] = useState(null);
 const [session, setSession] = useState([]);
 const [totalPrompts, setTotalPrompts] = useState(MIXED_ROUNDS);
 const [roundPlan, setRoundPlan] = useState(null);
@@ -3304,6 +3461,8 @@ const picked = pickSession(m, key);
 setMode(m);
 setGameKey(key || null);
 setGameLabel(picked.label);
+setShareName(picked.shareName || picked.label);
+setPuzzleKey(picked.puzzleKey || null);
 setSession(picked.list);
 setTotalPrompts(picked.total);
 setRoundPlan(picked.roundPlan);
@@ -3444,6 +3603,9 @@ const nextIdx = idx + 1;
 if (nextIdx >= totalPrompts) {
 // `score` already includes the round just finalized, so this is the total.
 playResult(score, maxScore(totalPrompts));
+// Recorded here rather than on the result screen, which re-renders: this
+// runs exactly once, when the last round closes.
+recordResult(puzzleKey, score, totalPrompts);
 setScreen('result');
 return;
 }
@@ -3485,6 +3647,7 @@ screen === 'start'
 ? h(StartScreen, {
 onStartDaily: (id) => startGame('daily', id),
 onStartPractice: () => startGame('practice'),
+onStartArchived: (dayKey) => startGame('practice', dayKey),
 })
 : null,
 screen === 'game'
@@ -3500,7 +3663,7 @@ onNext: nextPrompt,
 : null,
 screen === 'result'
 ? h(ResultScreen, {
-mode, gameLabel, score, totalPrompts, log,
+mode, gameLabel, shareName, score, totalPrompts, log, puzzleKey,
 // A daily show is the same all day, so replaying it would just repeat
 // the same five questions — send them to the Daily Dive instead.
 onReplay: () => (mode === 'daily' ? startGame('practice') : startGame(mode, gameKey)),

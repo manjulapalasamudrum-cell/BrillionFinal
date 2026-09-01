@@ -59,11 +59,13 @@ function DepthGauge({ year }) {
 }
 
 export function ResultScreen({
-  mode, gameLabel, score, totalPrompts, log,
+  mode, gameLabel, shareName, score, totalPrompts, log, puzzleKey,
   onReplay, onBackToMenu, copyLabel, onCopy,
 }) {
   const year = depthYear(score, totalPrompts);
-  const shareText = buildShareText({ gameName: gameLabel, score, year, log });
+  const shareText = buildShareText({
+    gameName: shareName || gameLabel, score, year, log, puzzleKey,
+  });
 
   return h(
     'div',

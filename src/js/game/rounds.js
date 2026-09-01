@@ -29,7 +29,9 @@
 import { CATEGORIES } from '../data/categories.js';
 import { DAILY_SHOWS, findShow } from '../data/dailies.js';
 import { computeEraBuckets, eraLabelText, eraOfYear } from './eras.js';
-import { mulberry32, seededShuffle, dateSeed } from '../lib/random.js';
+import {
+  mulberry32, seededShuffle, dateSeed, puzzleDate, dateFromKey, formatPuzzleKey,
+} from '../lib/random.js';
 
 /*
   MIXED_ROUNDS is the Daily Dive. It is set to the number of packs on purpose:
@@ -42,6 +44,18 @@ export const MIXED_ROUNDS = 10;
 export const THEMED_ROUNDS = 5;
 export const DAILY_ROUNDS = 5;
 export const ROUND_SECONDS = 40;
+
+/*
+  How many past days the archive offers. Two weeks is enough that someone who
+  drops the habit for a while can pick it back up, and short enough that the
+  list stays a list rather than a scrolling year.
+
+  There is no floor date and no stored history of puzzles because none is
+  needed: a day's dive is a pure function of its date, so any date at all
+  rebuilds exactly the game that was played then. Raising this number is the
+  entire change required to offer a longer archive.
+*/
+export const ARCHIVE_DAYS = 14;
 
 function article(t) {
   return /^[aeiou]/i.test(t) ? 'an' : 'a';
@@ -520,9 +534,10 @@ export function buildDivePlan(date = new Date()) {
  * Choose the packs and the round plan for one game.
  *   'daily'    — one of the programme's shows, seeded off today's date
  *   'themed'   — the same pack every round, distinguished by the round plan
- *   'practice' — the Daily Dive: every pack once, seeded off today's date
+ *   'practice' — the Daily Dive: every pack once, seeded off a date
  *
- * `key` is a show id for 'daily' and a pack id for 'themed'.
+ * `key` is a show id for 'daily', a pack id for 'themed', and for 'practice' a
+ * puzzle day from the archive ("2026-08-30") or absent for today.
  */
 export function pickSession(mode, key) {
   if (mode === 'daily') {
@@ -546,18 +561,30 @@ export function pickSession(mode, key) {
     };
   }
 
-  // The Daily Dive — see buildDivePlan for how the day's ten are chosen.
-  const plan = buildDivePlan();
+  /*
+    The Daily Dive. `key` is a puzzle day ("2026-08-30") when the player picked
+    one out of the archive, and absent for today's. Because the plan is a pure
+    function of the date, a past day needs no stored puzzle — it is rebuilt
+    from its own date, identical to what everyone saw that day.
+  */
+  const dayKey = key || puzzleDate();
+  const plan = buildDivePlan(dateFromKey(dayKey));
   return {
     list: plan.list,
     total: plan.total,
+    puzzleKey: dayKey,
     // This used to be null, which is what made the main game ten rounds of
     // "Name a <pack>": with no plan, GameScreen fell back to printing the
     // pack's own title as the prompt. The Dive now carries a plan like every
     // other mode.
     roundPlan: { rounds: plan.rounds },
     // 'practice' is what this mode *was* — random, unconstrained, replayable.
-    // "Daily Dive" is what it is called on the hoarding: the main game.
-    label: 'Daily Dive',
+    // "Daily Dive" is what it is called on the hoarding: the main game. An
+    // archived day says which day on screen, where there is nothing else to
+    // tell you which run you are looking at...
+    label: key ? 'Daily Dive · ' + formatPuzzleKey(dayKey) : 'Daily Dive',
+    // ...but not in the shared grid, which stamps the puzzle's date on its own
+    // line. "Daily Dive · Mon 31 Aug (2026-08-31)" says it twice.
+    shareName: 'Daily Dive',
   };
 }

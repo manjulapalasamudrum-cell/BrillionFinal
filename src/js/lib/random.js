@@ -49,3 +49,37 @@ export function dateSeed(d) {
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
   return h;
 }
+
+/**
+ * The inverse of `puzzleDate`: an instant that falls on the given puzzle day.
+ *
+ * Anchored at midnight UTC, which is 05:30 on that same day in India — far
+ * enough inside the day that adding the offset cannot tip it into the next
+ * one. Anchoring at local midnight instead would put a player west of UTC on
+ * the wrong puzzle, which is the whole failure `puzzleDate` exists to avoid.
+ */
+export function dateFromKey(key) {
+  return new Date(key + 'T00:00:00Z');
+}
+
+/**
+ * The puzzle days before `from`, newest first — the archive of dives already
+ * played out. Today is excluded: it is the main game and has its own billing.
+ */
+export function previousPuzzleKeys(count, from = new Date()) {
+  const today = dateFromKey(puzzleDate(from));
+  const keys = [];
+  for (let i = 1; i <= count; i++) {
+    keys.push(puzzleDate(new Date(today.getTime() - i * 86400000)));
+  }
+  return keys;
+}
+
+/** "2026-08-30" as "Sat 30 Aug" — dated like a listing, not like a database. */
+export function formatPuzzleKey(key) {
+  const d = dateFromKey(key);
+  const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getUTCDay()];
+  const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getUTCMonth()];
+  return day + ' ' + d.getUTCDate() + ' ' + month;
+}

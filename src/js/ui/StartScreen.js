@@ -11,7 +11,10 @@
 import { h } from './dom.js';
 import { DAILY_SHOWS } from '../data/dailies.js';
 import { rarityLadder } from '../data/bank.js';
-import { MIXED_ROUNDS, DAILY_ROUNDS, ROUND_SECONDS } from '../game/rounds.js';
+import { MIXED_ROUNDS, DAILY_ROUNDS, ROUND_SECONDS, ARCHIVE_DAYS } from '../game/rounds.js';
+import { previousPuzzleKeys, formatPuzzleKey } from '../lib/random.js';
+import { allResults } from '../lib/history.js';
+import { maxScore } from '../game/scoring.js';
 
 /**
  * The page's thesis, drawn from the bank itself: five films by one actor, from
@@ -101,6 +104,64 @@ function Programme({ onStartDaily }) {
 }
 
 /**
+ * The dives already played out — the last fortnight, newest first.
+ *
+ * Nothing is stored to make this work. A day's dive is a pure function of its
+ * date, so every one of these rebuilds exactly the game that was played that
+ * day; the only thing read from storage is the player's own score, to mark
+ * which ones they have done.
+ *
+ * Listed like the back issues they are, one line each, under the programme
+ * rather than above it: today's dive is the main attraction and this must not
+ * compete with it.
+ */
+function Archive({ onStartArchived }) {
+  const keys = previousPuzzleKeys(ARCHIVE_DAYS);
+  const played = allResults();
+  const best = maxScore(MIXED_ROUNDS);
+
+  return h(
+    'div',
+    { className: 'archive' },
+    h(
+      'div',
+      { className: 'section-label' },
+      h('span', null, 'Previous dives'),
+      h('div', { className: 'line' }),
+      h('span', { className: 'sl-note' }, 'last ' + ARCHIVE_DAYS + ' days')
+    ),
+    h(
+      'ol',
+      { className: 'archive-list' },
+      keys.map((key) => {
+        const rec = played[key];
+        const done = rec && typeof rec.score === 'number';
+        return h(
+          'li',
+          { key },
+          h(
+            'button',
+            {
+              className: 'archive-btn' + (done ? ' is-done' : ''),
+              onClick: () => onStartArchived(key),
+              // The visible label is a date alone, which says nothing about
+              // what the button does to anyone not looking at the heading.
+              'aria-label': 'Play the Daily Dive for ' + formatPuzzleKey(key) +
+                (done ? ', already played, best ' + rec.score + ' points' : ', not yet played'),
+            },
+            h('span', { className: 'ab-date' }, formatPuzzleKey(key)),
+            done
+              ? h('span', { className: 'ab-score' }, rec.score + ' / ' + best)
+              : h('span', { className: 'ab-new' }, 'not played'),
+            h('span', { className: 'ab-go' }, done ? 'replay' : 'play')
+          )
+        );
+      })
+    )
+  );
+}
+
+/**
  * The main game, top-billed. It is the first thing on the card and the only
  * button on the page at this scale, because on a hoarding the main attraction
  * is not one listing among several — it is the whole top half.
@@ -124,7 +185,7 @@ function TopBill({ onStart }) {
   );
 }
 
-export function StartScreen({ onStartDaily, onStartPractice }) {
+export function StartScreen({ onStartDaily, onStartPractice, onStartArchived }) {
   return h(
     'div',
     { id: 'screen-start', className: 'card' },
@@ -142,6 +203,7 @@ export function StartScreen({ onStartDaily, onStartPractice }) {
     ),
 
     h(RarityLadder),
-    h(Programme, { onStartDaily })
+    h(Programme, { onStartDaily }),
+    h(Archive, { onStartArchived })
   );
 }

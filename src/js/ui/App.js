@@ -7,6 +7,7 @@ import { h, React, useState, useEffect, useRef, focusEl, selectEl } from './dom.
 import { TIERS, MISS } from '../data/tiers.js';
 import { normalize, matchInput } from '../lib/text-match.js';
 import { playAnswer, playReject, playMiss, playResult } from '../lib/audio.js';
+import { recordResult } from '../lib/history.js';
 import { eraLabelText } from '../game/eras.js';
 import {
   pickSession, violatesConstraint, firstLetter, wordCount,
@@ -25,6 +26,12 @@ export function App() {
   // 'themed', null for practice. Kept so "Play again" can repeat the same one.
   const [gameKey, setGameKey] = useState(null);
   const [gameLabel, setGameLabel] = useState('');
+  // What the shared grid calls this game. Usually the same as gameLabel, but
+  // an archived dive drops the date from it — the grid stamps the date itself.
+  const [shareName, setShareName] = useState('');
+  // Which puzzle day this game is, for the share stamp and the archive record.
+  // Only the Daily Dive sets it; a themed game belongs to no particular day.
+  const [puzzleKey, setPuzzleKey] = useState(null);
   const [session, setSession] = useState([]);
   const [totalPrompts, setTotalPrompts] = useState(MIXED_ROUNDS);
   const [roundPlan, setRoundPlan] = useState(null);
@@ -51,6 +58,8 @@ export function App() {
     setMode(m);
     setGameKey(key || null);
     setGameLabel(picked.label);
+    setShareName(picked.shareName || picked.label);
+    setPuzzleKey(picked.puzzleKey || null);
     setSession(picked.list);
     setTotalPrompts(picked.total);
     setRoundPlan(picked.roundPlan);
@@ -216,6 +225,9 @@ export function App() {
     if (nextIdx >= totalPrompts) {
       // `score` already includes the round just finalized, so this is the total.
       playResult(score, maxScore(totalPrompts));
+      // Recorded here rather than on the result screen, which re-renders: this
+      // runs exactly once, when the last round closes.
+      recordResult(puzzleKey, score, totalPrompts);
       setScreen('result');
       return;
     }
@@ -262,6 +274,7 @@ export function App() {
       ? h(StartScreen, {
           onStartDaily: (id) => startGame('daily', id),
           onStartPractice: () => startGame('practice'),
+          onStartArchived: (dayKey) => startGame('practice', dayKey),
         })
       : null,
     screen === 'game'
@@ -277,7 +290,7 @@ export function App() {
       : null,
     screen === 'result'
       ? h(ResultScreen, {
-          mode, gameLabel, score, totalPrompts, log,
+          mode, gameLabel, shareName, score, totalPrompts, log, puzzleKey,
           // A daily show is the same all day, so replaying it would just repeat
           // the same five questions — send them to the Daily Dive instead.
           onReplay: () => (mode === 'daily' ? startGame('practice') : startGame(mode, gameKey)),

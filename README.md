@@ -93,7 +93,9 @@ src/js/
   data/categories.js        the answer bank — 10 packs, ~720 answers
   data/dailies.js           the daily shows and their constraints
   data/bank.js              facts read off the bank: counts, the rarity ladder
-  lib/random.js             seeded PRNG; the day runs midnight-to-midnight IST
+  lib/random.js             seeded PRNG; the day runs midnight-to-midnight IST,
+                            plus the archive's date keys
+  lib/history.js            best score per day, in localStorage, for the archive
   lib/text-match.js         normalization + fuzzy matching of typed answers
   lib/audio.js              the sound effects, synthesised — no audio files
   game/eras.js              era labelling and the early/mid/late bucketing
@@ -101,7 +103,7 @@ src/js/
   game/scoring.js           score → year, and the shareable result grid
   ui/dom.js                 the `h` (createElement) helper and focus utilities
   ui/Chrome.js              header and footer
-  ui/StartScreen.js         the main game, the rarity ladder, today's programme
+  ui/StartScreen.js         the main game, rarity ladder, programme, archive
   ui/GameScreen.js          prompt, clock, answer box, feedback panel
   ui/ResultScreen.js        the depth gauge, breakdown, share box
   ui/App.js                 all game state and the round lifecycle
@@ -172,6 +174,35 @@ the entire game.
 Internally it is still `mode === 'practice'`, which is now a misleading name —
 it dates from when the draw really was random and unconstrained. `pickSession()`
 in `game/rounds.js` is the only place that matters.
+
+### The archive: previous days' dives
+
+Under the programme, the start screen lists the last `ARCHIVE_DAYS` (14) days,
+newest first, and playing one rebuilds that day's dive exactly.
+
+**Nothing is stored to make this work, and that is the point.** A dive is a
+pure function of its date — `buildDivePlan(date)` — so a past day needs no
+saved puzzle, no server and no migration: its date is the puzzle. There is no
+floor date either, so raising `ARCHIVE_DAYS` is the entire change needed to
+offer a longer archive. Days before the game existed would generate perfectly
+valid dives, which is why the window is a count of days back rather than a
+launch date nobody recorded.
+
+Two things it is easy to get wrong here, both handled:
+
+- **The share stamp must name the puzzle's day, not the poster's.** A grid
+  pasted today for last Tuesday's dive says `(2026-08-25)`. `buildShareText`
+  takes `puzzleKey` and only falls back to today when there isn't one.
+- **The label and the share name differ.** On screen an archived run reads
+  "Daily Dive · Mon 31 Aug", because nothing else on the result screen says
+  which run you are looking at. The shared grid uses the plain "Daily Dive",
+  because it stamps the date on its own line and would otherwise say it twice.
+
+`lib/history.js` holds a best-score-per-day in `localStorage` purely so the
+list can show which days you have done. It stores no answers and nothing
+identifying, never leaves the browser, and every access is wrapped — reading
+`localStorage` *throws* in a browser set to block site data, and a game that
+would not start because a scoreboard could not be read is a poor trade.
 
 ### The themed mode is dormant, not deleted
 
