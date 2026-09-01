@@ -199,7 +199,16 @@ $payload
 New-Item -ItemType Directory -Force -Path (Join-Path $root 'dist\site') | Out-Null
 [System.IO.File]::WriteAllText((Join-Path $root 'dist\site\index.html'), $standalone, $utf8)
 
-foreach ($out in @('dist\bollybuzz.html', 'dist\bollybuzz.artifact.html', 'dist\site\index.html')) {
+# --- 4. GitHub Pages root ----------------------------------------------------
+# Pages serves either the repo root or a folder named exactly docs/, and the
+# repo root has no index.html to give it: public/index.html is the dev shell
+# and points at /src/, which is not what a visitor should get. So docs/ holds
+# the same self-contained page as dist/site/ under the one name Pages accepts.
+# Unlike dist/, this one is committed on purpose - see .gitignore.
+New-Item -ItemType Directory -Force -Path (Join-Path $root 'docs') | Out-Null
+[System.IO.File]::WriteAllText((Join-Path $root 'docs\index.html'), $standalone, $utf8)
+
+foreach ($out in @('dist\bollybuzz.html', 'dist\bollybuzz.artifact.html', 'dist\site\index.html', 'docs\index.html')) {
   $item = Get-Item (Join-Path $root $out)
   "{0,-30} {1,9:N0} bytes" -f $out, $item.Length
 }
