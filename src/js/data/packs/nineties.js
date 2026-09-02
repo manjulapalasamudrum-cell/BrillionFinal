@@ -97,7 +97,9 @@ export const PACK_NINETIES = {
     {name:'Shola Aur Shabnam', aliases:[], tier:2, year:1992},
     {name:'Vishwatma', aliases:['vishwaatma'], tier:2, year:1992},
     {name:'Jigar', aliases:[], tier:2, year:1992},
-    {name:'Raju Ban Gaya Gentleman', aliases:['rbgg','raju ban gaya'], tier:2, year:1992},
+    // Same short forms as the srk copy — a film has to be typeable the same
+    // way in every pack it appears in, which check-bank.py enforces.
+    {name:'Raju Ban Gaya Gentleman', aliases:['rbgg','raju ban gaya','gentleman','raju'], tier:2, year:1992},
     {name:'Aatish', aliases:['aatish feel the fire'], tier:2, year:1994},
     {name:'Saajan Chale Sasural', aliases:['sajan chale sasural'], tier:2, year:1996},
     {name:'Agni Sakshi', aliases:['agnisakshi'], tier:2, year:1996},

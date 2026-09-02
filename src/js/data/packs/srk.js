@@ -59,7 +59,11 @@ export const PACK_SRK = {
     {name:'Trimurti', aliases:[], tier:3, year:1995},
     {name:'One 2 Ka 4', aliases:['one two ka four','1 2 ka 4'], tier:3, year:2001},
     {name:'English Babu Desi Mem', aliases:['ebdm','english babu'], tier:3, year:1996},
-    {name:'Raju Ban Gaya Gentleman', aliases:['rbgg','raju ban gaya'], tier:3, year:1992},
+    // "Gentleman" is what people actually call this one, and three dropped
+    // words is far past anything fuzzy matching can bridge, so it has to be an
+    // explicit alias. Nothing in any pack folds to it, so it cannot shadow
+    // another film.
+    {name:'Raju Ban Gaya Gentleman', aliases:['rbgg','raju ban gaya','gentleman','raju'], tier:3, year:1992},
     {name:'King Uncle', aliases:[], tier:3, year:1993},
     {name:'Guddu', aliases:[], tier:3, year:1995},
     {name:'Chamatkar', aliases:['chamatkaar'], tier:3, year:1992},
