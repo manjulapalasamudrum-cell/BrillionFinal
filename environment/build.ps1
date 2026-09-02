@@ -183,6 +183,26 @@ foreach ($hazard in @('<script', '</script', '<!--', '<style', '</style')) {
 
 New-Item -ItemType Directory -Force -Path (Join-Path $root 'dist') | Out-Null
 
+<#
+  Vercel Web Analytics.
+
+  Counts visits and page views. It goes ONLY in the standalone page, never in
+  the artifact body below: the script is served by Vercel itself and would 404
+  anywhere else, including in Claude's Artifact host and on a double-clicked
+  copy of the file. A deferred script that 404s is harmless, but there is no
+  reason to ship a broken request to hosts that can never serve it.
+
+  Worth knowing about the path: it is FIRST-PARTY. Vercel proxies the script
+  and the collector under the site's own origin, so this adds no third-party
+  host and no cookie, and the page still reaches nothing but Google Fonts and
+  itself. That is why this was an acceptable thing to add to a page whose whole
+  character is that it phones nobody.
+
+  It reports nothing until Web Analytics is switched on for the project in the
+  Vercel dashboard; until then the endpoint simply is not there.
+#>
+$analytics = '<script defer src="/_vercel/insights/script.js"></script>'
+
 # --- 1. Standalone page ------------------------------------------------------
 $standalone = @"
 <!DOCTYPE html>
@@ -192,7 +212,7 @@ $standalone = @"
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Bollybuzz.io $EMDASH 10 Bollywood Trivia Games Where Rare Answers Win</title>
 <meta name="description" content="Name one answer per prompt. The rarer your answer, the deeper you dive into 113 years of Hindi cinema." />
-<meta name="theme-color" content="#EAEAEE">
+<meta name="theme-color" content="#150F38">
 $fonts
 <style>
 $css
@@ -200,6 +220,7 @@ $css
 </head>
 <body>
 $payload
+$analytics
 </body>
 </html>
 "@
