@@ -89,7 +89,10 @@
   margin: 0 auto var(--s-2);
   padding: 5px var(--s-3);
   border-radius: 999px;
-  background: #E7F0FE;
+  /* A pale wash of the action colour. Retinted when peacock moved from blue to
+     teal — a blue chip beside a teal button read as a second, unrelated
+     accent. */
+  background: #DDF0F1;
   color: var(--peacock-deep);
   font-size: var(--t-small);
   font-weight: 700;
@@ -103,7 +106,7 @@
   margin-top: var(--s-4);
   padding: var(--s-3) var(--s-4);
   border-left: 3px solid var(--vermilion);
-  background: #FDE7EA;
+  background: #FDE6EE;
   color: var(--magenta-deep);
   font-size: var(--t-small);
   line-height: 1.5;

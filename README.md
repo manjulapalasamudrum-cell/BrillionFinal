@@ -418,21 +418,55 @@ never break the game.
 
 ## The design
 
-**Current style: "Social"** — a light card-based interface in the register
-Facebook made familiar. Grey ground, white cards with small radii and soft
-shadows, one blue for every action, the system font stack.
+**Current style: "Night at the Picture House."** The page is a cinema frontage
+after dark: a deep indigo ground, cards that read as *lit paper* rather than
+merely white boxes, a rail of marquee bulbs across the masthead, and the
+saturated inks of a hand-painted Bombay hoarding — marigold, rani pink,
+peacock, violet.
 
-The bullets below describe the **previous** direction, "Four-Colour Process":
-the Bombay film hoarding printed at night on cold stock, lit by marquee lamps,
-with process cyan/magenta/yellow inks on a deep indigo ground. It was replaced
-on request. It is documented here rather than deleted because reverting is
-mostly a matter of restoring `tokens.css`, `base.css` and `components.css` —
-the markup never carried the style, and the ghost spans in `Chrome.js` and the
-`.bulbs` element are still there, merely hidden.
+It replaced **"Social"**, a grey/white/one-blue card system whose own note
+described it as "the register Facebook made familiar". That is a perfectly good
+system and a completely anonymous one, and on a phone — where the cards go
+full-bleed and the chrome shrinks to nothing — the whole screen was a grey
+field and one blue rectangle. Nothing on it said Hindi cinema.
 
-What survived the swap, and should survive any future one: **the rarity ramp is
-information, not decoration.** Those five colours are the scoring model made
-visible. They were retuned for a light ground, never flattened to greys.
+Three things the change cost nothing to get back, because they were already
+paid for and switched off:
+
+- **Rozha One**, a Devanagari display face set here in Latin, was being fetched
+  by `index.html` and then discarded in favour of the system stack. It carries
+  the wordmark, the billing and the prompt, and nothing else — it has real
+  personality at large sizes and none at small ones.
+- **The marquee.** `.bulbs` was already in the markup, hidden by one CSS line.
+- **The off-register wordmark.** The two ghost passes were already in
+  `Chrome.js`, hidden by another.
+
+**Colour discipline:** the rarity ramp is information; everything else is
+atmosphere, and atmosphere must not compete with it. The chrome keeps to deep
+grounds and warm metals so the five rungs stay the most legible ordered thing
+on the page. Marigold — the brightest ink — is spent on exactly one element,
+the Play stub, so that button reads as the lit bulb; using it for ordinary
+controls would cost it that meaning.
+
+Contrast was measured, not eyeballed. The hero gradient runs hot to *deep*
+rather than hot to light so white text clears 4.5:1 at every point along it
+(4.73 at the rani end, 8.3 at the violet), and `--rani` is `#E01067` rather
+than the better-looking `#E8156F` because that one carries white at only 4.40.
+
+The bullets below describe **"Four-Colour Process"**, the direction that came
+before "Social" and that the current one is a descendant of: the Bombay film
+hoarding printed at night on cold stock, lit by marquee lamps, with process
+cyan/magenta/yellow inks on a deep indigo ground.
+
+They are kept because most of what they describe is live again — the indigo
+ground, the marquee, the off-register wordmark — and because the parts that are
+**not** back are the ones to reach for next: the sprockets down the page edges,
+the jali lattice, the projector beams, and the dark game card. Each is a
+`background-image` on `body` or `.card--screen` and needs no markup.
+
+What survived both swaps, and should survive any future one: **the rarity ramp
+is information, not decoration.** Those five colours are the scoring model made
+visible. They have been retuned twice and flattened to greys never.
 
 - **The palette is a printing process, not a theme.** Every colour is either an
   ink or a light source: process cyan, process magenta and process yellow, laid

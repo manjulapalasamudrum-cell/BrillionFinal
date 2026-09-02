@@ -48,14 +48,43 @@ header.top {
   position: relative;
   text-align: center;
   margin-bottom: var(--s-4);
-  padding: var(--s-5) var(--s-5) var(--s-4);
+  /* Extra top padding leaves the bulb rail somewhere to sit. */
+  padding: var(--s-6) var(--s-5) var(--s-4);
   background: var(--paper);
   border-radius: var(--radius);
   box-shadow: var(--shadow-card);
+  overflow: hidden;
 }
 
-/* The lamp rail belonged to the marquee; there is no marquee now. */
-.bulbs { display: none; }
+/*
+  THE MARQUEE. A rail of bulbs across the top of the frontage, built from two
+  repeating radial gradients — one for the filament, one for the glow it throws
+  back onto the board. Nothing else on the page is lit, which is what makes the
+  masthead read as the frontage and not as a header.
+
+  The flicker is slow and shallow (opacity .82 → 1 over 4s) because filament
+  lamps are never quite steady, and because anything faster would be a
+  distraction sitting above every screen in the game. Reduced motion stops it
+  dead via the rule at the foot of this file; the bulbs stay lit, they just
+  stop breathing.
+*/
+.bulbs {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 14px;
+  background-image:
+    radial-gradient(circle at 10px 7px, var(--bulb) 0 2.5px, transparent 3px),
+    radial-gradient(circle at 10px 7px, var(--bulb-halo) 0 5px, transparent 8px);
+  background-size: 20px 14px, 20px 14px;
+  background-repeat: repeat-x;
+  animation: flicker 4s ease-in-out infinite;
+}
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .82; }
+}
 
 .sound-toggle {
   position: absolute;
@@ -95,22 +124,36 @@ header.top {
   display: block;
 }
 
-/* One weight, one colour. The three-pass off-register print is gone with the
-   rest of the hoarding; the ghost spans are left in the markup but hidden so
-   Chrome.js needs no change. */
+/*
+  THE WORDMARK, printed three times. Peacock and rani are laid down first, each
+  a pixel or two out of true, then the solid ink on top — a screen print that
+  missed its registration marks, which is exactly what the cheap end of film
+  publicity looks like.
+
+  It is one indulgence and it is spent here, on the one word that names the
+  game. Nothing else on the page uses the device. The ghost passes are
+  aria-hidden in Chrome.js, so a screen reader hears the title once.
+*/
 .wordmark {
   position: relative;
   display: block;
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 400;          /* Rozha One ships one weight and it is heavy */
   font-size: var(--t-mega);
-  line-height: 1.15;
-  letter-spacing: -.02em;
-  margin: var(--s-2) 0 var(--s-2);
-  color: var(--peacock);
+  line-height: 1.05;
+  letter-spacing: .005em;
+  margin: var(--s-2) 0 var(--s-3);
+  color: var(--on-paper);
 }
-.wm-ghost { display: none; }
-.wm-main { position: static; text-shadow: none; }
+.wm-ghost {
+  position: absolute;
+  inset: 0;
+  display: block;
+  z-index: 0;
+}
+.wm-ghost--peacock { color: var(--peacock); transform: translate(-2px, 1px); }
+.wm-ghost--magenta { color: var(--rani); transform: translate(2px, -1px); }
+.wm-main { position: relative; z-index: 1; }
 
 .tagline {
   color: var(--on-paper-dim);

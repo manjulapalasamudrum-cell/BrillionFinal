@@ -1,10 +1,10 @@
 /* Reusable pieces: card surfaces, buttons, tiles, labels, the input. */
 
 /* --- Cards -------------------------------------------------------------
-   One surface now. The old design used two — printed paper for the menus and
-   a dark "lights down" screen for the game — which carried meaning but is not
-   available in a style where everything is a white card on grey. The game card
-   is distinguished by a blue accent rail instead.
+   Every card is lit paper on a dark indigo ground — the bill pasted on the
+   frontage, read by the light of the marquee. The dark surface that used to
+   distinguish the game card is not needed now that the GROUND is dark; the
+   game card is marked by the strip of film leader across its top edge instead.
 -------------------------------------------------------------------------- */
 
 .card {
@@ -19,19 +19,42 @@
 .card::before { display: none; }
 .card > * { position: relative; }
 
+/*
+  The game card wears a strip of film leader across its top edge: the four inks
+  in sequence, hard-edged rather than blended, the way a colour bar is printed
+  down the side of a negative. It replaced a flat blue rule, which said only
+  "this is the active card" — this says which game you are in the middle of.
+*/
 .card--screen {
   background: var(--paper);
   color: var(--on-paper);
   padding-top: var(--s-5);
-  border-top: 3px solid var(--peacock);
+  border-top: none;
+  overflow: hidden;
+}
+.card--screen::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--peacock) 0 25%,
+    var(--rani) 25% 50%,
+    var(--marigold) 50% 75%,
+    var(--violet) 75% 100%
+  );
 }
 
 .card + .card { margin-top: var(--s-4); }
 
 /* --- Buttons ------------------------------------------------------------
-   Filled blue for the primary action, grey for secondary, flat for tertiary.
-   No offsets, no print register — this style signals affordance with fill and
-   radius, and a press is a small darkening rather than a physical shift.
+   Filled peacock for the primary action, a pale fill for secondary, flat for
+   tertiary. Marigold is deliberately NOT used here: it belongs to the one
+   button on the page that starts the main game, and spending it on ordinary
+   controls would cost that button its meaning.
 -------------------------------------------------------------------------- */
 
 button {
@@ -90,10 +113,16 @@ button {
 .card--screen .linklike:hover:not(:disabled) { color: var(--on-paper); }
 
 /* --- The main game ------------------------------------------------------
-   A filled blue panel, the one saturated block on the page, so the primary
-   action is unmissable without needing lamps around it.
--------------------------------------------------------------------------- */
+   The hoarding for tonight's attraction: a rani-to-violet gradient, the two
+   hottest inks on the board, under a fine diagonal ray pattern like light
+   falling across a painted billboard.
 
+   The gradient runs hot to DEEP rather than hot to light, so white text clears
+   4.5:1 at every point along it (4.73 at the rani end, 8.3 at the violet).
+   That constraint decided the direction: a marigold panel would have been
+   louder and would have carried no legible white text anywhere on it — which
+   is why marigold ended up on the small Play stub, in near-black, instead.
+-------------------------------------------------------------------------- */
 .hero-btn {
   position: relative;
   display: grid;
@@ -104,20 +133,26 @@ button {
   text-align: left;
   padding: var(--s-6) var(--s-5);
   margin-bottom: var(--s-5);
-  background: var(--peacock);
-  border-radius: 12px;
+  background:
+    repeating-linear-gradient(
+      115deg,
+      rgba(255, 255, 255, .07) 0 2px,
+      transparent 2px 22px
+    ),
+    linear-gradient(135deg, var(--rani) 0%, var(--violet) 100%);
+  border-radius: var(--radius);
   color: #FFFFFF;
-  box-shadow: 0 2px 10px rgba(24, 119, 242, .3);
-  transition: background .14s var(--ease-press), box-shadow .14s var(--ease-press),
-              transform .14s var(--ease-press);
+  box-shadow: 0 6px 22px rgba(224, 16, 103, .38);
+  overflow: hidden;
+  transition: box-shadow .16s var(--ease-press), transform .16s var(--ease-press);
 }
 .hero-btn::before, .hero-btn::after { display: none; }
 .hero-btn:hover {
-  background: var(--peacock-deep);
-  box-shadow: 0 6px 18px rgba(24, 119, 242, .38);
-  transform: translateY(-1px);
+  box-shadow: 0 12px 34px rgba(224, 16, 103, .5);
+  transform: translateY(-2px);
 }
-.hero-btn:focus-visible { outline-color: var(--on-paper); outline-offset: 3px; }
+.hero-btn:active { transform: translateY(0); }
+.hero-btn:focus-visible { outline-color: var(--marigold); outline-offset: 3px; }
 
 .hb-main { min-width: 0; }
 .hb-rule {
@@ -131,26 +166,42 @@ button {
 .hb-title {
   display: block;
   font-family: var(--font-display);
-  font-weight: 800;
-  font-size: clamp(30px, 7vw, 44px);
-  line-height: 1.1;
-  letter-spacing: -.02em;
+  font-weight: 400;
+  font-size: clamp(34px, 8.5vw, 50px);
+  line-height: 1.02;
+  letter-spacing: .01em;
   margin: var(--s-2) 0 var(--s-2);
+  /* A hard shadow rather than a blur: ink laid down twice, once off-register,
+     the same conceit as the wordmark. */
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, .22);
 }
 .hb-desc {
   display: block;
   font-size: var(--t-body);
   line-height: 1.5;
-  color: rgba(255, 255, 255, .9);
+  color: rgba(255, 255, 255, .92);
 }
+/*
+  The lit bulb. Marigold is the brightest colour in the system and this is the
+  only place it is used at full size — the one action the page wants you to
+  take. Near-black text on it clears 11:1, which is the other half of why the
+  brightest ink ended up on the smallest element.
+*/
 .hb-go {
+  font-family: var(--font-body);
   font-size: 17px;
   font-weight: 700;
   padding: 14px var(--s-6);
   border-radius: var(--radius-sm);
-  background: #FFFFFF;
-  color: var(--peacock);
+  background: var(--marigold);
+  color: #241503;
   white-space: nowrap;
+  box-shadow: 0 0 0 rgba(255, 176, 31, 0);
+  transition: box-shadow .16s var(--ease-press), background .16s var(--ease-press);
+}
+.hero-btn:hover .hb-go {
+  background: #FFC24E;
+  box-shadow: 0 0 22px rgba(255, 176, 31, .65);
 }
 
 /* --- Selection tiles ---------------------------------------------------- */
@@ -172,10 +223,12 @@ button {
   padding: var(--s-3) var(--s-4) var(--s-3) calc(var(--s-4) + 6px);
   transform: none;
 }
+/* --ink is the page ground, now deep indigo; these sit ON a card, so their
+   hover tint comes off the card. (Dormant with the themed mode, kept correct.) */
 .mode-btn:hover,
 .pack-btn:hover,
 .pack-btn:focus-visible {
-  background: var(--ink);
+  background: var(--paper-shade);
   border-color: var(--paper-rule);
   box-shadow: var(--shadow-card);
   transform: none;
