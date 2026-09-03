@@ -2885,6 +2885,18 @@ spec: { type: 'open' },
 ],
 },
 };
+function repeat(from, on) {
+const source = SCHEDULE[from];
+if (!source) return;
+on.forEach((key) => {
+SCHEDULE[key] = {
+note: 'Repeat of the ' + from + ' set.',
+prompts: source.prompts,
+};
+});
+}
+// Today runs the set that ran on the 2nd.
+repeat('2026-09-02', ['2026-09-03']);
 function scheduleFor(key) {
 return SCHEDULE[key] || null;
 }

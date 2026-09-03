@@ -87,6 +87,33 @@ export const SCHEDULE = {
   },
 };
 
+/*
+  Run a day's set again on another day.
+
+  A scheduled day is authored, not generated, so it lives for exactly twenty-four
+  hours and is then gone. Repeating one is a matter of pointing a second date at
+  the same prompts rather than copying them: two copies of ten questions would
+  drift the moment either was edited.
+
+  The earlier date keeps its own entry and MUST keep it. The archive replays
+  past days by rebuilding them from their date, so deleting 2026-09-02's
+  schedule would make the archive serve a generated set for a day that really
+  served this one — the archive would quietly lie about what was played.
+*/
+function repeat(from, on) {
+  const source = SCHEDULE[from];
+  if (!source) return;
+  on.forEach((key) => {
+    SCHEDULE[key] = {
+      note: 'Repeat of the ' + from + ' set.',
+      prompts: source.prompts,
+    };
+  });
+}
+
+// Today runs the set that ran on the 2nd.
+repeat('2026-09-02', ['2026-09-03']);
+
 export function scheduleFor(key) {
   return SCHEDULE[key] || null;
 }
