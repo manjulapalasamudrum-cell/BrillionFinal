@@ -111,8 +111,13 @@ function repeat(from, on) {
   });
 }
 
-// Today runs the set that ran on the 2nd.
-repeat('2026-09-02', ['2026-09-03']);
+/*
+  The hand-picked set runs the 2nd, 3rd and 4th, then stops. Listing the dates
+  rather than expressing a range keeps the end date explicit: on the 5th the
+  Dive goes back to a generated day on its own, with nothing to remember to
+  switch off.
+*/
+repeat('2026-09-02', ['2026-09-03', '2026-09-04']);
 
 export function scheduleFor(key) {
   return SCHEDULE[key] || null;
