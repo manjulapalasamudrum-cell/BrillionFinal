@@ -13,6 +13,7 @@
  */
 
 import { computeEraBuckets, eraLabelText, PROMPT_FLOOR_YEAR } from './eras.js';
+import { TIERS } from '../data/tiers.js';
 import {
   firstLetter, wordCount, LONG_TITLE_WORDS, violatesConstraint,
 } from './constraints.js';
@@ -89,6 +90,41 @@ const MIN_TYPE_ANSWERS = 6;
  */
 const NARROWING_SHARE = 0.75;
 
+/**
+ * How many different point values a round must be able to pay out.
+ *
+ * MIN_TYPE_ANSWERS asks whether a round has enough answers. It does not ask
+ * whether those answers can be told APART, and that is a separate failure:
+ * "Name an Amitabh Bachchan movie almost nobody would think of" offered 29
+ * valid answers of which every single one scored +50. Nobody could do better or
+ * worse than anybody else, so the round took a wild guess and reported it as a
+ * perfect answer — the scoring model, which is the whole game, silently
+ * switched off for a tenth of the day.
+ *
+ * Two is the right floor rather than "must include a common answer". A
+ * deep-cuts round excludes common answers BY DESIGN, so demanding one would
+ * delete the rarity type entirely; what it must still do is separate a +30 from
+ * a +50. Any round that can pay two different amounts is doing its job.
+ */
+const MIN_DISTINCT_SCORES = 2;
+
+/**
+ * Can this round tell its answers apart, or does everything pay the same?
+ * Checked by every type before it offers itself.
+ */
+function scoresSpread(answers, spec) {
+  const seen = new Set();
+  answers.forEach((e) => {
+    if (!violatesConstraint(spec, e)) seen.add(TIERS[e.tier].points);
+  });
+  return seen.size >= MIN_DISTINCT_SCORES;
+}
+
+/** A spec is worth asking only if enough answers satisfy it AND it can score. */
+function isAskable(answers, spec) {
+  return countSatisfying(answers, spec) >= MIN_TYPE_ANSWERS && scoresSpread(answers, spec);
+}
+
 /** What the answers in this pack ARE: films have titles, people have names. */
 function nounFor(cat) {
   return cat.noun || 'title';
@@ -164,7 +200,7 @@ export function viableTypes(cat) {
     type: 'initial',
     value: L,
     text: 'Name ' + a + ' whose ' + noun + ' begins with “' + L + '”.',
-  }));
+  })).filter((s) => scoresSpread(answers, s));
   if (letterSpecs.length) groups.push({ id: 'initial', specs: letterSpecs });
 
   // Shape of the answer itself: one word, or a long one.
@@ -183,17 +219,23 @@ export function viableTypes(cat) {
       text: 'Name ' + a + ' whose ' + noun + ' runs to four words or more.',
     });
   }
-  if (wordSpecs.length) groups.push({ id: 'words', specs: wordSpecs });
+  const spreadWordSpecs = wordSpecs.filter((s) => scoresSpread(answers, s));
+  if (spreadWordSpecs.length) groups.push({ id: 'words', specs: spreadWordSpecs });
 
-  // Rarity — implemented all along, reachable from nothing until now.
+  /*
+    Rarity. `minTier: 4` is the round that broke: it admits exactly one tier, so
+    every answer pays +50 and the round cannot score. isAskable now rejects it
+    on every pack, which leaves `minTier: 3` — two rungs, +40 and +50, which is
+    a deep-cuts round that still separates a good answer from a lucky one.
+  */
   const raritySpecs = [3, 4]
-    .filter((min) => answers.filter((e) => e.tier >= min).length >= MIN_TYPE_ANSWERS)
     .map((min) => ({
       type: 'rarity', minTier: min,
       text: min >= 4
         ? 'Name ' + a + ' almost nobody would think of.'
         : 'Deep cut only: name ' + a + ' off the beaten track.',
-    }));
+    }))
+    .filter((s) => isAskable(answers, s));
   if (raritySpecs.length) groups.push({ id: 'rarity', specs: raritySpecs });
 
   // Decade — a harder, more specific cut than the era thirds below, and it
@@ -217,7 +259,7 @@ export function viableTypes(cat) {
     value: Number(d),
     text: 'Name ' + a + ' ' + yearVerb(cat) + ' in the ' + d + 's.',
     label: (cat.yearIs === 'debut' ? 'Broke through' : 'Released') + ' in the ' + d + 's',
-  }));
+  })).filter((s) => scoresSpread(answers, s));
   if (decadeSpecs.length) groups.push({ id: 'decade', specs: decadeSpecs });
 
   /*
@@ -233,7 +275,7 @@ export function viableTypes(cat) {
   if (buckets) {
     const eraSpecs = ['early', 'mid', 'late']
       .map((value) => eraSpec(cat, buckets, value))
-      .filter((spec) => countSatisfying(answers, spec) >= MIN_TYPE_ANSWERS);
+      .filter((spec) => isAskable(answers, spec));
     if (eraSpecs.length) groups.push({ id: 'era', specs: eraSpecs });
   }
 

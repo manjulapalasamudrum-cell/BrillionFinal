@@ -3312,6 +3312,17 @@ const ROUND_FLAVORS = [
 ];
 const MIN_TYPE_ANSWERS = 6;
 const NARROWING_SHARE = 0.75;
+const MIN_DISTINCT_SCORES = 2;
+function scoresSpread(answers, spec) {
+const seen = new Set();
+answers.forEach((e) => {
+if (!violatesConstraint(spec, e)) seen.add(TIERS[e.tier].points);
+});
+return seen.size >= MIN_DISTINCT_SCORES;
+}
+function isAskable(answers, spec) {
+return countSatisfying(answers, spec) >= MIN_TYPE_ANSWERS && scoresSpread(answers, spec);
+}
 function nounFor(cat) {
 return cat.noun || 'title';
 }
@@ -3353,7 +3364,7 @@ const letterSpecs = askableKeys(letters, answers.length).map((L) => ({
 type: 'initial',
 value: L,
 text: 'Name ' + a + ' whose ' + noun + ' begins with “' + L + '”.',
-}));
+})).filter((s) => scoresSpread(answers, s));
 if (letterSpecs.length) groups.push({ id: 'initial', specs: letterSpecs });
 // Shape of the answer itself: one word, or a long one.
 const wordSpecs = [];
@@ -3371,16 +3382,16 @@ type: 'words', value: 'many',
 text: 'Name ' + a + ' whose ' + noun + ' runs to four words or more.',
 });
 }
-if (wordSpecs.length) groups.push({ id: 'words', specs: wordSpecs });
-// Rarity — implemented all along, reachable from nothing until now.
+const spreadWordSpecs = wordSpecs.filter((s) => scoresSpread(answers, s));
+if (spreadWordSpecs.length) groups.push({ id: 'words', specs: spreadWordSpecs });
 const raritySpecs = [3, 4]
-.filter((min) => answers.filter((e) => e.tier >= min).length >= MIN_TYPE_ANSWERS)
 .map((min) => ({
 type: 'rarity', minTier: min,
 text: min >= 4
 ? 'Name ' + a + ' almost nobody would think of.'
 : 'Deep cut only: name ' + a + ' off the beaten track.',
-}));
+}))
+.filter((s) => isAskable(answers, s));
 if (raritySpecs.length) groups.push({ id: 'rarity', specs: raritySpecs });
 // Decade — a harder, more specific cut than the era thirds below, and it
 // reads differently even though both are built out of the year.
@@ -3396,13 +3407,13 @@ type: 'decade',
 value: Number(d),
 text: 'Name ' + a + ' ' + yearVerb(cat) + ' in the ' + d + 's.',
 label: (cat.yearIs === 'debut' ? 'Broke through' : 'Released') + ' in the ' + d + 's',
-}));
+})).filter((s) => scoresSpread(answers, s));
 if (decadeSpecs.length) groups.push({ id: 'decade', specs: decadeSpecs });
 const buckets = computeEraBuckets(cat);
 if (buckets) {
 const eraSpecs = ['early', 'mid', 'late']
 .map((value) => eraSpec(cat, buckets, value))
-.filter((spec) => countSatisfying(answers, spec) >= MIN_TYPE_ANSWERS);
+.filter((spec) => isAskable(answers, spec));
 if (eraSpecs.length) groups.push({ id: 'era', specs: eraSpecs });
 }
 // Only the villain pack tags role, so only it can ask this.

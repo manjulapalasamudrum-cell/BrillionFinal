@@ -273,6 +273,20 @@ two rules worth keeping:
   movie whose title begins with D" (48 of 53) and "a 1990s movie released in
   the 1990s" (all 147) from ever being generated, as a rule rather than as a
   list of special cases.
+- **`MIN_DISTINCT_SCORES` (2)** — a round must be able to pay out two different
+  amounts. The other two rules ask whether a round has *enough* answers; this
+  asks whether they can be told **apart**, which is a separate failure and a
+  worse one. "Name an Amitabh Bachchan movie almost nobody would think of"
+  offered 29 valid answers of which every single one scored +50: nobody could
+  do better or worse than anyone else, so the round took a wild guess and
+  reported it as a perfect answer. The scoring model — the whole game — was
+  silently off for a tenth of that day.
+
+  Two is the floor rather than "must include a common answer", because a
+  deep-cuts round excludes common answers *by design* and that rule would have
+  deleted the `rarity` type outright. In practice it retires `minTier: 4`
+  (one tier admitted, so one price) and keeps `minTier: 3` (+40 and +50, which
+  still separates a good answer from a lucky one).
 
 `assignTypes` then spends that catalogue across a game, giving each pack the
 type used least so far, so the *kinds* of question stay spread out. `open`
