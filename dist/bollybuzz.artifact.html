@@ -3700,6 +3700,9 @@ return h(
 'Answers are matched loosely — misspell a title and it still counts. Type something the bank doesn’t know and the round stays open, so keep guessing until the clock runs out.'
 );
 }
+function signatureOf(plan) {
+return plan.rounds.map((r) => r.text).join(' ');
+}
 function RarityLadder() {
 const ladder = rarityLadder('srk');
 if (!ladder) return null;
@@ -3776,9 +3779,13 @@ h('span', { className: 'sb-rounds' }, DAILY_ROUNDS + ' rounds')
 );
 }
 function Archive({ onStartArchived }) {
-const keys = previousPuzzleKeys(ARCHIVE_DAYS);
+const todaysQuestions = signatureOf(buildDivePlan());
+const keys = previousPuzzleKeys(ARCHIVE_DAYS)
+.filter((key) => signatureOf(buildDivePlan(dateFromKey(key))) !== todaysQuestions);
 const played = allResults();
 const best = maxScore(MIXED_ROUNDS);
+// Every day in the window duplicated today — nothing left to list.
+if (!keys.length) return null;
 return h(
 'div',
 { className: 'archive' },

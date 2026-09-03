@@ -336,6 +336,13 @@ Two things it is easy to get wrong here, both handled:
   which run you are looking at. The shared grid uses the plain "Daily Dive",
   because it stamps the date on its own line and would otherwise say it twice.
 
+**A day that would serve today's questions is left off the list.** That happens
+whenever a hand-picked set is repeated across days: the row is a real past dive,
+but tapping it replays the game already at the top of the page, which reads as
+the archive being broken rather than as a repeat. The check compares the built
+questions rather than the dates, so it hides a duplicate however it arose and
+hides nothing that genuinely differs.
+
 `lib/history.js` holds a best-score-per-day in `localStorage` purely so the
 list can show which days you have done. It stores no answers and nothing
 identifying, never leaves the browser, and every access is wrapped — reading
