@@ -14,6 +14,11 @@ html, body { margin: 0; padding: 0; }
   rather than stretching over the full scroll height, which would flatten it
   back out on a long page.
 */
+/*
+  THE WATER COLUMN. Light at the surface, black at the floor, fixed to the
+  viewport so it reads as a place you are inside rather than a gradient that
+  scrolls past. This is the descent the game has always described in words.
+*/
 body {
   min-height: 100vh;
   font-family: var(--font-body);
@@ -21,9 +26,9 @@ body {
   color: var(--on-ink);
   background-color: var(--ink);
   background-image: linear-gradient(
-    170deg,
+    180deg,
     var(--ink-tint-top) 0%,
-    var(--ink) 45%,
+    var(--ink) 38%,
     var(--ink-tint-bottom) 100%
   );
   background-attachment: fixed;
@@ -32,7 +37,58 @@ body {
   padding: var(--s-5) var(--s-4) var(--s-7);
   position: relative;
   overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
+  /* Antialiasing is switched OFF on purpose. VT323 is a bitmap face; smoothing
+     it rounds the pixel edges that are the entire point of using it. */
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+}
+
+/*
+  CRT SCANLINES over everything. One repeating gradient, fixed, pointer-events
+  none so it can never intercept a tap. Kept at 3% because the face already
+  carries the retro reading — any heavier and it stops being an atmosphere and
+  starts being a texture you have to read through.
+*/
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    180deg,
+    rgba(0, 0, 0, .3) 0 1px,
+    transparent 1px 3px
+  );
+  opacity: .35;
+}
+
+/*
+  THE DEPTH SCALE, down the right edge: the years this game dives through,
+  surface to floor. Krillion marks its column in metres; this one marks it in
+  the thing actually being descended.
+
+  Drawn as body content rather than as an element so no markup carries it, and
+  hidden below 720px where the column is too narrow to give up the width.
+*/
+body::after {
+  content: "2026 · 2000 · 1975 · 1950 · 1913";
+  position: fixed;
+  top: 50%;
+  right: 10px;
+  z-index: 2;
+  pointer-events: none;
+  transform: rotate(90deg) translateX(-50%);
+  transform-origin: right center;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: var(--track);
+  color: var(--on-ink-dim);
+  opacity: .4;
+}
+@media (max-width: 720px) {
+  body::after { display: none; }
 }
 
 .wrap {
@@ -44,16 +100,23 @@ body {
 
 /* --- Header ------------------------------------------------------------ */
 
+/* Top padding clears the sound toggle, which is absolutely positioned in the
+   corner and used to sit on top of the kicker line — "dive to 1913" was being
+   cut off behind it at desktop width. */
 header.top {
   position: relative;
   text-align: center;
   margin-bottom: var(--s-4);
-  /* Extra top padding leaves the bulb rail somewhere to sit. */
-  padding: var(--s-6) var(--s-5) var(--s-4);
+  padding: var(--s-7) var(--s-5) var(--s-4);
   background: var(--paper);
+  border: var(--rule);
   border-radius: var(--radius);
   box-shadow: var(--shadow-card);
   overflow: hidden;
+}
+@media (max-width: 520px) {
+  /* The toggle drops its label here, so it needs far less room. */
+  header.top { padding-top: var(--s-6); }
 }
 
 /*
@@ -68,23 +131,9 @@ header.top {
   dead via the rule at the foot of this file; the bulbs stay lit, they just
   stop breathing.
 */
-.bulbs {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 14px;
-  background-image:
-    radial-gradient(circle at 10px 7px, var(--bulb) 0 2.5px, transparent 3px),
-    radial-gradient(circle at 10px 7px, var(--bulb-halo) 0 5px, transparent 8px);
-  background-size: 20px 14px, 20px 14px;
-  background-repeat: repeat-x;
-  animation: flicker 4s ease-in-out infinite;
-}
-@keyframes flicker {
-  0%, 100% { opacity: 1; }
-  50% { opacity: .82; }
-}
+/* The marquee belonged to the hoarding. There is no hoarding now — we are
+   underwater. The element stays in Chrome.js and is simply not drawn. */
+.bulbs { display: none; }
 
 .sound-toggle {
   position: absolute;
@@ -93,17 +142,18 @@ header.top {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 12px;
-  background: var(--ink-deep);
-  border: none;
-  border-radius: var(--radius-sm);
-  color: var(--on-paper);
+  padding: 4px 10px;
+  background: var(--ink-sunk);
+  border: var(--rule);
+  border-radius: var(--radius);
+  color: var(--on-paper-dim);
   font-family: var(--font-body);
-  font-size: var(--t-small);
-  font-weight: 600;
-  transition: background .14s var(--ease-press);
+  font-size: var(--t-micro);
+  text-transform: uppercase;
+  letter-spacing: var(--track);
+  transition: color .14s var(--ease-press), border-color .14s var(--ease-press);
 }
-.sound-toggle:hover { background: var(--paper-rule); }
+.sound-toggle:hover { color: var(--peacock); border-color: var(--peacock); }
 .sound-toggle svg {
   width: 15px;
   height: 15px;
@@ -122,6 +172,8 @@ header.top {
   font-size: var(--t-small);
   color: var(--on-paper-dim);
   display: block;
+  text-transform: uppercase;
+  letter-spacing: var(--track);
 }
 
 /*
@@ -134,15 +186,25 @@ header.top {
   game. Nothing else on the page uses the device. The ghost passes are
   aria-hidden in Chrome.js, so a screen reader hears the title once.
 */
+/*
+  THE WORDMARK as a mistracked signal: a cyan pass and a hot-pink pass either
+  side of the white one, the chromatic split of a CRT that has lost its
+  convergence. The device is unchanged from the previous design — the same
+  three passes, the same two ghost spans in Chrome.js — but it has stopped
+  meaning "a screen print that missed its marks" and started meaning "a monitor
+  slightly out of alignment", which is what this interface is now pretending to
+  be. Same markup, different story.
+*/
 .wordmark {
   position: relative;
   display: block;
   font-family: var(--font-display);
-  font-weight: 400;          /* Rozha One ships one weight and it is heavy */
+  font-weight: 400;
   font-size: var(--t-mega);
-  line-height: 1.05;
-  letter-spacing: .005em;
-  margin: var(--s-2) 0 var(--s-3);
+  line-height: 1;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin: var(--s-2) 0 var(--s-2);
   color: var(--on-paper);
 }
 .wm-ghost {
@@ -151,8 +213,8 @@ header.top {
   display: block;
   z-index: 0;
 }
-.wm-ghost--peacock { color: var(--peacock); transform: translate(-2px, 1px); }
-.wm-ghost--magenta { color: var(--rani); transform: translate(2px, -1px); }
+.wm-ghost--peacock { color: var(--peacock); transform: translate(-3px, 0); }
+.wm-ghost--magenta { color: var(--rani); transform: translate(3px, 0); }
 .wm-main { position: relative; z-index: 1; }
 
 .tagline {

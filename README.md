@@ -439,11 +439,38 @@ never break the game.
 
 ## The design
 
-**Current style: "Night at the Picture House."** The page is a cinema frontage
-after dark: a deep indigo ground, cards that read as *lit paper* rather than
-merely white boxes, a rail of marquee bulbs across the masthead, and the
-saturated inks of a hand-painted Bombay hoarding — marigold, rani pink,
-peacock, violet.
+**Current style: "The Descent."** A pixel-terminal interface in the register of
+[Krillion.io](https://krillion.io), the sibling daily dive: VT323 throughout,
+hard corners with no radius anywhere, translucent navy panels ruled with a
+single hairline, wide-tracked uppercase labels, and a CRT scanline over
+everything.
+
+**What keeps it this game and not a copy.** Krillion descends through water and
+marks the depth in metres. Bollybuzz already descends — "Daily Dive", "how deep
+did you dive", a gauge that runs to 1913 — but it descends through *film
+history*. So the ground is graded from a lit surface to a dark floor and the
+column is marked in **years**, not metres. The metaphor was always in the copy;
+it was being drawn as a stack of white cards.
+
+Three devices carried over from the previous design without touching the
+markup, which is worth knowing because it is why the switch was cheap:
+
+- **The off-register wordmark.** Same three passes, same two ghost spans in
+  `Chrome.js`. It stopped meaning "a screen print that missed its marks" and
+  started meaning "a monitor out of convergence" — same markup, different story.
+- **The film-leader strip** on the game card.
+- **The depth gauge**, which was already a year scale and now matches the ground
+  it sits on.
+
+`--ease-press` is `steps(4, end)` rather than a cubic bézier: a pixel interface
+should not move smoothly.
+
+### The style before this one: "Night at the Picture House"
+
+A cinema frontage after dark — deep indigo ground, cards as *lit paper*, a rail
+of marquee bulbs across the masthead, and the inks of a hand-painted Bombay
+hoarding. Reverting is mostly `tokens.css`, `base.css` and `components.css`; the
+`.bulbs` element is still in `Chrome.js`, hidden by one line in `base.css`.
 
 It replaced **"Social"**, a grey/white/one-blue card system whose own note
 described it as "the register Facebook made familiar". That is a perfectly good

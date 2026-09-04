@@ -38,14 +38,19 @@
   line-height: 1.65;
   max-width: 54ch;
 }
-.howto b { font-weight: 600; }
-/* Highlighted the way a marker pen picks a line out of a printed bill — so a
-   soft-edged wash of marigold rather than a neat rectangle of tint. */
+.howto b { color: var(--on-paper); }
+/*
+  Highlighted the way a terminal shows a selection: solid cyan, knocked out to
+  the ground colour. It was a marigold wash with no colour of its own, which
+  worked while the text under it was near-black on a white card and became
+  near-white on orange the moment the ground went dark.
+*/
 .howto em {
   font-style: normal;
-  padding: 1px 4px;
-  background: linear-gradient(100deg, rgba(255, 176, 31, .42), rgba(255, 176, 31, .68));
-  border-radius: 3px;
+  padding: 0 4px;
+  background: var(--peacock);
+  color: var(--ink);
+  border-radius: var(--radius);
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
