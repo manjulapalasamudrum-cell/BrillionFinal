@@ -92,7 +92,7 @@
   /* A pale wash of the action colour. Retinted when peacock moved from blue to
      teal — a blue chip beside a teal button read as a second, unrelated
      accent. */
-  background: rgba(127, 166, 201, .14);
+  background: rgba(61, 110, 150, .1);
   color: var(--peacock-deep);
   font-size: var(--t-small);
   font-weight: 700;
@@ -106,7 +106,7 @@
   margin-top: var(--s-4);
   padding: var(--s-3) var(--s-4);
   border-left: 3px solid var(--vermilion);
-  background: rgba(196, 87, 107, .14);
+  background: rgba(184, 61, 92, .09);
   /* The bright pink, not the deep one: this sits on a dark panel now, so the
      deep shade that read well on white is barely legible. */
   color: var(--magenta);
@@ -139,7 +139,7 @@
   letter-spacing: .08em;
   text-transform: uppercase;
   padding: 5px var(--s-3);
-  color: var(--ink);
+  color: #FFFFFF;
 }
 .fb-points {
   font-family: var(--font-display);
@@ -159,7 +159,7 @@
   margin-top: var(--s-3);
   font-size: var(--t-small);
   border-left: 3px solid var(--marigold);
-  background: rgba(201, 162, 39, .14);
+  background: rgba(138, 104, 7, .1);
   padding: var(--s-2) var(--s-3);
   color: var(--marigold);
   line-height: 1.5;

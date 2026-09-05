@@ -40,16 +40,16 @@
 }
 .howto b { color: var(--on-paper); }
 /*
-  Highlighted the way a terminal shows a selection: solid cyan, knocked out to
-  the ground colour. It was a marigold wash with no colour of its own, which
-  worked while the text under it was near-black on a white card and became
-  near-white on orange the moment the ground went dark.
+  Highlighted the way a selection is: a solid fill in the accent colour with the
+  text knocked out white. It began as a marigold wash with no colour of its own,
+  which quietly inverted its own legibility every time the ground changed — the
+  lesson being that a highlight has to set BOTH halves of the pair.
 */
 .howto em {
   font-style: normal;
   padding: 0 4px;
   background: var(--peacock);
-  color: var(--ink);
+  color: #FFFFFF;
   border-radius: var(--radius);
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;

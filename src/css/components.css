@@ -1,18 +1,11 @@
 /* Reusable pieces: card surfaces, buttons, tiles, labels, the input. */
 
 /* --- Cards -------------------------------------------------------------
-   Every card is lit paper on a dark indigo ground — the bill pasted on the
-   frontage, read by the light of the marquee. The dark surface that used to
-   distinguish the game card is not needed now that the GROUND is dark; the
-   game card is marked by the strip of film leader across its top edge instead.
+   A white card on a pale grey ground, held by a hairline rule and a very light
+   shadow. The game card is distinguished by the strip of colour across its top
+   edge rather than by a surface of its own.
 -------------------------------------------------------------------------- */
 
-/*
-  A panel, not a card. Translucent so the water grade shows through — a panel
-  further down the page sits in visibly darker water than the masthead — and
-  ruled with a hairline rather than floated on a shadow, because a soft shadow
-  under a hard corner is the tell that gives away a pixel interface.
-*/
 .card {
   position: relative;
   background: var(--paper);
@@ -21,8 +14,6 @@
   border-radius: var(--radius);
   padding: var(--s-5);
   box-shadow: var(--shadow-card);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
 }
 .card::before { display: none; }
 .card > * { position: relative; }
@@ -73,14 +64,9 @@ button {
 }
 
 /*
-  An outlined instrument key, not a filled pill: a hairline box, uppercase,
-  widely tracked, that fills with its own colour on hover. The fill is the
-  press feedback, so there is no shadow to lift and nothing to round.
-*/
-/*
   A filled key for the primary action, an outlined one for secondary. Sentence
-  case, not uppercase: shouted labels were part of the terminal costume, and a
-  quiet interface should say "Dive", not "D I V E".
+  case, not uppercase: shouted labels were part of an earlier terminal costume,
+  and a quiet interface should say "Dive", not "D I V E".
 */
 .btn-primary,
 .btn-gold {
@@ -91,7 +77,7 @@ button {
   border: 1px solid var(--peacock);
   border-radius: var(--radius-sm);
   background: var(--peacock);
-  color: var(--ink);
+  color: #FFFFFF;
   white-space: nowrap;
   transition: background .14s var(--ease-press), border-color .14s var(--ease-press);
 }
@@ -135,27 +121,11 @@ button {
 .card--screen .linklike:hover:not(:disabled) { color: var(--on-paper); }
 
 /* --- The main game ------------------------------------------------------
-   The hoarding for tonight's attraction: a rani-to-violet gradient, the two
-   hottest inks on the board, under a fine diagonal ray pattern like light
-   falling across a painted billboard.
-
-   The gradient runs hot to DEEP rather than hot to light, so white text clears
-   4.5:1 at every point along it (4.73 at the rani end, 8.3 at the violet).
-   That constraint decided the direction: a marigold panel would have been
-   louder and would have carried no legible white text anywhere on it — which
-   is why marigold ended up on the small Play stub, in near-black, instead.
+   The panel earns its prominence from size, position, a tinted fill and a
+   single accent rule down its left edge — not from a gradient, a glow or a
+   pulse, each of which a previous direction tried and each of which made it
+   the loudest thing on a page that should be calm.
 -------------------------------------------------------------------------- */
-/*
-  The hatch you go down through. A double-ruled cyan box on the darkest fill on
-  the page, with a slow pulse on the outer rule — the one thing on the page that
-  moves, so the eye goes to it without any colour being spent.
-*/
-/*
-  The main game panel. It earns its prominence from size, position and a single
-  hairline in the accent colour — not from fill, glow or a pulse. The pulsing
-  double rule that used to sit here was the loudest thing on a page whose whole
-  brief is now to be quiet.
-*/
 .hero-btn {
   position: relative;
   display: grid;
@@ -202,12 +172,6 @@ button {
   line-height: 1.5;
   color: var(--on-paper-dim);
 }
-/*
-  The lit bulb. Marigold is the brightest colour in the system and this is the
-  only place it is used at full size — the one action the page wants you to
-  take. Near-black text on it clears 11:1, which is the other half of why the
-  brightest ink ended up on the smallest element.
-*/
 /* The one filled control on the start screen, so it is unmistakably the thing
    to press. The ▼ arrows that used to bracket it came from the descent
    costume and are gone with it. */
@@ -218,7 +182,7 @@ button {
   padding: 11px var(--s-6);
   border-radius: var(--radius-sm);
   background: var(--peacock);
-  color: var(--ink);
+  color: #FFFFFF;
   white-space: nowrap;
   transition: background .14s var(--ease-press);
 }

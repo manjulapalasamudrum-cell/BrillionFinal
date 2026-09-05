@@ -212,7 +212,7 @@ $standalone = @"
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Bollybuzz.io $EMDASH 10 Bollywood Trivia Games Where Rare Answers Win</title>
 <meta name="description" content="Name one answer per prompt. The rarer your answer, the deeper you dive into 113 years of Hindi cinema." />
-<meta name="theme-color" content="#12151B">
+<meta name="theme-color" content="#EEF0F4">
 $fonts
 <style>
 $css
