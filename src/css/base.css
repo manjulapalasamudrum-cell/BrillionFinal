@@ -37,45 +37,34 @@ body {
   padding: var(--s-5) var(--s-4) var(--s-7);
   position: relative;
   overflow-x: hidden;
-  /* Antialiasing is switched OFF on purpose. VT323 is a bitmap face; smoothing
-     it rounds the pixel edges that are the entire point of using it. */
-  -webkit-font-smoothing: none;
-  font-smooth: never;
+  /* Antialiasing back on. It was switched off for the bitmap face, which needed
+     hard pixel edges; a geometric sans rendered without smoothing just looks
+     broken. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /*
-  CRT SCANLINES over everything. One repeating gradient, fixed, pointer-events
-  none so it can never intercept a tap. Kept at 3% because the face already
-  carries the retro reading — any heavier and it stops being an atmosphere and
-  starts being a texture you have to read through.
+  The CRT scanline overlay that used to sit here is gone. It was a costume: it
+  read as texture you had to look through rather than as atmosphere, and it
+  fought every piece of small type on the page.
 */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 9;
-  pointer-events: none;
-  background-image: repeating-linear-gradient(
-    180deg,
-    rgba(0, 0, 0, .3) 0 1px,
-    transparent 1px 3px
-  );
-  opacity: .35;
-}
 
 /*
   THE DEPTH SCALE, down the right edge: the years this game dives through,
-  surface to floor. Krillion marks its column in metres; this one marks it in
-  the thing actually being descended.
+  surface to floor. It is the one flourish kept from the previous direction,
+  because it is the only one that was carrying information rather than mood —
+  the game really does descend from 2026 to 1913, and the result screen plots
+  your score on exactly this line.
 
-  Drawn as body content rather than as an element so no markup carries it, and
-  hidden below 720px where the column is too narrow to give up the width.
+  Drawn as body content so no markup carries it, and dropped below 720px where
+  the page cannot spare the width.
 */
 body::after {
   content: "2026 · 2000 · 1975 · 1950 · 1913";
   position: fixed;
   top: 50%;
-  right: 10px;
+  right: 8px;
   z-index: 2;
   pointer-events: none;
   transform: rotate(90deg) translateX(-50%);
@@ -85,7 +74,7 @@ body::after {
   font-size: var(--t-micro);
   letter-spacing: var(--track);
   color: var(--on-ink-dim);
-  opacity: .4;
+  opacity: .28;
 }
 @media (max-width: 720px) {
   body::after { display: none; }
@@ -187,35 +176,27 @@ header.top {
   aria-hidden in Chrome.js, so a screen reader hears the title once.
 */
 /*
-  THE WORDMARK as a mistracked signal: a cyan pass and a hot-pink pass either
-  side of the white one, the chromatic split of a CRT that has lost its
-  convergence. The device is unchanged from the previous design — the same
-  three passes, the same two ghost spans in Chrome.js — but it has stopped
-  meaning "a screen print that missed its marks" and started meaning "a monitor
-  slightly out of alignment", which is what this interface is now pretending to
-  be. Same markup, different story.
+  THE WORDMARK, set plainly. The three-pass off-register print is retired: it
+  was the loudest thing on the page and this direction has no room for a
+  flourish that says nothing.
+
+  The ghost spans stay in Chrome.js and are simply not drawn, so restoring the
+  effect is one rule here and no markup change — the same way the marquee bulbs
+  are still waiting.
 */
 .wordmark {
   position: relative;
   display: block;
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: 700;
   font-size: var(--t-mega);
-  line-height: 1;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  margin: var(--s-2) 0 var(--s-2);
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  margin: var(--s-2) 0 var(--s-3);
   color: var(--on-paper);
 }
-.wm-ghost {
-  position: absolute;
-  inset: 0;
-  display: block;
-  z-index: 0;
-}
-.wm-ghost--peacock { color: var(--peacock); transform: translate(-3px, 0); }
-.wm-ghost--magenta { color: var(--rani); transform: translate(3px, 0); }
-.wm-main { position: relative; z-index: 1; }
+.wm-ghost { display: none; }
+.wm-main { position: static; }
 
 .tagline {
   color: var(--on-paper-dim);

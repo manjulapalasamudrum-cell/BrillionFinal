@@ -86,6 +86,11 @@
   border-bottom: var(--rule-thin);
 }
 .ladder-row:last-child { border-bottom: none; }
+/* The title column has to be allowed to shrink or its ellipsis never fires: a
+   grid item defaults to min-width:auto, so a long title pushes into the points
+   instead of truncating. "Dilwale Dulhania Le Jayenge" ran over the +10 at
+   360px. */
+.ladder-row > span { min-width: 0; }
 
 /*
   The ladder is the page's thesis: five real answers from one pack, the film
@@ -115,6 +120,12 @@
 @keyframes bar-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
 .lr-name {
+  /* `display: block` is load-bearing, not cosmetic. This is a <span>, so it was
+     inline — and overflow/text-overflow do nothing at all on an inline box, so
+     the ellipsis below had never once fired. A long title simply ran out of its
+     column and over the points: "Dilwale Dulhania Le Jayenge" overlapped its
+     +10 by 11px at 360px wide. */
+  display: block;
   font-weight: 600;
   font-size: 14.5px;
   line-height: 1.25;

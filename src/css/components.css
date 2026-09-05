@@ -77,38 +77,42 @@ button {
   widely tracked, that fills with its own colour on hover. The fill is the
   press feedback, so there is no shadow to lift and nothing to round.
 */
+/*
+  A filled key for the primary action, an outlined one for secondary. Sentence
+  case, not uppercase: shouted labels were part of the terminal costume, and a
+  quiet interface should say "Dive", not "D I V E".
+*/
 .btn-primary,
 .btn-gold {
   font-family: var(--font-body);
   font-size: var(--t-body);
-  text-transform: uppercase;
-  letter-spacing: var(--track);
-  padding: 8px var(--s-5) 6px;
+  font-weight: 600;
+  padding: 10px var(--s-5);
   border: 1px solid var(--peacock);
-  border-radius: var(--radius);
-  background: transparent;
-  color: var(--peacock);
+  border-radius: var(--radius-sm);
+  background: var(--peacock);
+  color: var(--ink);
   white-space: nowrap;
-  transition: background .1s var(--ease-press), color .1s var(--ease-press);
+  transition: background .14s var(--ease-press), border-color .14s var(--ease-press);
 }
 .btn-primary:hover:not(:disabled),
-.btn-gold:hover:not(:disabled),
-.btn-primary:active:not(:disabled),
-.btn-gold:active:not(:disabled) { background: var(--peacock); color: var(--ink); }
+.btn-gold:hover:not(:disabled) {
+  background: var(--peacock-deep);
+  border-color: var(--peacock-deep);
+}
 .btn-primary:disabled,
 .btn-gold:disabled { opacity: .35; cursor: not-allowed; }
 
 .btn-ghost {
   background: transparent;
   color: var(--on-paper-dim);
-  padding: 8px var(--s-5) 6px;
+  padding: 10px var(--s-5);
   border: var(--rule);
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   font-family: var(--font-body);
   font-size: var(--t-body);
-  text-transform: uppercase;
-  letter-spacing: var(--track);
-  transition: color .1s var(--ease-press), border-color .1s var(--ease-press);
+  font-weight: 500;
+  transition: color .14s var(--ease-press), border-color .14s var(--ease-press);
 }
 .btn-ghost:hover { color: var(--on-paper); border-color: var(--on-paper-dim); }
 
@@ -146,6 +150,12 @@ button {
   the page, with a slow pulse on the outer rule — the one thing on the page that
   moves, so the eye goes to it without any colour being spent.
 */
+/*
+  The main game panel. It earns its prominence from size, position and a single
+  hairline in the accent colour — not from fill, glow or a pulse. The pulsing
+  double rule that used to sit here was the loudest thing on a page whose whole
+  brief is now to be quiet.
+*/
 .hero-btn {
   position: relative;
   display: grid;
@@ -157,25 +167,20 @@ button {
   padding: var(--s-5);
   margin-bottom: var(--s-5);
   background: var(--ink-sunk);
-  border: 1px solid var(--peacock);
-  outline: 1px solid rgba(79, 210, 232, .28);
-  outline-offset: 3px;
+  border: 1px solid var(--paper-rule);
+  border-left: 2px solid var(--peacock);
   border-radius: var(--radius);
   color: var(--on-paper);
-  transition: background .1s var(--ease-press);
-  animation: hatch-pulse 2.6s ease-in-out infinite;
-}
-@keyframes hatch-pulse {
-  0%, 100% { outline-color: rgba(79, 210, 232, .28); }
-  50% { outline-color: rgba(79, 210, 232, .7); }
+  transition: background .14s var(--ease-press), border-color .14s var(--ease-press);
 }
 .hero-btn::before, .hero-btn::after { display: none; }
-.hero-btn:hover { background: rgba(79, 210, 232, .09); }
+.hero-btn:hover { background: var(--paper-shade); border-color: var(--peacock); }
 .hero-btn:focus-visible { outline-color: var(--peacock); outline-offset: 3px; }
 
 .hb-main { min-width: 0; }
 .hb-rule {
   display: block;
+  font-family: var(--font-mono);
   font-size: var(--t-micro);
   letter-spacing: var(--track);
   text-transform: uppercase;
@@ -184,18 +189,17 @@ button {
 .hb-title {
   display: block;
   font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(36px, 9vw, 54px);
-  line-height: 1;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  margin: var(--s-1) 0 var(--s-2);
+  font-weight: 700;
+  font-size: clamp(30px, 7vw, 42px);
+  line-height: 1.05;
+  letter-spacing: -.025em;
+  margin: var(--s-2) 0 var(--s-2);
   color: var(--on-paper);
 }
 .hb-desc {
   display: block;
   font-size: var(--t-small);
-  line-height: 1.45;
+  line-height: 1.5;
   color: var(--on-paper-dim);
 }
 /*
@@ -204,27 +208,21 @@ button {
   take. Near-black text on it clears 11:1, which is the other half of why the
   brightest ink ended up on the smallest element.
 */
-/*
-  The descent marker. Krillion's own key reads "▼ BEGIN DESCENT ▼"; the arrows
-  are added here in CSS rather than in StartScreen.js so the markup keeps saying
-  plain "Play" — a screen reader announces a verb, not punctuation.
-*/
+/* The one filled control on the start screen, so it is unmistakably the thing
+   to press. The ▼ arrows that used to bracket it came from the descent
+   costume and are gone with it. */
 .hb-go {
   font-family: var(--font-body);
   font-size: var(--t-body);
-  text-transform: uppercase;
-  letter-spacing: var(--track);
-  padding: 10px var(--s-5) 8px;
-  border: 1px solid var(--peacock);
-  border-radius: var(--radius);
-  background: transparent;
-  color: var(--peacock);
+  font-weight: 600;
+  padding: 11px var(--s-6);
+  border-radius: var(--radius-sm);
+  background: var(--peacock);
+  color: var(--ink);
   white-space: nowrap;
-  transition: background .1s var(--ease-press), color .1s var(--ease-press);
+  transition: background .14s var(--ease-press);
 }
-.hb-go::before { content: "\25BC  "; }
-.hb-go::after  { content: "  \25BC"; }
-.hero-btn:hover .hb-go { background: var(--peacock); color: var(--ink); }
+.hero-btn:hover .hb-go { background: var(--peacock-deep); }
 
 /* --- Selection tiles ---------------------------------------------------- */
 
@@ -317,8 +315,9 @@ button {
 
 /*
   The answer field, set as a terminal line: square, ruled, with a caret-style
-  prompt marker in front of it. The 20px radius it used to carry was the last
-  rounded corner on the page.
+  The answer field. Plain and quiet: the accent appears only on the focus rule,
+  because the field is where the player's own words go and colouring their
+  typing was part of the terminal costume.
 
   font-size stays at 16px or larger. Anything under that makes iOS Safari zoom
   the whole page on focus, and the player would lose the clock off the top of
@@ -327,22 +326,16 @@ button {
 input#answerInput {
   flex: 1;
   min-width: 0;
-  padding: 10px var(--s-3);
+  padding: 10px var(--s-4);
   border: 1px solid var(--paper-rule);
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   background: var(--ink-sunk);
-  color: var(--peacock);
-  font-size: 20px;
+  color: var(--on-paper);
+  font-size: 16px;
   font-family: var(--font-body);
-  letter-spacing: .04em;
   outline: none;
   transition: border-color .14s var(--ease-press);
 }
-input#answerInput::placeholder {
-  color: var(--on-paper-dim);
-  text-transform: uppercase;
-  letter-spacing: var(--track);
-  font-size: var(--t-micro);
-}
+input#answerInput::placeholder { color: var(--on-paper-dim); }
 input#answerInput:focus { border-color: var(--peacock); }
 input#answerInput:disabled { opacity: .6; }

@@ -1,121 +1,136 @@
 /*
-  Design tokens — "The Descent".
+  Design tokens — "The Archive".
   --------------------------------------------------------------------------
-  A pixel-terminal interface in the register of Krillion.io, the sibling daily
-  dive: VT323 throughout, hard corners with no radius anywhere, translucent
-  navy panels ruled with a single hairline, wide-tracked uppercase labels, and
-  a CRT scanline over the whole page.
+  A quiet, cool-toned instrument: near-monochrome slate, one muted steel accent,
+  Space Grotesk for everything a person reads and JetBrains Mono for everything
+  a machine counts.
 
-  WHAT MAKES IT BOLLYBUZZ AND NOT A COPY. Krillion descends through water and
-  marks the depth in metres. This game already descends — "Daily Dive", "how
-  deep did you dive", the gauge that runs to 1913 — but it descends through
-  FILM HISTORY, so the ground is graded from a lit surface down to a dark floor
-  and the depth is marked in YEARS. The metaphor was always here; it was being
-  drawn as a stack of white cards.
+  THE ONE IDEA HOLDING IT TOGETHER. The chrome is almost colourless on purpose,
+  because the rarity ramp is the only thing on the page where colour carries
+  meaning. A loud interface competes with it; a quiet one hands it the whole
+  stage. Every earlier direction here fought that — a hot pink hoarding, then a
+  cyan arcade terminal — and in both the ramp had to shout to be heard over the
+  furniture. Here it can murmur.
 
-  Read the two surface tokens as surfaces rather than as literal colours, which
-  is why they keep their old names:
-    ink   = the water column the panels sit in
-    paper = a panel, now translucent navy rather than white
+  It replaced "The Descent", a VT323 pixel terminal with CRT scanlines and a hot
+  cyan. That was a faithful match for a sibling site and far too loud to sit
+  with for long: a bitmap face at body size is tiring to read, and scanlines
+  over every screen are a costume rather than a design.
 
-  THE RARITY RAMP IS INFORMATION. Those five colours are the scoring model made
-  visible. The chrome is deliberately a narrow band of navies and one cyan so
-  the ramp stays the only place on the page where colour means a score.
+  Read the two surface tokens as surfaces, not literal colours:
+    ink   = the ground the panels sit on
+    paper = a panel
 */
 
 :root {
-  /* --- The water column ------------------------------------------------
-     Graded top to bottom: the surface catches light, the floor does not.
-     Painted in base.css as a fixed gradient so it does not stretch on a long
-     page. */
-  --ink: #0B1526;              /* the ground — deep water */
-  --ink-tint-top: #1D4266;     /* the surface, lit */
-  --ink-tint-bottom: #04070F;  /* the floor */
-  --ink-raised: #101D33;       /* a panel, opaque */
-  --ink-sunk: #0A1425;         /* inset wells: inputs, quiet blocks */
-  --ink-deep: #24354F;         /* dividers and pressed states */
+  /* --- Ground and surfaces --------------------------------------------
+     Cool near-black, desaturated rather than navy: a slate that reads as
+     neutral next to the ramp's colour instead of tinting it. The gradient is
+     barely there — two or three steps of lift at the top — because a sober
+     surface should look lit, not painted. */
+  --ink: #12151B;              /* the ground */
+  --ink-tint-top: #1B2029;     /* lit, just */
+  --ink-tint-bottom: #0C0E13;  /* and its shaded foot */
+  --ink-raised: #191D25;       /* a panel */
+  --ink-sunk: #0F1218;         /* inset wells: inputs, quiet blocks */
+  --ink-deep: #262C37;         /* dividers and pressed states */
 
-  /* A panel is translucent so the water grade shows through it — a lower panel
-     sits in visibly darker water than the masthead. That is the whole reason
-     the cards are no longer white. */
-  --paper: rgba(16, 29, 51, .82);
-  --paper-shade: rgba(36, 53, 79, .55);
-  --paper-rule: #2C405E;
+  --paper: #191D25;
+  --paper-shade: #21262F;
+  --paper-rule: #2C3340;
 
-  /* --- Ink -------------------------------------------------------------
-     Two accents and no more. Cyan is every action; the hot pink appears only
-     on the wordmark's off-register pass and at the top of the rarity ramp. */
-  --peacock: #4FD2E8;          /* the action colour — instrument cyan */
-  --peacock-deep: #7FE4F5;
-  --marigold: #FFC24E;         /* a warning light, used sparingly */
-  --marigold-deep: #E0A32E;
-  --rani: #FF4D7D;
-  --rani-deep: #D82E5C;
-  --violet: #9A7BFF;
-  --magenta: #FF4D7D;
-  --magenta-deep: #D82E5C;
-  --vermilion: #FF5A5A;        /* the clock running out */
+  /* --- Accent ----------------------------------------------------------
+     ONE, and it is muted steel rather than a saturated blue. It carries every
+     action, every focus ring and every link, which is exactly why it must not
+     compete: an accent used everywhere has to be quiet or the page has no
+     hierarchy at all. */
+  --peacock: #7FA6C9;
+  --peacock-deep: #9DBEDC;
+  /* Kept because components reference them, retuned to the same sober register
+     so nothing on the page is louder than the rarity ramp. */
+  --marigold: #C9A227;
+  --marigold-deep: #A8871F;
+  --rani: #C4576B;
+  --rani-deep: #A6465A;
+  --violet: #8B7BB8;
+  /* The lighter rose, because this one is used as TEXT on a dark panel (the
+     retry note) where the mid-tone reached only 3.96:1. The deeper shade is
+     kept below for rules and fills, which have no such requirement. */
+  --magenta: #DE94A1;
+  --magenta-deep: #C4576B;
+  --vermilion: #C4576B;        /* the clock running out — a fill, not text */
 
   /* --- Text ------------------------------------------------------------ */
-  --on-paper: #E8F1FF;         /* primary text on a panel */
-  --on-paper-dim: #7D93B8;     /* secondary text */
-  --on-ink: #E8F1FF;
-  --on-ink-dim: #7D93B8;
+  --on-paper: #E6E9EF;
+  --on-paper-dim: #8B93A1;
+  --on-ink: #E6E9EF;
+  --on-ink-dim: #8B93A1;
 
-  /* The marquee is gone with the hoarding; these resolve to nothing so any
-     stray reference stays harmless. */
+  /* Nothing is lit any more; these resolve to nothing so stray references stay
+     harmless. */
   --bulb: transparent;
   --bulb-halo: transparent;
 
   /*
-    Rarity ramp — the scoring model, made visible. Drab to loud: the answer
-    everyone gives is a flat slate, the one nobody remembers is the hottest
-    colour on the page. Order matches TIERS in js/data/tiers.js.
+    Rarity ramp — the scoring model, made visible, and the only place on the
+    page where colour carries meaning.
 
-    Retuned to sit on deep water. Every rung had to stay distinct from the
-    instrument cyan that now carries every control, which is why the second
-    rung moved off cyan and onto a colder blue.
+    THE LADDER IS BUILT FROM CHROMA, NOT LIGHTNESS. All five sit at roughly the
+    same brightness and ascend in saturation instead: near-grey slate for the
+    answer everyone gives, through blue and violet, to gold and rose for the one
+    nobody remembers. That is what "how much colour is spent on it" means, and
+    it survives being desaturated for a sober page in a way a dark-to-light ramp
+    would not.
+
+    Holding them at one brightness is also a hard accessibility requirement, not
+    a stylistic choice. GameScreen paints the tier swatch as the BACKGROUND of a
+    text chip, so every rung has to carry dark text at 4.5:1 — the mid-tone
+    versions of these managed only 3.8, which is a real failure on a label a
+    player reads after every single answer.
   */
-  --tier-common: #6B7C99;      /* slate — no colour spent on it */
-  --tier-known: #4A8FE8;
-  --tier-solid: #9A7BFF;
-  --tier-deepcut: #FFC24E;
-  --tier-legendary: #FF4D7D;
-  --tier-miss: #3A4A63;
+  --tier-common: #9AA1AD;      /* near-grey — no colour spent on it */
+  --tier-known: #8FB4D8;
+  --tier-solid: #B0A2D8;
+  --tier-deepcut: #E0C567;
+  --tier-legendary: #E294A2;
+  --tier-miss: #4A5361;
 
   /* --- Type ------------------------------------------------------------
-     VT323 is a bitmap terminal face: one weight, fixed pitch, and it renders
-     with visible pixel edges at any size. It carries the whole interface, which
-     is what makes this read as an instrument panel rather than as a document.
+     Space Grotesk is a geometric sans with just enough irregularity to have a
+     voice — the tightened terminals and the odd wide bowl keep it from reading
+     as a system font — while staying completely calm at body size. It sets
+     everything a person reads.
 
-     It is small on the body, so every size below is raised from the previous
-     system to compensate — VT323 at 15px is unreadable where Hind at 15px is
-     comfortable. */
-  --font-display: 'VT323', ui-monospace, 'Courier New', monospace;
-  --font-body: 'VT323', ui-monospace, 'Courier New', monospace;
-  --font-mono: 'VT323', ui-monospace, 'Courier New', monospace;
+     JetBrains Mono takes the scores, the clock and the labels: things that are
+     counted or compared, where a fixed pitch means figures line up.
 
-  --t-mega: clamp(46px, 12vw, 78px);
-  --t-prompt: clamp(28px, 6vw, 40px);
-  --t-colossal: clamp(56px, 15vw, 92px);
-  --t-body: 20px;
-  --t-small: 17px;
-  --t-micro: 15px;
+     This replaced VT323, a bitmap face used for the entire interface. It had
+     real character and was exhausting at 20px for anything longer than a
+     heading. */
+  --font-display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
 
-  /* Wide tracking on every uppercase label. A bitmap face at small sizes reads
-     as a solid block without it. */
-  --track: .22em;
+  --t-mega: clamp(32px, 7vw, 46px);
+  --t-prompt: clamp(24px, 5vw, 34px);
+  --t-colossal: clamp(46px, 12vw, 74px);
+  --t-body: 16px;
+  --t-small: 14px;
+  --t-micro: 12px;
+
+  /* Enough tracking to open up a small uppercase label, far less than the
+     pixel face needed. */
+  --track: .1em;
 
   /* --- Shape -----------------------------------------------------------
-     No radius anywhere. A pixel interface has square corners; a rounded one
-     would fight the face. Panels are ruled with a hairline instead of shadowed,
-     because a soft shadow under a hard corner is the tell. */
-  --radius: 0px;
-  --radius-sm: 0px;
-  --shadow-card: 0 0 0 1px rgba(79, 210, 232, .16), 0 8px 26px rgba(0, 0, 0, .45);
-  --shadow-raised: 0 0 0 1px rgba(79, 210, 232, .3), 0 12px 34px rgba(0, 0, 0, .55);
+     Small radii are back. Hard corners belonged to the pixel face; with a
+     geometric sans they read as unfinished rather than deliberate. */
+  --radius: 8px;
+  --radius-sm: 6px;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, .4);
+  --shadow-raised: 0 8px 24px rgba(0, 0, 0, .5);
   --rule: 1px solid var(--paper-rule);
-  --rule-thin: 1px solid rgba(125, 147, 184, .22);
+  --rule-thin: 1px solid rgba(139, 147, 161, .16);
 
   /* --- Rhythm ---------------------------------------------------------- */
   --s-1: 4px;
@@ -127,5 +142,5 @@
   --s-7: 48px;
 
   /* --- Motion ---------------------------------------------------------- */
-  --ease-press: steps(4, end);
+  --ease-press: cubic-bezier(.2, .8, .2, 1);
 }

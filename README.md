@@ -439,38 +439,43 @@ never break the game.
 
 ## The design
 
-**Current style: "The Descent."** A pixel-terminal interface in the register of
-[Krillion.io](https://krillion.io), the sibling daily dive: VT323 throughout,
-hard corners with no radius anywhere, translucent navy panels ruled with a
-single hairline, wide-tracked uppercase labels, and a CRT scanline over
-everything.
+**Current style: "The Archive."** A quiet, cool-toned instrument:
+near-monochrome slate, one muted steel accent, **Space Grotesk** for everything
+a person reads and **JetBrains Mono** for everything a machine counts.
 
-**What keeps it this game and not a copy.** Krillion descends through water and
-marks the depth in metres. Bollybuzz already descends — "Daily Dive", "how deep
-did you dive", a gauge that runs to 1913 — but it descends through *film
-history*. So the ground is graded from a lit surface to a dark floor and the
-column is marked in **years**, not metres. The metaphor was always in the copy;
-it was being drawn as a stack of white cards.
+**The one idea holding it together:** the chrome is almost colourless *on
+purpose*, because the rarity ramp is the only place on the page where colour
+carries meaning. A loud interface competes with it; a quiet one hands it the
+whole stage. Two earlier directions fought that — a hot-pink hoarding, then a
+cyan arcade terminal — and in both the ramp had to shout to be heard over the
+furniture. Here it can murmur.
 
-Three devices carried over from the previous design without touching the
-markup, which is worth knowing because it is why the switch was cheap:
+### The ramp is built from chroma, not lightness
 
-- **The off-register wordmark.** Same three passes, same two ghost spans in
-  `Chrome.js`. It stopped meaning "a screen print that missed its marks" and
-  started meaning "a monitor out of convergence" — same markup, different story.
-- **The film-leader strip** on the game card.
-- **The depth gauge**, which was already a year scale and now matches the ground
-  it sits on.
+All five rungs sit at roughly the same brightness and ascend in **saturation**:
+near-grey slate for the answer everyone gives, through blue and violet, to gold
+and rose for the one nobody remembers. That is literally what "how much colour
+is spent on it" means, and it survives being desaturated in a way a
+dark-to-light ramp would not.
 
-`--ease-press` is `steps(4, end)` rather than a cubic bézier: a pixel interface
-should not move smoothly.
+It is also a hard accessibility requirement rather than a taste. `GameScreen`
+paints the tier swatch as the **background of a text chip**, so every rung has
+to carry dark text at 4.5:1. The mid-tone versions managed only 3.8 — a real
+failure on a label the player reads after every single answer.
 
-### The style before this one: "Night at the Picture House"
+### Earlier directions, in order
 
-A cinema frontage after dark — deep indigo ground, cards as *lit paper*, a rail
-of marquee bulbs across the masthead, and the inks of a hand-painted Bombay
-hoarding. Reverting is mostly `tokens.css`, `base.css` and `components.css`; the
-`.bulbs` element is still in `Chrome.js`, hidden by one line in `base.css`.
+- **"The Descent"** — a VT323 pixel terminal with CRT scanlines and a hot cyan,
+  matched to [Krillion.io](https://krillion.io), the sibling daily dive. Its
+  year-marked depth scale down the right edge is the one thing kept, because it
+  carried information rather than mood.
+- **"Night at the Picture House"** — a cinema frontage after dark, deep indigo,
+  marquee bulbs, the inks of a hand-painted Bombay hoarding.
+- **"Social"** — grey, white, and one blue.
+
+Each is mostly `tokens.css`, `base.css` and `components.css`. The markup never
+carried any of them: `.bulbs` and the two wordmark ghost spans are still in
+`Chrome.js`, hidden by one rule each in `base.css`.
 
 It replaced **"Social"**, a grey/white/one-blue card system whose own note
 described it as "the register Facebook made familiar". That is a perfectly good
