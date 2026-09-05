@@ -112,12 +112,15 @@ function repeat(from, on) {
 }
 
 /*
-  The hand-picked set runs the 2nd, 3rd and 4th, then stops. Listing the dates
-  rather than expressing a range keeps the end date explicit: on the 5th the
-  Dive goes back to a generated day on its own, with nothing to remember to
-  switch off.
+  The hand-picked set, extended a day at a time as it has been asked for.
+
+  Listing the dates rather than expressing an open range keeps the end explicit:
+  the day after the last one here, the Dive goes back to a generated day on its
+  own, with nothing to remember to switch off. The cost is that extending it is
+  a code change — see the note under SCHEDULE on making a set permanent, which
+  is the better answer if this keeps being extended.
 */
-repeat('2026-09-02', ['2026-09-03', '2026-09-04']);
+repeat('2026-09-02', ['2026-09-03', '2026-09-04', '2026-09-05']);
 
 export function scheduleFor(key) {
   return SCHEDULE[key] || null;
