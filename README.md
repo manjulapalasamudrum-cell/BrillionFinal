@@ -214,6 +214,29 @@ later pack quietly bringing its own prompt to life.
 Wording is written out rather than generated, because controlling the wording
 is the entire reason to schedule a day.
 
+### Replacing one round: `overrides`
+
+`prompts` authors a day from the front and pushes the generated rounds back.
+`overrides` swaps a single round **in place** and leaves the rest generated,
+keyed by round number as the player sees it — 1-based, because that is how the
+request always arrives:
+
+```js
+'2026-09-07': {
+  overrides: {
+    3: { pack: 'award', text: '…', spec: { type: 'era', value: 'early' } },
+  },
+},
+```
+
+Both exist because "today's third question is too thin" should not require
+transcribing the other nine by hand — nine chances to introduce a typo the
+generator would never have made.
+
+**An override that names a pack already used elsewhere that day is refused.**
+A day asking about Shah Rukh Khan twice is worse than a day that ignored an
+edit, so the safe shape for an override is the same pack asked a different way.
+
 ## What a round asks — the question types
 
 The pack supplies the subject. The **type** supplies the question, and there are

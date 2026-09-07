@@ -85,6 +85,41 @@ export const SCHEDULE = {
       },
     ],
   },
+
+  /*
+    Two rounds of an otherwise generated day, replaced.
+
+    `overrides` is keyed by ROUND NUMBER as the player sees it, 1-based, and
+    swaps that round only — the other eight are still drawn by the generator.
+    That is the difference from `prompts` above, which authors a day from the
+    front and pushes everything else back.
+
+    Both replacements here are the same pack asked a different way, which is
+    the safe shape for an override: changing the pack could collide with
+    another round and put the same pack in the day twice.
+  */
+  '2026-09-07': {
+    note: 'Generated day with rounds 1 and 3 replaced.',
+    overrides: {
+      // Was "a Bollywood biopic, 2016-2020" — 20 answers. The 2010s are the
+      // decade this pack is deepest in, so the same pack gives half again as
+      // many answers for the same question shape.
+      1: {
+        pack: 'biopic',
+        text: 'Name a Bollywood biopic released in the 2010s.',
+        spec: { type: 'decade', value: 2010 },
+      },
+      // Was "a Filmfare Best Film winner released in the 2020s" — SIX answers,
+      // exactly the minimum a round may have. The award pack is a list of
+      // annual winners, so any single recent decade is tiny by construction;
+      // the early era bucket is the part of it that is actually deep.
+      3: {
+        pack: 'award',
+        text: 'Name a Filmfare Best Film winner, up to 2001.',
+        spec: { type: 'era', value: 'early' },
+      },
+    },
+  },
 };
 
 /*

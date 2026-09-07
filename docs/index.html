@@ -2882,6 +2882,28 @@ spec: { type: 'open' },
 },
 ],
 },
+'2026-09-07': {
+note: 'Generated day with rounds 1 and 3 replaced.',
+overrides: {
+// Was "a Bollywood biopic, 2016-2020" — 20 answers. The 2010s are the
+// decade this pack is deepest in, so the same pack gives half again as
+// many answers for the same question shape.
+1: {
+pack: 'biopic',
+text: 'Name a Bollywood biopic released in the 2010s.',
+spec: { type: 'decade', value: 2010 },
+},
+// Was "a Filmfare Best Film winner released in the 2020s" — SIX answers,
+// exactly the minimum a round may have. The award pack is a list of
+// annual winners, so any single recent decade is tiny by construction;
+// the early era bucket is the part of it that is actually deep.
+3: {
+pack: 'award',
+text: 'Name a Filmfare Best Film winner, up to 2001.',
+spec: { type: 'era', value: 'early' },
+},
+},
+},
 };
 function repeat(from, on) {
 const source = SCHEDULE[from];
@@ -3567,12 +3589,31 @@ const turn = dayNumber(date);
 const need = MIXED_ROUNDS - fixed.length;
 const filler = [];
 for (let i = 0; i < need; i++) filler.push(ring[(turn * need + i) % ring.length]);
-return {
+const plan = {
 list: fixed.map((f) => f.cat).concat(filler),
 total: fixed.length + filler.length,
 rounds: fixed.map((f) => f.spec)
 .concat(assignTypes(filler, rng, turn, yesterdaysFixedAsks(date))),
 };
+return applyOverrides(plan, puzzleDate(date));
+}
+function applyOverrides(plan, dayKey) {
+const day = scheduleFor(dayKey);
+if (!day || !day.overrides) return plan;
+Object.keys(day.overrides).forEach((n) => {
+const i = Number(n) - 1;
+if (!(i >= 0 && i < plan.rounds.length)) return;
+const o = day.overrides[n];
+const cat = CATEGORIES.find((c) => c.id === o.pack);
+if (!cat) return;
+const clashes = plan.list.some((c, j) => j !== i && c.id === cat.id);
+if (clashes) return;
+const spec = Object.assign({}, o.spec, { text: o.text });
+if (spec.type === 'era' && !spec.buckets) spec.buckets = computeEraBuckets(cat);
+plan.list[i] = cat;
+plan.rounds[i] = spec;
+});
+return plan;
 }
 function yesterdaysFixedAsks(date) {
 const prevKey = puzzleDate(new Date(dateFromKey(puzzleDate(date)).getTime() - 86400000));

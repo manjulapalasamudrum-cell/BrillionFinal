@@ -227,12 +227,55 @@ export function buildDivePlan(date = new Date()) {
   const filler = [];
   for (let i = 0; i < need; i++) filler.push(ring[(turn * need + i) % ring.length]);
 
-  return {
+  const plan = {
     list: fixed.map((f) => f.cat).concat(filler),
     total: fixed.length + filler.length,
     rounds: fixed.map((f) => f.spec)
       .concat(assignTypes(filler, rng, turn, yesterdaysFixedAsks(date))),
   };
+  return applyOverrides(plan, puzzleDate(date));
+}
+
+/**
+ * Replace individual rounds of an otherwise generated day.
+ *
+ * `prompts` in data/schedule.js authors a day from the front and pushes the
+ * generated rounds back; `overrides` swaps one round in place and leaves the
+ * rest alone. That is the difference, and it is why both exist: "today's third
+ * question is too thin" should not require transcribing the other nine by hand,
+ * which is nine chances to introduce a typo the generator would never have made.
+ *
+ * Keyed by round number as the player sees it — 1-based — because that is how
+ * the request always arrives.
+ */
+function applyOverrides(plan, dayKey) {
+  const day = scheduleFor(dayKey);
+  if (!day || !day.overrides) return plan;
+
+  Object.keys(day.overrides).forEach((n) => {
+    const i = Number(n) - 1;
+    if (!(i >= 0 && i < plan.rounds.length)) return;
+
+    const o = day.overrides[n];
+    const cat = CATEGORIES.find((c) => c.id === o.pack);
+    if (!cat) return;
+
+    /*
+      An override may name a different pack from the round it replaces, which
+      could put that pack in the day twice — the one invariant the draw
+      guarantees. Refusing the swap is the right failure: a day that quietly
+      asks about Shah Rukh Khan twice is worse than a day that ignored an edit,
+      and the check below is why the entries in schedule.js keep their pack.
+    */
+    const clashes = plan.list.some((c, j) => j !== i && c.id === cat.id);
+    if (clashes) return;
+
+    const spec = Object.assign({}, o.spec, { text: o.text });
+    if (spec.type === 'era' && !spec.buckets) spec.buckets = computeEraBuckets(cat);
+    plan.list[i] = cat;
+    plan.rounds[i] = spec;
+  });
+  return plan;
 }
 
 /**
