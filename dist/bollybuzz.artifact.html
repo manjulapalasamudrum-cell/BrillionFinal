@@ -2874,24 +2874,17 @@ spec: { type: 'open' },
 ],
 },
 '2026-09-07': {
-note: 'Generated day with rounds 1 and 3 replaced.',
+note: 'Generated day with rounds 1 and 3 replaced (second pass).',
 overrides: {
-// Was "a Bollywood biopic, 2016-2020" — 20 answers. The 2010s are the
-// decade this pack is deepest in, so the same pack gives half again as
-// many answers for the same question shape.
 1: {
 pack: 'biopic',
-text: 'Name a Bollywood biopic released in the 2010s.',
-spec: { type: 'decade', value: 2010 },
+text: 'Name a Bollywood biopic released in the 2020s.',
+spec: { type: 'decade', value: 2020 },
 },
-// Was "a Filmfare Best Film winner released in the 2020s" — SIX answers,
-// exactly the minimum a round may have. The award pack is a list of
-// annual winners, so any single recent decade is tiny by construction;
-// the early era bucket is the part of it that is actually deep.
 3: {
 pack: 'award',
-text: 'Name a Filmfare Best Film winner, up to 2001.',
-spec: { type: 'era', value: 'early' },
+text: 'Name a Filmfare Best Film winner, 2014 or later.',
+spec: { type: 'era', value: 'late' },
 },
 },
 },

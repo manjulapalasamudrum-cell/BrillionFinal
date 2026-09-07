@@ -99,24 +99,37 @@ export const SCHEDULE = {
     another round and put the same pack in the day twice.
   */
   '2026-09-07': {
-    note: 'Generated day with rounds 1 and 3 replaced.',
+    note: 'Generated day with rounds 1 and 3 replaced (second pass).',
     overrides: {
-      // Was "a Bollywood biopic, 2016-2020" — 20 answers. The 2010s are the
-      // decade this pack is deepest in, so the same pack gives half again as
-      // many answers for the same question shape.
+      /*
+        A one-word-title round was the obvious way to move this off the year
+        axis, and it is exactly wrong here: round 4 already asks for a
+        one-word title. Two rounds of the same SHAPE three apart read as the
+        game repeating itself, which is worse than another year question.
+
+        `decade` is the only type this day does not already use, so it is what
+        keeps ten rounds feeling like ten questions. The 2020s are also a
+        different half of the pack from the 2010s it replaces.
+      */
       1: {
         pack: 'biopic',
-        text: 'Name a Bollywood biopic released in the 2010s.',
-        spec: { type: 'decade', value: 2010 },
+        text: 'Name a Bollywood biopic released in the 2020s.',
+        spec: { type: 'decade', value: 2020 },
       },
-      // Was "a Filmfare Best Film winner released in the 2020s" — SIX answers,
-      // exactly the minimum a round may have. The award pack is a list of
-      // annual winners, so any single recent decade is tiny by construction;
-      // the early era bucket is the part of it that is actually deep.
+      /*
+        Round 3 stays an era question but moves to the far end of the pack:
+        "up to 2001" was the deep half, this is the recent one.
+
+        Worth recording that this is a TRADE, not an improvement. The award pack
+        is a list of annual winners, so its recent slices are inherently small —
+        12 answers here against 46 before. It clears every rule comfortably and
+        still pays all five prices, but if the ask was for depth rather than for
+        change, "up to 2001" was the strongest this pack has.
+      */
       3: {
         pack: 'award',
-        text: 'Name a Filmfare Best Film winner, up to 2001.',
-        spec: { type: 'era', value: 'early' },
+        text: 'Name a Filmfare Best Film winner, 2014 or later.',
+        spec: { type: 'era', value: 'late' },
       },
     },
   },
