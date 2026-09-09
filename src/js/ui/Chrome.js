@@ -50,9 +50,9 @@ export function TopHeader() {
     h(
       'h1',
       { className: 'wordmark' },
-      h('span', { className: 'wm-ghost wm-ghost--peacock', 'aria-hidden': 'true' }, 'Bollybuzz.io'),
-      h('span', { className: 'wm-ghost wm-ghost--magenta', 'aria-hidden': 'true' }, 'Bollybuzz.io'),
-      h('span', { className: 'wm-main' }, 'Bollybuzz.io')
+      h('span', { className: 'wm-ghost wm-ghost--peacock', 'aria-hidden': 'true' }, 'BollyBuzz'),
+      h('span', { className: 'wm-ghost wm-ghost--magenta', 'aria-hidden': 'true' }, 'BollyBuzz'),
+      h('span', { className: 'wm-main' }, 'BollyBuzz')
     ),
     /*
       The scoring rule stated outright, then anchored with the two numbers that

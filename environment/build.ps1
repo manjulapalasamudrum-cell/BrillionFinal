@@ -159,7 +159,7 @@ $fonts = @'
 
 # Everything after the <head>: identical in both outputs.
 $payload = @"
-<div class="wrap" id="root"><p class="boot">Loading Bollybuzz.io</p></div>
+<div class="wrap" id="root"><p class="boot">Loading BollyBuzz</p></div>
 <script>
 $vendorJs
 </script>
@@ -210,7 +210,7 @@ $standalone = @"
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Bollybuzz.io $EMDASH 10 Bollywood Trivia Games Where Rare Answers Win</title>
+<title>BollyBuzz $EMDASH 10 Bollywood Trivia Games Where Rare Answers Win</title>
 <meta name="description" content="Name one answer per prompt. The rarer your answer, the deeper you dive into 113 years of Hindi cinema." />
 <meta name="theme-color" content="#EEF0F4">
 $fonts
@@ -246,7 +246,7 @@ New-Item -ItemType Directory -Force -Path (Join-Path $root 'docs') | Out-Null
 # <html>, <head> or <body> here. The <title> must land in the first 8KB, so it
 # goes before the stylesheet.
 $artifact = @"
-<title>Bollybuzz.io</title>
+<title>BollyBuzz</title>
 $fonts
 <style>
 $css
