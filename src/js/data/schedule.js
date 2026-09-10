@@ -133,6 +133,42 @@ export const SCHEDULE = {
       },
     },
   },
+
+  /*
+    Round 1 replaced with Shah Rukh Khan, as asked.
+
+    THIS ONE CHANGES THE PACK, which the 2026-09-07 entry above deliberately
+    avoids. It is safe here and it was checked rather than assumed: the day
+    generates as nineties, rahman, cop, remake, biopic, bhansali, award,
+    deepika, wedding, actress, and `srk` is in none of them. Had it been,
+    `applyOverrides` would have refused the swap outright and the day would
+    have played on unchanged — a silent no-op, which is exactly the failure
+    worth knowing about before writing an override that moves packs.
+
+    It is asked OPEN, with no constraint, for two reasons. It replaces the
+    day's "deep cut only" round, and opening a game by turning away the first
+    three films a player thinks of is a poor welcome — the rarity scoring
+    already rewards them for reaching past the obvious without the round
+    refusing them. And Shah Rukh Khan is the one pack where naming anything at
+    all is easy, so an unconstrained round 1 gets a player scoring inside ten
+    seconds.
+
+    That does leave two open rounds in the day, this and Bhansali at 6. They
+    sit five apart, which is far enough not to read as the game repeating
+    itself — the objection recorded above was to two rounds of one shape THREE
+    apart, and the shape there was a much narrower one than "anything in the
+    pack".
+  */
+  '2026-09-10': {
+    note: 'Generated day with round 1 replaced by an open Shah Rukh Khan ask.',
+    overrides: {
+      1: {
+        pack: 'srk',
+        text: 'Name a Bollywood movie starring Shah Rukh Khan.',
+        spec: { type: 'open' },
+      },
+    },
+  },
 };
 
 /*
