@@ -17,7 +17,7 @@
   font-size: var(--t-micro);
   letter-spacing: .16em;
   text-transform: uppercase;
-  color: var(--magenta);
+  color: var(--gold);
 }
 
 /*
@@ -35,14 +35,22 @@
   position: relative;
   width: 66px;
   flex-shrink: 0;
-  border-left: 2px solid var(--paper-rule);
+  border-left: 2px solid var(--ink-deep);
 }
+/*
+  How far your score carried you, drawn as exposed film. Gold, because on this
+  palette gold is what a thing is worth and this strip IS the score restated as
+  distance — the same fact the total below it gives as a number. The marker at
+  its foot is the one red thing here: red is action, and stopping is the only
+  event on the rail.
+*/
 .gauge-travelled {
   position: absolute;
   left: -2px;
   top: 0;
   width: 14px;
-  background: var(--magenta);
+  background: linear-gradient(180deg, var(--gold) 0%, var(--gold-deep) 100%);
+  box-shadow: 0 0 16px rgba(240, 180, 41, .35);
   /* Perforated like film leader. */
   -webkit-mask-image: repeating-linear-gradient(180deg, #000 0 9px, transparent 9px 13px);
   mask-image: repeating-linear-gradient(180deg, #000 0 9px, transparent 9px 13px);
@@ -64,7 +72,7 @@
   color: var(--on-paper-dim);
   white-space: nowrap;
 }
-.gauge-tick::before { content: ""; width: 10px; height: 1px; background: var(--paper-rule); }
+.gauge-tick::before { content: ""; width: 10px; height: 1px; background: var(--ink-deep); }
 
 /* Where you stopped. This is the answer to the whole game, so it is drawn
    as a hard cut across the strip rather than a tick like any other. */
@@ -91,19 +99,25 @@
 .gauge-readout { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
 .depth-year {
   font-family: var(--font-display);
+  font-weight: 400;
   font-size: var(--t-colossal);
-  line-height: .84;
-  letter-spacing: -.02em;
+  /* Was .84, which is a crop rather than tight leading with a poster face:
+     Anton's digits overrun their em box and the year lost its top and bottom
+     edges. */
+  line-height: 1.05;
+  letter-spacing: 0;
   color: var(--on-paper);
+  text-shadow: 0 4px 30px rgba(0, 0, 0, .7);
 }
 .depth-era { font-size: var(--t-body); font-weight: 600; margin-top: var(--s-2); line-height: 1.3; }
 .depth-note { font-size: var(--t-small); color: var(--on-paper-dim); margin-top: var(--s-2); line-height: 1.5; }
 .depth-note b { font-family: var(--font-mono); font-weight: 500; color: var(--on-paper); }
 
 /* --- The total ----------------------------------------------------------
-   Ruled off above and below like the total on a printed ticket. Magenta,
-   because that is the ink the filmstrip uses to draw the distance this score
-   bought you — the number and the strip are the same fact twice.
+   Ruled off above and below like the total on a printed ticket. Gold, the
+   colour this palette reserves for worth, and the same ink the filmstrip uses
+   to draw the distance the score bought — the number and the strip are the
+   same fact twice, so they are the same colour.
 -------------------------------------------------------------------------- */
 
 .score-band {
@@ -128,9 +142,13 @@
 .score-value {
   grid-column: 1 / -1;
   font-family: var(--font-display);
-  font-size: clamp(38px, 10vw, 54px);
-  line-height: 1.05;
-  color: var(--magenta-deep);
+  font-weight: 400;
+  font-size: clamp(44px, 12vw, 66px);
+  line-height: 1.15;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+  /* No glow — see the note on .rb-score b. A gold halo behind a gold digit
+     fills the counter of every 0, 6 and 8. */
 }
 .score-unit {
   font-family: var(--font-body);
@@ -210,8 +228,9 @@
 .share-box {
   margin-top: var(--s-5);
   padding: var(--s-4);
-  background: var(--paper-shade);
-  border: var(--rule-thin);
+  border-radius: var(--radius-sm);
+  background: var(--ink);
+  border: var(--rule);
   font-family: var(--font-mono);
   font-size: var(--t-small);
   white-space: pre-wrap;

@@ -1,4 +1,4 @@
-/** Lights down: prompt, clock, answer box, and the post-answer verdict. */
+/** Lights down: the run bar, the prompt, the clock, and the post-answer verdict. */
 
 import { h } from './dom.js';
 import { ROUND_SECONDS } from '../game/rounds.js';
@@ -7,16 +7,80 @@ import { constraintLabel } from '../game/constraints.js';
 /** Below this many seconds the clock turns red and reads as urgent. */
 const LOW_SECONDS = 5;
 
-/** Shown once a round is locked in, before advancing to the next prompt. */
-function Feedback({ feedback, idx, totalPrompts, onNext }) {
-  const { raw, tierInfo, matchedLabel, correction } = feedback;
+/**
+ * The tier index at which an answer stops being merely good and gets a
+ * celebration: a deep cut (+40) or a legendary rare (+50).
+ *
+ * It is defined as an INDEX rather than a points threshold because the tiers
+ * are re-priced from time to time and a hard-coded "40 or more" would quietly
+ * start firing on a different rung. TIERS is append-only by contract (see
+ * data/tiers.js), so index 3 is stable in a way its price is not.
+ */
+const RARE_FROM_TIER = 3;
+
+/** How many sparks the burst throws. Purely decorative, hence aria-hidden. */
+const SPARK_COUNT = 10;
+
+/**
+ * The moment the whole scoring model exists to produce. A player who names
+ * something almost nobody remembers should be told so immediately and loudly —
+ * the number alone does not carry it, because +40 and +20 look alike in a
+ * glance and only one of them is an achievement.
+ */
+function RareBurst({ tierIndex, points }) {
+  const legendary = tierIndex >= 4;
   return h(
     'div',
-    { className: 'feedback' },
+    { className: 'rare-burst' + (legendary ? ' rare-burst--legendary' : ''), role: 'status' },
+    h(
+      'div',
+      { className: 'rb-sparks', 'aria-hidden': 'true' },
+      // Each spark is thrown at its own angle and distance, handed to CSS as
+      // custom properties so one keyframe serves all ten.
+      Array.from({ length: SPARK_COUNT }).map((_, i) =>
+        h('i', {
+          key: i,
+          style: {
+            '--a': (i * (360 / SPARK_COUNT)) + 'deg',
+            '--d': (46 + (i % 3) * 16) + 'px',
+            '--delay': (i * 18) + 'ms',
+          },
+        })
+      )
+    ),
+    h('span', { className: 'rb-flame', 'aria-hidden': 'true' }, '🔥'),
+    h('span', { className: 'rb-text' }, legendary ? 'Legendary rare!' : 'Rare answer!'),
+    h('span', { className: 'rb-points' }, '+' + points)
+  );
+}
+
+/** Shown once a round is locked in, before advancing to the next prompt. */
+function Feedback({ feedback, idx, totalPrompts, onNext }) {
+  const { raw, tierInfo, tierIndex, matchedLabel, correction } = feedback;
+  const rare = tierIndex >= RARE_FROM_TIER;
+
+  return h(
+    'div',
+    { className: 'feedback' + (rare ? ' feedback--rare' : '') },
+    rare ? h(RareBurst, { tierIndex, points: tierInfo.points }) : null,
     h(
       'div',
       { className: 'fb-top' },
-      h('span', { className: 'fb-tier', style: { background: tierInfo.color } }, tierInfo.label),
+      h(
+        'span',
+        {
+          className: 'fb-tier',
+          // The swatch is the tier's own colour, and on this palette all five
+          // rungs are LIGHT fills, so all five carry the dark ink. Only MISS —
+          // which is not in TIERS and arrives as -1 — is a dark swatch and
+          // needs the off-white back.
+          style: {
+            background: tierInfo.color,
+            color: tierIndex >= 0 ? 'var(--on-gold)' : 'var(--on-red)',
+          },
+        },
+        tierInfo.label
+      ),
       h('span', { className: 'fb-points' }, '+' + tierInfo.points)
     ),
     h(
@@ -47,8 +111,60 @@ function Feedback({ feedback, idx, totalPrompts, onNext }) {
   );
 }
 
+/**
+ * The run bar: where you are, what you have, and what each round paid.
+ *
+ * It replaced a plain "Prompt 3 / 10 · Score 120" line at the top and a row of
+ * grey dots at the very bottom of the card — two halves of the same fact,
+ * placed as far apart as the card allowed, neither of them showing what any
+ * round was actually worth.
+ *
+ * The bar is SEGMENTED rather than continuous, and that is the whole reason it
+ * is worth the space: each segment takes the COLOUR of the tier that round
+ * paid, so the bar accumulates into a picture of the run. Four grey segments
+ * and a gold one says something a running total never can.
+ *
+ * There was briefly a continuous fill bar above the segments as well. It was
+ * cut: it could only ever say "you are 3 of 10 through", which the segments
+ * and the "Round 3 / 10" beside them both already said, so the card carried
+ * three statements of one fact and no statement of the interesting one.
+ */
+function RunBar({ idx, totalPrompts, score, log, scored }) {
+  return h(
+    'div',
+    { className: 'runbar' + (scored ? ' is-scored' : '') },
+    h(
+      'div',
+      { className: 'runbar-head' },
+      h('span', { className: 'rb-round' }, 'Round ', h('b', null, idx + 1), ' / ' + totalPrompts),
+      h('span', { className: 'rb-score' }, h('i', null, 'Score'), h('b', null, score))
+    ),
+    h(
+      'div',
+      {
+        className: 'runbar-pips',
+        role: 'progressbar',
+        'aria-label': 'Rounds completed',
+        'aria-valuenow': log.length,
+        'aria-valuemin': 0,
+        'aria-valuemax': totalPrompts,
+      },
+      Array.from({ length: totalPrompts }).map((_, i) => {
+        const entry = log[i];
+        return h('div', {
+          key: i,
+          className: 'pdot' + (entry ? ' done' : '') + (i === idx ? ' now' : ''),
+          // A played round is painted in what it paid; an unplayed one is left
+          // as empty track.
+          style: entry ? { background: entry.tier.color } : null,
+        });
+      })
+    )
+  );
+}
+
 export function GameScreen({
-  idx, totalPrompts, score, timeLeft, mode, roundPlan, cat, gameLabel,
+  idx, totalPrompts, score, timeLeft, mode, roundPlan, cat, gameLabel, log,
   inputValue, setInputValue, onSubmit, onSkip, onQuit,
   retryMsg, feedback, locked, inputRef, onNext,
 }) {
@@ -76,12 +192,8 @@ export function GameScreen({
   return h(
     'div',
     { id: 'screen-game', className: 'card card--screen' },
-    h(
-      'div',
-      { className: 'hud' },
-      h('span', null, 'Prompt ', h('b', null, idx + 1), ' / ' + totalPrompts),
-      h('span', null, 'Score ', h('b', null, score))
-    ),
+
+    h(RunBar, { idx, totalPrompts, score, log, scored: !!feedback }),
 
     // The clock is a length of film: perforations run out as it depletes.
     h(
@@ -106,9 +218,12 @@ export function GameScreen({
       h('span', { className: 'timer-count' }, seconds + 's')
     ),
 
+    // The prompt, given a surface of its own. It is the only thing on the
+    // screen a player has to read, and on the previous layout it was one more
+    // block of centred text between a clock and an input.
     h(
       'div',
-      { className: 'cat-label' },
+      { className: 'prompt-card' },
       h('div', { className: 'cl-kicker' }, kicker),
       h('h2', null, title),
       limit ? h('div', { className: 'cl-limit' }, limit) : null,
@@ -157,13 +272,6 @@ export function GameScreen({
     retryMsg ? h('div', { className: 'retry-note', role: 'status' }, retryMsg) : null,
     feedback ? h(Feedback, { feedback, idx, totalPrompts, onNext }) : null,
 
-    h(
-      'div',
-      { className: 'progress-dots', 'aria-hidden': 'true' },
-      Array.from({ length: totalPrompts }).map((_, i) =>
-        h('div', { key: i, className: 'pdot' + (i < idx ? ' done' : '') + (i === idx ? ' now' : '') })
-      )
-    ),
     h(
       'div',
       { className: 'back-row' },

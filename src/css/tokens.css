@@ -1,21 +1,32 @@
 /*
-  Design tokens — "The Archive".
+  Design tokens — "The Single Screen".
   --------------------------------------------------------------------------
-  A quiet, cool-toned instrument: near-monochrome slate, one muted steel accent,
-  Space Grotesk for everything a person reads and JetBrains Mono for everything
-  a machine counts.
+  The darkened auditorium, the hand-painted hoarding outside it, and the gold
+  foil of a printed title card. Warm near-black ground, two accents, and a
+  rarity ramp that climbs into those accents.
 
-  THE ONE IDEA HOLDING IT TOGETHER. The chrome is almost colourless on purpose,
-  because the rarity ramp is the only thing on the page where colour carries
-  meaning. A loud interface competes with it; a quiet one hands it the whole
-  stage. Every earlier direction here fought that — a hot pink hoarding, then a
-  cyan arcade terminal — and in both the ramp had to shout to be heard over the
-  furniture. Here it can murmur.
+  THE ONE IDEA HOLDING IT TOGETHER — TWO ACCENTS, TWO JOBS.
 
-  It replaced "The Descent", a VT323 pixel terminal with CRT scanlines and a hot
-  cyan. That was a faithful match for a sibling site and far too loud to sit
-  with for long: a bitmap face at body size is tiring to read, and scanlines
-  over every screen are a costume rather than a design.
+    gold = what a thing is WORTH   (scores, points, rarity, the foil wordmark)
+    red  = what you DO             (play, submit, the clock running out)
+
+  They are never swapped and never used decoratively. That rule is the whole
+  reason two accents do not read as noise: every gold thing on the page is a
+  number you earned, and every red thing is a control or a warning.
+
+  It pays off in the rarity ramp below, which ENDS in those same two colours.
+  The rarest answers are literally the gold and red ones, so the palette is
+  stating the scoring model rather than sitting beside it.
+
+  THE GROUND IS WARM BLACK, NOT BLUE-BLACK. #0A0705 has red in it. A cool
+  near-black is the reflexive choice for a dark interface and it would fight
+  every gold and red on top of it — the accents would read as stickers on a
+  slab. Warm black lets them sit in the same light.
+
+  This replaced "The Archive", a pale cool-grey editorial layout with a single
+  muted steel accent. That direction was deliberately quiet so the rarity ramp
+  could carry the only colour on the page. This one is the opposite bet: the
+  ground is theatrical and the ramp is brighter still.
 
   Read the two surface tokens as surfaces, not literal colours:
     ink   = the ground the panels sit on
@@ -24,129 +35,163 @@
 
 :root {
   /* --- Ground and surfaces --------------------------------------------
-     A pale cool grey page with white panels floating on it. The grey is a few
-     points toward blue rather than dead neutral, so it sits with the steel
-     accent instead of looking dingy beside it, and it is deep enough that a
-     white panel reads as genuinely white rather than as a slightly brighter
-     patch of the same thing. */
-  --ink: #EEF0F4;              /* the ground */
-  --ink-tint-top: #F7F8FA;     /* lit, just */
-  --ink-tint-bottom: #E3E6EC;  /* and its shaded foot */
-  --ink-raised: #FFFFFF;       /* a panel */
-  --ink-sunk: #F4F5F8;         /* inset wells: inputs, quiet blocks */
-  --ink-deep: #DDE1E8;         /* dividers and pressed states */
+     Four steps of warm black. The gaps between them are small on purpose —
+     on a dark ground a panel separates from the page by a hairline and a
+     shadow, not by a big jump in lightness, which would read as a grey box
+     rather than as a lit surface. */
+  --ink: #0A0705;              /* the ground — the darkened house */
+  --ink-tint-top: #16100B;     /* the spill from the screen */
+  --ink-tint-bottom: #050303;  /* and the black at the back of the stalls */
+  --ink-raised: #16100C;       /* a panel */
+  --ink-sunk: #221812;         /* inset wells: inputs, quiet blocks */
+  --ink-deep: #2E211A;         /* dividers and pressed states */
 
-  --paper: #FFFFFF;
-  --paper-shade: #F2F4F7;
-  --paper-rule: #D5DAE2;
+  --paper: #16100C;
+  --paper-shade: #221812;
+  --paper-rule: #3A2A20;
 
-  /* --- Accent ----------------------------------------------------------
-     ONE, and it is muted steel rather than a saturated blue. It carries every
-     action, every focus ring and every link, which is exactly why it must not
-     compete: an accent used everywhere has to be quiet or the page has no
-     hierarchy at all. */
-  /* Darkened for a pale ground: the steel that carried white text on a dark
-     panel is far too light to be read ON one. It clears 5.43:1 on white and
-     carries white text at the same, so it works as both a colour and a fill. */
-  --peacock: #3D6E96;
-  --peacock-deep: #2E5877;
-  /* Kept because components reference them, retuned to the same sober register
-     so nothing on the page is louder than the rarity ramp. */
-  --marigold: #8A6807;
-  --marigold-deep: #6F5306;
-  --rani: #B83D5C;
-  --rani-deep: #98304A;
-  --violet: #6F5AA8;
-  --magenta: #B83D5C;
-  --magenta-deep: #98304A;
-  --vermilion: #B83D5C;        /* the clock running out */
+  /* --- Accent one: FOIL GOLD — worth -----------------------------------
+     Points, scores, rarity, the wordmark. Bright enough to carry on the
+     ground (10.4:1 on --ink) and saturated enough to read as metal rather
+     than as yellow. `-deep` is for fills that must carry dark text. */
+  --gold: #F0B429;
+  --gold-deep: #C98A10;
+  --gold-wash: rgba(240, 180, 41, .12);
 
-  /* --- Text ------------------------------------------------------------ */
-  --on-paper: #1A1E26;
-  --on-paper-dim: #5A6272;
-  --on-ink: #1A1E26;
-  --on-ink-dim: #5A6272;
-
-  /* Nothing is lit any more; these resolve to nothing so stray references stay
-     harmless. */
-  --bulb: transparent;
-  --bulb-halo: transparent;
+  /* --- Accent two: MARQUEE RED — action --------------------------------
+     Every button that starts or submits something, and the clock in its last
+     five seconds. Kept a touch orange rather than crimson so it belongs to
+     the same warm family as the gold instead of arguing with it. */
+  --red: #E0203C;
+  --red-bright: #FF4D63;       /* on the dark ground, where --red goes muddy */
+  --red-deep: #A3122A;
+  --red-wash: rgba(224, 32, 60, .13);
 
   /*
-    Rarity ramp — the scoring model, made visible, and the only place on the
-    page where colour carries meaning.
-
-    THE LADDER IS BUILT FROM CHROMA, NOT LIGHTNESS. All five sit at roughly the
-    same brightness and ascend in saturation instead: near-grey slate for the
-    answer everyone gives, through blue and violet, to gold and rose for the one
-    nobody remembers. That is what "how much colour is spent on it" means, and
-    it is what lets the ramp survive a change of ground: moving from a dark page
-    to a pale one flipped every rung from pastel to deep, and the ladder still
-    reads in exactly the same order because the ORDER was never carried by
-    lightness.
-
-    Holding them at one brightness is also a hard accessibility requirement, not
-    a stylistic choice. GameScreen paints the tier swatch as the BACKGROUND of a
-    text chip, so every rung has to carry its chip text at 4.5:1 AND stand out
-    from the panel as a swatch at 3:1. `known` and `deepcut` were nudged darker
-    from their first values for exactly that — they landed at 4.49 and 4.27.
+    Legacy accent names. The old direction's four inks are referenced across
+    the screens; rather than chase every call site they resolve to the two
+    accents this direction actually has. Nothing new should use these.
   */
-  --tier-common: #6E7687;      /* near-grey — no colour spent on it */
-  --tier-known: #3A74AF;
-  --tier-solid: #6F5AA8;
-  --tier-deepcut: #8A6807;
-  --tier-legendary: #B83D5C;
+  --peacock: var(--gold);
+  --peacock-deep: var(--gold-deep);
+  --marigold: var(--gold);
+  --marigold-deep: var(--gold-deep);
+  --rani: var(--red-bright);
+  --rani-deep: var(--red-deep);
+  --violet: #A98BE8;
+  --magenta: var(--red-bright);
+  --magenta-deep: var(--red);
+  --vermilion: var(--red-bright);   /* the clock running out */
+
+  /* --- Text ------------------------------------------------------------
+     Warm off-white, never pure #FFF: white on warm black glares and pulls
+     blue against the gold. */
+  --on-paper: #F6EFE6;
+  --on-paper-dim: #AC9787;
+  --on-ink: #F6EFE6;
+  --on-ink-dim: #AC9787;
+  /* What sits ON a gold or red fill. Gold is a light fill and needs the
+     ground back on top of it; red is dark enough to take the off-white. */
+  --on-gold: #1A0F05;
+  --on-red: #FFF4F1;
+
+  --bulb: #F0B429;
+  --bulb-halo: rgba(240, 180, 41, .5);
+
   /*
-    A miss. It has to satisfy the same two rules as a real rung — visible on a
-    white card, and able to carry the white "No answer" chip text — so it cannot
-    be the pale grey it was on the dark theme, where it scored 1.85 against the
-    card and all but vanished.
+    Rarity ramp — the scoring model, made visible.
 
-    It ends up close to `common` in both hue and lightness, and that is fine:
-    the two never have to be told apart by colour, because the row beside them
-    says either a film title or "Skipped — no answer".
+    RE-TUNED FOR A BLACK GROUND, AND THE TUNING IS NOT OPTIONAL. The previous
+    ramp was built to carry white chip text ON each swatch while sitting on a
+    WHITE card, so every rung was deep: #3A74AF, #8A6807, #B83D5C. Dropped onto
+    near-black those same values all but disappear — the gold rung scored 2.1:1
+    against the ground. Every rung here is lifted until it clears 4.5:1 on
+    --ink.
+
+    THE CHIP TEXT FLIPPED WITH THEM. GameScreen paints a rung as the BACKGROUND
+    of a text chip, and every rung is now a LIGHT fill, so all five carry the
+    dark ink rather than the white they used to. `common` was lifted again,
+    from #7E8794, purely for that: at the darker value the chip text landed at
+    4.1:1 and missed. Only MISS keeps light text, because it is the one swatch
+    deliberately left dark.
+
+    THE LADDER STILL CLIMBS BY CHROMA, NOT LIGHTNESS. Grey for the answer
+    everyone gives, through blue and violet, into the two accents. That is what
+    survived the move from a pale ground to this one: the ORDER was never
+    carried by lightness, so inverting the page did not invert the ladder.
+
+    The top two rungs ARE the brand accents, which is the point — a deep cut is
+    gold because gold is what this page uses for worth, and a legendary rare is
+    the loudest red on the page because nothing else has earned it.
   */
-  --tier-miss: #6C7178;
+  --tier-common: #98A1AE;      /* near-grey — no colour spent on it */
+  --tier-known: #4E9BD6;
+  --tier-solid: #A98BE8;
+  --tier-deepcut: #F0B429;     /* = gold */
+  --tier-legendary: #FF4D63;   /* = red-bright */
+  /*
+    A miss. Same two rules as a real rung — visible against the panel, and able
+    to carry its chip text — but deliberately the dimmest thing on the ladder,
+    because it is the one outcome worth nothing. It sits near `common` in hue,
+    which is fine: the row beside it always says either a film title or
+    "Skipped — no answer".
+  */
+  --tier-miss: #5C5148;
 
   /* --- Type ------------------------------------------------------------
-     Space Grotesk is a geometric sans with just enough irregularity to have a
-     voice — the tightened terminals and the odd wide bowl keep it from reading
-     as a system font — while staying completely calm at body size. It sets
-     everything a person reads.
+     ANTON sets the things a hoarding would shout: the wordmark, the prompt,
+     the score. It is a condensed poster grotesque with no lowercase subtlety
+     and one weight, which is exactly the register of a painted film hoarding
+     — and it is unusable below about 20px, so it can never leak into body
+     copy by accident.
 
-     JetBrains Mono takes the scores, the clock and the labels: things that are
+     BARLOW sets everything a person actually reads. Slightly condensed and
+     humanist, it holds a line beside Anton without competing, and it is warm
+     where a neutral UI sans would go cold against this ground.
+
+     JETBRAINS MONO keeps the scores, the clock and the small labels: things
      counted or compared, where a fixed pitch means figures line up.
 
-     This replaced VT323, a bitmap face used for the entire interface. It had
-     real character and was exhausting at 20px for anything longer than a
-     heading. */
-  --font-display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
-  --font-body: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+     This replaced Space Grotesk set for both display and body — one face
+     doing both jobs, which is what made the old direction read as calm and
+     also as flat. A poster needs two voices. */
+  --font-display: 'Anton', 'Haettenschweiler', 'Arial Narrow', Impact, sans-serif;
+  --font-body: 'Barlow', 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
 
-  --t-mega: clamp(32px, 7vw, 46px);
-  --t-prompt: clamp(24px, 5vw, 34px);
-  --t-colossal: clamp(46px, 12vw, 74px);
+  --t-mega: clamp(44px, 12vw, 78px);
+  --t-prompt: clamp(30px, 7.5vw, 52px);
+  --t-colossal: clamp(56px, 15vw, 92px);
   --t-body: 16px;
   --t-small: 14px;
   --t-micro: 12px;
 
-  /* Enough tracking to open up a small uppercase label, far less than the
-     pixel face needed. */
-  --track: .1em;
+  /* Anton is tightly fitted; small uppercase labels need real air to survive
+     beside it. */
+  --track: .14em;
 
   /* --- Shape -----------------------------------------------------------
-     Small radii are back. Hard corners belonged to the pixel face; with a
-     geometric sans they read as unfinished rather than deliberate. */
-  --radius: 8px;
-  --radius-sm: 6px;
-  /* Far lighter than the dark theme's. A shadow at 40% black under a white
-     panel on a pale ground reads as dirt; on a dark ground it was the only
-     thing separating the panel from the page. */
-  --shadow-card: 0 1px 2px rgba(26, 30, 38, .08), 0 1px 3px rgba(26, 30, 38, .06);
-  --shadow-raised: 0 6px 20px rgba(26, 30, 38, .12);
+     Slightly larger radii than the editorial direction used. A dark surface
+     with a hairline edge needs a visible corner or it reads as a hole cut in
+     the page rather than as a card lying on it. */
+  --radius: 12px;
+  --radius-sm: 8px;
+  /*
+    Shadows do the opposite job here. On a pale ground a shadow separated a
+    white panel from the page; on near-black a shadow is invisible, so the
+    separation comes from a hairline rule plus a faint warm LIFT along the top
+    edge — light falling on the card from the screen.
+  */
+  --shadow-card:
+    0 1px 0 rgba(255, 226, 178, .05) inset,
+    0 10px 30px rgba(0, 0, 0, .55);
+  --shadow-raised:
+    0 1px 0 rgba(255, 226, 178, .07) inset,
+    0 18px 48px rgba(0, 0, 0, .7);
+  --glow-gold: 0 0 28px rgba(240, 180, 41, .35);
+  --glow-red: 0 0 28px rgba(224, 32, 60, .38);
   --rule: 1px solid var(--paper-rule);
-  --rule-thin: 1px solid rgba(90, 98, 114, .16);
+  --rule-thin: 1px solid rgba(172, 151, 135, .16);
 
   /* --- Rhythm ---------------------------------------------------------- */
   --s-1: 4px;
@@ -157,6 +202,9 @@
   --s-6: 32px;
   --s-7: 48px;
 
-  /* --- Motion ---------------------------------------------------------- */
+  /* --- Motion ----------------------------------------------------------
+     `press` for anything a finger causes, `pop` for the celebratory beats —
+     it overshoots, which is what makes a stamp land rather than fade in. */
   --ease-press: cubic-bezier(.2, .8, .2, 1);
+  --ease-pop: cubic-bezier(.2, 1.6, .4, 1);
 }

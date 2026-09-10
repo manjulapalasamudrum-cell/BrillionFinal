@@ -1,9 +1,11 @@
 /* Reusable pieces: card surfaces, buttons, tiles, labels, the input. */
 
 /* --- Cards -------------------------------------------------------------
-   A white card on a pale grey ground, held by a hairline rule and a very light
-   shadow. The game card is distinguished by the strip of colour across its top
-   edge rather than by a surface of its own.
+   A warm-black panel on a warmer-black ground. On a dark page a card cannot
+   separate itself by being a different colour — the gap is too small to see —
+   so it separates by a hairline rule, a deep shadow underneath, and a faint
+   warm lift along its top edge, as if light were falling on it from the
+   screen. All three live in --shadow-card.
 -------------------------------------------------------------------------- */
 
 .card {
@@ -19,10 +21,11 @@
 .card > * { position: relative; }
 
 /*
-  The game card wears a strip of film leader across its top edge: the four inks
-  in sequence, hard-edged rather than blended, the way a colour bar is printed
-  down the side of a negative. It replaced a flat blue rule, which said only
-  "this is the active card" — this says which game you are in the middle of.
+  The game card wears a foil rule across its top edge — the gold band along the
+  top of a title card. It replaced a four-ink film-leader strip built from the
+  old direction's peacock / rani / marigold / violet, three of which no longer
+  exist in this palette; kept as a single gold band because this direction has
+  exactly two accents and the strip was spending four.
 */
 .card--screen {
   background: var(--paper);
@@ -37,23 +40,21 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 4px;
-  background: linear-gradient(
-    90deg,
-    var(--peacock) 0 25%,
-    var(--rani) 25% 50%,
-    var(--marigold) 50% 75%,
-    var(--violet) 75% 100%
-  );
+  height: 3px;
+  background: linear-gradient(90deg,
+    transparent 0%, var(--gold-deep) 12%, var(--gold) 50%, var(--gold-deep) 88%, transparent 100%);
 }
 
 .card + .card { margin-top: var(--s-4); }
 
 /* --- Buttons ------------------------------------------------------------
-   Filled peacock for the primary action, a pale fill for secondary, flat for
-   tertiary. Marigold is deliberately NOT used here: it belongs to the one
-   button on the page that starts the main game, and spending it on ordinary
-   controls would cost that button its meaning.
+   RED FILLS, GOLD OUTLINES. Red is the action colour, so every control that
+   commits something — Play, Dive, Next prompt — is a solid red key. Gold is
+   the worth colour and is never spent on an ordinary button; it appears on a
+   control only as a hover edge or a focus ring.
+
+   This is the rule that lets the page carry two saturated accents without
+   either losing its meaning.
 -------------------------------------------------------------------------- */
 
 button {
@@ -63,68 +64,82 @@ button {
   border-radius: var(--radius-sm);
 }
 
-/*
-  A filled key for the primary action, an outlined one for secondary. Sentence
-  case, not uppercase: shouted labels were part of an earlier terminal costume,
-  and a quiet interface should say "Dive", not "D I V E".
-*/
 .btn-primary,
 .btn-gold {
   font-family: var(--font-body);
   font-size: var(--t-body);
-  font-weight: 600;
-  padding: 10px var(--s-5);
-  border: 1px solid var(--peacock);
+  font-weight: 700;
+  letter-spacing: .01em;
+  padding: 11px var(--s-5);
+  border: 1px solid var(--red);
   border-radius: var(--radius-sm);
-  background: var(--peacock);
-  color: #FFFFFF;
+  background: linear-gradient(180deg, #F02A46 0%, var(--red) 55%, var(--red-deep) 100%);
+  color: var(--on-red);
   white-space: nowrap;
-  transition: background .14s var(--ease-press), border-color .14s var(--ease-press);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, .35), 0 6px 18px rgba(224, 32, 60, .28);
+  transition: transform .12s var(--ease-press), box-shadow .14s var(--ease-press),
+              filter .14s var(--ease-press);
 }
 .btn-primary:hover:not(:disabled),
 .btn-gold:hover:not(:disabled) {
-  background: var(--peacock-deep);
-  border-color: var(--peacock-deep);
+  filter: brightness(1.12);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, .35), var(--glow-red);
+}
+/* A real press, not a colour change. The key drops onto the page. */
+.btn-primary:active:not(:disabled),
+.btn-gold:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 0 0 rgba(0, 0, 0, .35), 0 2px 8px rgba(224, 32, 60, .2);
 }
 .btn-primary:disabled,
-.btn-gold:disabled { opacity: .35; cursor: not-allowed; }
+.btn-gold:disabled {
+  opacity: .3;
+  cursor: not-allowed;
+  box-shadow: none;
+}
 
 .btn-ghost {
   background: transparent;
   color: var(--on-paper-dim);
-  padding: 10px var(--s-5);
+  padding: 11px var(--s-5);
   border: var(--rule);
   border-radius: var(--radius-sm);
   font-family: var(--font-body);
   font-size: var(--t-body);
-  font-weight: 500;
-  transition: color .14s var(--ease-press), border-color .14s var(--ease-press);
+  font-weight: 600;
+  transition: color .14s var(--ease-press), border-color .14s var(--ease-press),
+              background .14s var(--ease-press);
 }
-.btn-ghost:hover { color: var(--on-paper); border-color: var(--on-paper-dim); }
+.btn-ghost:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+  background: var(--gold-wash);
+}
 
 /* A real button that reads as a text link — keeps it keyboard reachable. */
 .linklike {
   background: none;
   border: none;
-  padding: 4px 6px;
+  padding: 5px 8px;
   border-radius: var(--radius-sm);
   font-family: var(--font-body);
   font-size: var(--t-small);
   font-weight: 600;
   color: var(--on-paper-dim);
   text-decoration: none;
+  transition: color .14s var(--ease-press), background .14s var(--ease-press);
 }
-.linklike:hover:not(:disabled) { background: var(--ink-deep); color: var(--on-paper); }
-.linklike:disabled { opacity: .45; cursor: not-allowed; }
+.linklike:hover:not(:disabled) { background: var(--ink-sunk); color: var(--gold); }
+.linklike:disabled { opacity: .4; cursor: not-allowed; }
 
 .card--screen .linklike { color: var(--on-paper-dim); }
-.card--screen .linklike:hover:not(:disabled) { color: var(--on-paper); }
+.card--screen .linklike:hover:not(:disabled) { color: var(--gold); }
 
 /* --- The main game ------------------------------------------------------
-   The panel earns its prominence from size, position, a tinted fill and a
-   single accent rule down its left edge — not from a gradient, a glow or a
-   pulse, each of which a previous direction tried and each of which made it
-   the loudest thing on a page that should be calm.
+   The one panel on the start screen that has to be pressed. It earns that by
+   being the only surface wearing the house colours: a deep maroon-to-black
+   wash, a gold rule down its left edge, and the page's only red key sitting
+   inside it. Everything else on the start screen is flat.
 -------------------------------------------------------------------------- */
 .hero-btn {
   position: relative;
@@ -136,33 +151,60 @@ button {
   text-align: left;
   padding: var(--s-5);
   margin-bottom: var(--s-5);
-  background: var(--ink-sunk);
+  background: linear-gradient(120deg, #2A0F14 0%, #1A0F0A 62%, #241703 100%);
   border: 1px solid var(--paper-rule);
-  border-left: 2px solid var(--peacock);
+  border-left: 3px solid var(--gold);
   border-radius: var(--radius);
   color: var(--on-paper);
-  transition: background .14s var(--ease-press), border-color .14s var(--ease-press);
+  overflow: hidden;
+  transition: border-color .14s var(--ease-press), box-shadow .16s var(--ease-press);
 }
-.hero-btn::before, .hero-btn::after { display: none; }
-.hero-btn:hover { background: var(--paper-shade); border-color: var(--peacock); }
-.hero-btn:focus-visible { outline-color: var(--peacock); outline-offset: 3px; }
+.hero-btn::before { display: none; }
+/*
+  A slow sheen across the panel, the way light moves over a foil-blocked
+  poster as you walk past it. One pass every 7 seconds, at 6% white — visible
+  as movement, never as a shine you have to look at. This is the only ambient
+  animation outside the poster wall.
+*/
+.hero-btn::after {
+  content: "";
+  position: absolute;
+  top: -60%;
+  left: -60%;
+  width: 40%;
+  height: 220%;
+  background: linear-gradient(90deg, transparent, rgba(255, 240, 200, .06), transparent);
+  transform: rotate(18deg);
+  animation: sheen 7s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes sheen {
+  0%, 62% { left: -60%; }
+  100% { left: 130%; }
+}
+.hero-btn:hover {
+  border-color: var(--gold);
+  box-shadow: var(--glow-gold);
+}
+.hero-btn:focus-visible { outline-color: var(--gold); outline-offset: 3px; }
 
-.hb-main { min-width: 0; }
+.hb-main { min-width: 0; position: relative; z-index: 1; }
 .hb-rule {
   display: block;
   font-family: var(--font-mono);
   font-size: var(--t-micro);
   letter-spacing: var(--track);
   text-transform: uppercase;
-  color: var(--peacock);
+  color: var(--gold);
 }
 .hb-title {
   display: block;
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(30px, 7vw, 42px);
-  line-height: 1.05;
-  letter-spacing: -.025em;
+  font-weight: 400;
+  font-size: clamp(34px, 8vw, 50px);
+  line-height: 1;
+  letter-spacing: .01em;
+  text-transform: uppercase;
   margin: var(--s-2) 0 var(--s-2);
   color: var(--on-paper);
 }
@@ -172,50 +214,44 @@ button {
   line-height: 1.5;
   color: var(--on-paper-dim);
 }
-/* The one filled control on the start screen, so it is unmistakably the thing
-   to press. The ▼ arrows that used to bracket it came from the descent
-   costume and are gone with it. */
 .hb-go {
+  position: relative;
+  z-index: 1;
   font-family: var(--font-body);
-  font-size: var(--t-body);
-  font-weight: 600;
-  padding: 11px var(--s-6);
+  font-size: 17px;
+  font-weight: 700;
+  padding: 13px var(--s-6);
   border-radius: var(--radius-sm);
-  background: var(--peacock);
-  color: #FFFFFF;
+  background: linear-gradient(180deg, #F02A46 0%, var(--red) 55%, var(--red-deep) 100%);
+  color: var(--on-red);
   white-space: nowrap;
-  transition: background .14s var(--ease-press);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, .4), 0 6px 20px rgba(224, 32, 60, .3);
+  transition: filter .14s var(--ease-press), box-shadow .16s var(--ease-press);
 }
-.hero-btn:hover .hb-go { background: var(--peacock-deep); }
+.hero-btn:hover .hb-go { filter: brightness(1.14); box-shadow: 0 2px 0 rgba(0, 0, 0, .4), var(--glow-red); }
 
 /* --- Selection tiles ---------------------------------------------------- */
 
 .mode-btn,
 .pack-btn {
-  background: var(--paper);
+  background: var(--ink-sunk);
   border: 1px solid var(--paper-rule);
   border-radius: var(--radius);
   text-align: left;
   color: var(--on-paper);
   font-family: var(--font-body);
-  transition: background .14s var(--ease-press), border-color .14s var(--ease-press),
-              box-shadow .14s var(--ease-press);
+  transition: background .14s var(--ease-press), border-color .14s var(--ease-press);
 }
 .mode-btn { padding: var(--s-4); }
 .pack-btn {
   position: relative;
   padding: var(--s-3) var(--s-4) var(--s-3) calc(var(--s-4) + 6px);
-  transform: none;
 }
-/* --ink is the page ground, now deep indigo; these sit ON a card, so their
-   hover tint comes off the card. (Dormant with the themed mode, kept correct.) */
 .mode-btn:hover,
 .pack-btn:hover,
 .pack-btn:focus-visible {
-  background: var(--paper-shade);
-  border-color: var(--paper-rule);
-  box-shadow: var(--shadow-card);
-  transform: none;
+  background: var(--ink-deep);
+  border-color: var(--gold);
 }
 
 /* The colour spine stays: it indexes the packs, which is information. */
@@ -238,9 +274,10 @@ button {
 .mode-btn .mdesc { color: var(--on-paper-dim); font-size: var(--t-small); margin-top: var(--s-2); line-height: 1.45; }
 .mode-btn .mrule {
   font-size: var(--t-micro);
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  color: var(--peacock);
+  letter-spacing: var(--track);
+  color: var(--gold);
   display: block;
   margin-bottom: var(--s-1);
 }
@@ -251,13 +288,14 @@ button {
 /* --- Rules and labels --------------------------------------------------- */
 
 .eyebrow {
+  font-family: var(--font-mono);
   font-size: var(--t-micro);
-  font-weight: 600;
-  letter-spacing: .04em;
+  font-weight: 500;
+  letter-spacing: var(--track);
   text-transform: uppercase;
   color: var(--on-paper-dim);
 }
-.card--screen .eyebrow { color: var(--peacock); }
+.card--screen .eyebrow { color: var(--gold); }
 
 .section-label {
   display: flex;
@@ -265,23 +303,31 @@ button {
   gap: var(--s-3);
   margin: var(--s-5) 0 var(--s-3);
 }
-/* A plain hairline. The ticket perforation belonged to the printed style. */
-.section-label .line { flex: 1; height: 1px; background: var(--ink-deep); opacity: 1; }
+.section-label .line { flex: 1; height: 1px; background: var(--paper-rule); opacity: 1; }
 .section-label span {
-  font-size: var(--t-small);
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 400;
+  letter-spacing: .02em;
+  text-transform: uppercase;
   color: var(--on-paper);
   white-space: nowrap;
 }
-.section-label .sl-note { color: var(--on-paper-dim); font-weight: 400; }
+.section-label .sl-note {
+  font-family: var(--font-body);
+  font-size: var(--t-small);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--on-paper-dim);
+  font-weight: 400;
+}
 
 /* --- Input -------------------------------------------------------------- */
 
 /*
-  The answer field, set as a terminal line: square, ruled, with a caret-style
-  The answer field. Plain and quiet: the accent appears only on the focus rule,
-  because the field is where the player's own words go and colouring their
-  typing was part of the terminal costume.
+  The answer field. A sunk well on the card with a gold focus edge — gold
+  rather than red because focus is a state, not an action, and the red key
+  sits directly beside it.
 
   font-size stays at 16px or larger. Anything under that makes iOS Safari zoom
   the whole page on focus, and the player would lose the clock off the top of
@@ -290,16 +336,20 @@ button {
 input#answerInput {
   flex: 1;
   min-width: 0;
-  padding: 10px var(--s-4);
+  padding: 13px var(--s-4);
   border: 1px solid var(--paper-rule);
   border-radius: var(--radius-sm);
-  background: var(--ink-sunk);
+  background: var(--ink);
   color: var(--on-paper);
-  font-size: 16px;
+  font-size: 17px;
+  font-weight: 500;
   font-family: var(--font-body);
   outline: none;
-  transition: border-color .14s var(--ease-press);
+  transition: border-color .14s var(--ease-press), box-shadow .14s var(--ease-press);
 }
-input#answerInput::placeholder { color: var(--on-paper-dim); }
-input#answerInput:focus { border-color: var(--peacock); }
-input#answerInput:disabled { opacity: .6; }
+input#answerInput::placeholder { color: var(--on-paper-dim); opacity: .75; }
+input#answerInput:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-wash);
+}
+input#answerInput:disabled { opacity: .5; }

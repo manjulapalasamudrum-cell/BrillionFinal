@@ -47,10 +47,15 @@
 */
 .howto em {
   font-style: normal;
-  padding: 0 4px;
-  background: var(--peacock);
-  color: #FFFFFF;
-  border-radius: var(--radius);
+  padding: 1px 6px;
+  background: var(--gold);
+  /* NOT white. Gold is a light fill — white on it lands at 1.8:1 and is
+     effectively unreadable. This is the exact trap the note above describes:
+     a highlight has to set BOTH halves of the pair, and inverting the page
+     inverts which half is dark. */
+  color: var(--on-gold);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
@@ -101,9 +106,10 @@
 */
 .lr-bar {
   height: 12px;
-  background: var(--ink-deep);
+  background: var(--ink);
+  border: 1px solid var(--paper-rule);
   display: block;
-  border-radius: 2px;
+  border-radius: 3px;
   overflow: hidden;
 }
 .lr-bar i {
@@ -111,11 +117,12 @@
   height: 100%;
   transform-origin: left center;
   animation: bar-draw .7s var(--ease-press) both;
-  /* The bar's own colour, thrown back as a halo. `currentColor` is not
-     available here — the colour arrives as an inline background from
-     StartScreen.js — so the glow is a generic dark lift that reads as bloom
-     against every rung. */
-  box-shadow: inset 0 -3px 6px rgba(0, 0, 0, .18);
+  /* A lift along the top edge rather than a shadow along the bottom. On the
+     pale ground this was an inset dark shadow reading as bloom; against
+     near-black a dark inset is invisible, so the rung is caught in light
+     instead. `currentColor` is not available here — the colour arrives as an
+     inline background from StartScreen.js — so it is a generic warm white. */
+  box-shadow: inset 0 1px 0 rgba(255, 240, 214, .35);
 }
 @keyframes bar-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
@@ -182,15 +189,18 @@
               padding-left .14s var(--ease-press);
 }
 
-/* The show number, set as a printed schedule would set it. */
+/* The show number, set as a printed schedule would set it. It reads off the
+   dim text colour rather than the rule colour: --paper-rule is a near-black
+   hairline on this ground and the numbers vanished into the card entirely. */
 .show-btn::before {
   content: counter(show, decimal-leading-zero);
   font-family: var(--font-mono);
   font-size: var(--t-small);
   letter-spacing: .06em;
-  color: var(--paper-rule);
+  color: var(--on-paper-dim);
+  opacity: .55;
   padding-left: var(--s-2);
-  transition: color .14s var(--ease-press);
+  transition: color .14s var(--ease-press), opacity .14s var(--ease-press);
 }
 
 /*
@@ -208,14 +218,21 @@
   bottom: 6px;
   width: 4px;
   border-radius: 0 2px 2px 0;
-  background: var(--peacock);
+  /* Four rungs of the rarity ramp rather than four unrelated inks. The palette
+     only has two accents now, so cycling "the accents" would have given two
+     golds and two reds — the ramp is the one place the page still keeps four
+     distinguishable colours, and it costs nothing to borrow them. */
+  background: var(--tier-known);
   transform: scaleY(.45);
   transform-origin: center;
   transition: transform .18s var(--ease-press);
 }
-.show-btn:nth-child(2)::after { background: var(--rani); }
-.show-btn:nth-child(3)::after { background: var(--marigold); }
-.show-btn:nth-child(4)::after { background: var(--violet); }
+/* of-type, not nth-child: the section label is the first child of .programme,
+   so counting children shifted every spine down by one and handed show 01 the
+   colour meant for 02. Counting buttons ignores the label. */
+.show-btn:nth-of-type(2)::after { background: var(--tier-solid); }
+.show-btn:nth-of-type(3)::after { background: var(--tier-deepcut); }
+.show-btn:nth-of-type(4)::after { background: var(--tier-legendary); }
 
 .show-btn:last-child { border-bottom: var(--rule); }
 .show-btn:hover,
@@ -223,15 +240,18 @@
 .show-btn:hover::after,
 .show-btn:focus-visible::after { transform: scaleY(1); }
 .show-btn:hover::before,
-.show-btn:focus-visible::before { color: var(--peacock); }
+.show-btn:focus-visible::before { color: var(--gold); opacity: 1; }
 .show-btn:hover .sb-blurb, .show-btn:hover .sb-rounds { color: var(--on-paper-dim); }
 
 .sb-main { min-width: 0; }
 .sb-name {
   display: block;
   font-family: var(--font-display);
-  font-size: 22px;
-  line-height: 1.15;
+  font-weight: 400;
+  font-size: 25px;
+  line-height: 1.05;
+  letter-spacing: .015em;
+  text-transform: uppercase;
 }
 .sb-blurb {
   display: block;
@@ -292,7 +312,7 @@
 .ab-score {
   font-family: var(--font-mono);
   font-size: var(--t-micro);
-  color: var(--peacock);
+  color: var(--gold);
   white-space: nowrap;
 }
 
@@ -307,7 +327,7 @@
 .ab-go { letter-spacing: .08em; text-transform: uppercase; }
 
 .archive-btn:hover .ab-go,
-.archive-btn:focus-visible .ab-go { color: var(--peacock); }
+.archive-btn:focus-visible .ab-go { color: var(--gold); }
 
 /* A played day is marked on the date itself rather than by tinting the whole
    row, which would read as "selected" rather than "done". */

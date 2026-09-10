@@ -4,20 +4,20 @@
 html, body { margin: 0; padding: 0; }
 
 /*
-  The ground, with a soft vertical gradient — light at the top where the page
-  "catches" light, settling darker toward the bottom. Flat colour at this
-  lightness reads as a blank fill; the gradient is what gives it depth without
-  putting any pattern behind the cards to compete with them. The hue itself is
-  three tokens in tokens.css, so it can be changed without touching this.
+  THE DARKENED HOUSE. A warm near-black ground with a single soft pool of light
+  behind the card column — the spill a screen throws back into an auditorium.
 
-  `background-attachment: fixed` keeps the gradient anchored to the viewport
-  rather than stretching over the full scroll height, which would flatten it
-  back out on a long page.
-*/
-/*
-  THE WATER COLUMN. Light at the surface, black at the floor, fixed to the
-  viewport so it reads as a place you are inside rather than a gradient that
-  scrolls past. This is the descent the game has always described in words.
+  It is built from two layers, both fixed to the viewport so they read as a
+  room you are inside rather than as a gradient that scrolls past:
+
+    1. an elliptical warm glow, centred and high, that lifts the middle of the
+       page just enough for the cards to sit in light;
+    2. the vertical wash from --ink-tint-top down to --ink-tint-bottom, so the
+       foot of the page is the back of the stalls.
+
+  Deliberately NO pattern or texture behind the cards. The poster wall in the
+  masthead is the one piece of imagery on the page and it only works because
+  nothing else competes with it.
 */
 body {
   min-height: 100vh;
@@ -25,40 +25,30 @@ body {
   font-size: var(--t-body);
   color: var(--on-ink);
   background-color: var(--ink);
-  background-image: linear-gradient(
-    180deg,
-    var(--ink-tint-top) 0%,
-    var(--ink) 38%,
-    var(--ink-tint-bottom) 100%
-  );
+  background-image:
+    radial-gradient(120% 62% at 50% 0%, rgba(240, 180, 41, .09) 0%, transparent 64%),
+    radial-gradient(90% 50% at 50% 34%, rgba(224, 32, 60, .06) 0%, transparent 70%),
+    linear-gradient(180deg, var(--ink-tint-top) 0%, var(--ink) 42%, var(--ink-tint-bottom) 100%);
   background-attachment: fixed;
   display: flex;
   justify-content: center;
   padding: var(--s-5) var(--s-4) var(--s-7);
   position: relative;
   overflow-x: hidden;
-  /* Antialiasing back on. It was switched off for the bitmap face, which needed
-     hard pixel edges; a geometric sans rendered without smoothing just looks
-     broken. */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /*
-  The CRT scanline overlay that used to sit here is gone. It was a costume: it
-  read as texture you had to look through rather than as atmosphere, and it
-  fought every piece of small type on the page.
-*/
-
-/*
   THE DEPTH SCALE, down the right edge: the years this game dives through,
-  surface to floor. It is the one flourish kept from the previous direction,
-  because it is the only one that was carrying information rather than mood —
-  the game really does descend from 2026 to 1913, and the result screen plots
-  your score on exactly this line.
+  surface to floor. Kept from every previous direction because it is the only
+  flourish that carries information rather than mood — the game really does
+  descend from 2026 to 1913, and the result screen plots your score on exactly
+  this line.
 
-  Drawn as body content so no markup carries it, and dropped below 720px where
-  the page cannot spare the width.
+  Drawn as body content so no markup carries it, and dropped below 900px, where
+  the page cannot spare the width. (It used to go at 720px and spent the
+  intervening range overlapping the card edge on tablets.)
 */
 body::after {
   content: "2026 · 2000 · 1975 · 1950 · 1913";
@@ -73,76 +63,168 @@ body::after {
   font-family: var(--font-mono);
   font-size: var(--t-micro);
   letter-spacing: var(--track);
-  color: var(--on-ink-dim);
-  opacity: .28;
+  color: var(--gold);
+  opacity: .22;
 }
-@media (max-width: 720px) {
+@media (max-width: 900px) {
   body::after { display: none; }
 }
 
 .wrap {
   width: 100%;
-  max-width: 620px;
+  max-width: 660px;
   position: relative;
   z-index: 1;
 }
 
 /* --- Header ------------------------------------------------------------ */
 
-/* Top padding clears the sound toggle, which is absolutely positioned in the
-   corner and used to sit on top of the kicker line — "dive to 1913" was being
-   cut off behind it at desktop width. */
 header.top {
   position: relative;
   text-align: center;
   margin-bottom: var(--s-4);
-  padding: var(--s-7) var(--s-5) var(--s-4);
+  padding: var(--s-7) var(--s-5) var(--s-5);
   background: var(--paper);
   border: var(--rule);
   border-radius: var(--radius);
   box-shadow: var(--shadow-card);
   overflow: hidden;
+  isolation: isolate;
 }
 @media (max-width: 520px) {
   /* The toggle drops its label here, so it needs far less room. */
   header.top { padding-top: var(--s-6); }
 }
 
-/*
-  THE MARQUEE. A rail of bulbs across the top of the frontage, built from two
-  repeating radial gradients — one for the filament, one for the glow it throws
-  back onto the board. Nothing else on the page is lit, which is what makes the
-  masthead read as the frontage and not as a header.
+/* ======================================================================
+   THE POSTER WALL — the signature
+   ======================================================================
 
-  The flicker is slow and shallow (opacity .82 → 1 over 4s) because filament
-  lamps are never quite steady, and because anything faster would be a
-  distraction sitting above every screen in the game. Reduced motion stops it
-  dead via the rule at the foot of this file; the bulbs stay lit, they just
-  stop breathing.
+   The wall of a single-screen theatre, pasted over with what is showing. Every
+   tile is a REAL title from the answer bank (Chrome.js reads them off it), so
+   the imagery behind the masthead is the game's own catalogue rather than
+   decoration — the page is advertising exactly what it contains.
+
+   It is built rather than photographed for a reason worth recording: actual
+   Bollywood poster art is under copyright and the shipped game is one
+   self-contained HTML file with no network, so there is nowhere for an image
+   to come from. Type on a painted ground is what a hoarding largely IS anyway.
+
+   Three things keep it atmosphere and not clutter:
+     - it sits at low opacity under a vignette that goes fully black in the
+       centre, so the wordmark and tagline always land on flat ground;
+     - it drifts very slowly (60s) and never loops visibly;
+     - it is aria-hidden in Chrome.js, so a screen reader never reads a wall of
+       film titles before the page's actual heading.
 */
-/* The marquee belonged to the hoarding. There is no hoarding now — we are
-   underwater. The element stays in Chrome.js and is simply not drawn. */
+.poster-wall {
+  position: absolute;
+  inset: -8% -4%;
+  z-index: 0;
+  pointer-events: none;
+  display: grid;
+  /* Ten columns, not six. At six the tiles came out ~110px wide against a
+     250px-tall masthead — two and a half enormous rectangles, which read as
+     blurred blocks rather than as a wall of bills. The imagery only works when
+     a tile is small enough that the eye takes the grid as texture and large
+     enough that a title is catchable: about 60px. */
+  grid-template-columns: repeat(10, 1fr);
+  gap: 7px;
+  opacity: .62;
+  transform: rotate(-4deg) scale(1.2);
+  animation: wall-drift 60s linear infinite alternate;
+  /* Clear in the middle so the wordmark and tagline always land on flat
+     ground, bills at the edges. Both spellings: Safari still wants the prefix,
+     and without it the mask is dropped and the wall covers the masthead. */
+  -webkit-mask-image: radial-gradient(72% 58% at 50% 46%, transparent 22%, #000 96%);
+  mask-image: radial-gradient(72% 58% at 50% 46%, transparent 22%, #000 96%);
+}
+@keyframes wall-drift {
+  from { transform: rotate(-4deg) scale(1.18) translate3d(-1.5%, -1%, 0); }
+  to   { transform: rotate(-4deg) scale(1.18) translate3d(1.5%, 1%, 0); }
+}
+
+/*
+  One pasted bill. The gradient is the painted ground, the gold hairline is the
+  border every one of these carries, and the title is set in the display face
+  at whatever size fits — small enough to read as texture, large enough that
+  you can catch a title you know.
+*/
+.pw-tile {
+  aspect-ratio: 2 / 3;
+  display: flex;
+  align-items: flex-end;
+  padding: 4px;
+  border-radius: 2px;
+  border: 1px solid rgba(240, 180, 41, .34);
+  background: linear-gradient(155deg, #7A2430 0%, #3A1418 55%, #5E3A0C 100%);
+  overflow: hidden;
+}
+/*
+  Four painted grounds, cycled, so the wall is not one flat colour repeated:
+  deep maroon, ink blue, marigold dusk and a bottle green — the four you would
+  actually find on a row of hoardings.
+
+  They are pitched far brighter than they look on the page, and deliberately.
+  The wall is already carrying an opacity of .62 AND a vignette mask; at the
+  near-black values these started on, the whole thing arrived as a blurred dark
+  smear with no title readable in it. The paint has to be bright BEFORE the two
+  layers of dimming, not after.
+*/
+.pw-tile:nth-child(4n+2) { background: linear-gradient(155deg, #23407A 0%, #101A34 60%, #3C2A54 100%); }
+.pw-tile:nth-child(4n+3) { background: linear-gradient(155deg, #96590E 0%, #3A2408 58%, #6E1E1E 100%); }
+.pw-tile:nth-child(4n+4) { background: linear-gradient(155deg, #14402E 0%, #0C2018 55%, #3A2C0A 100%); }
+
+.pw-title {
+  font-family: var(--font-display);
+  font-size: 8px;
+  line-height: 1.05;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  color: rgba(255, 250, 242, .95);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .8);
+  /* Two lines at most, then it is texture. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* Every third bill gets its title in foil, the way the featured one on a wall
+   does. */
+.pw-tile:nth-child(3n) .pw-title { color: rgba(255, 205, 90, .95); }
+
+@media (max-width: 520px) {
+  /* Fewer, larger bills — ten columns at phone width is grain, not posters. */
+  .poster-wall { grid-template-columns: repeat(6, 1fr); opacity: .5; }
+}
+
+/* The marquee belonged to an earlier hoarding direction. The element stays in
+   Chrome.js and is simply not drawn — the poster wall is the imagery now. */
 .bulbs { display: none; }
 
 .sound-toggle {
   position: absolute;
   top: var(--s-3);
   right: var(--s-3);
+  z-index: 3;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
-  background: var(--ink-sunk);
-  border: var(--rule);
-  border-radius: var(--radius);
+  padding: 5px 11px;
+  background: rgba(10, 7, 5, .72);
+  border: 1px solid var(--paper-rule);
+  border-radius: 100px;
   color: var(--on-paper-dim);
   font-family: var(--font-body);
   font-size: var(--t-micro);
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--track);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
   transition: color .14s var(--ease-press), border-color .14s var(--ease-press);
 }
-.sound-toggle:hover { color: var(--peacock); border-color: var(--peacock); }
+.sound-toggle:hover { color: var(--gold); border-color: var(--gold); }
 .sound-toggle svg {
   width: 15px;
   height: 15px;
@@ -157,53 +239,89 @@ header.top {
   .sound-toggle .st-label { display: none; }
 }
 
+/* Everything the masthead says sits above the wall. */
+header.top > .kicker,
+header.top > .wordmark,
+header.top > .tagline { position: relative; z-index: 2; }
+
 .kicker {
-  font-size: var(--t-small);
-  color: var(--on-paper-dim);
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  color: var(--gold);
   display: block;
   text-transform: uppercase;
   letter-spacing: var(--track);
+  opacity: .9;
 }
 
 /*
-  THE WORDMARK, printed three times. Peacock and rani are laid down first, each
-  a pixel or two out of true, then the solid ink on top — a screen print that
-  missed its registration marks, which is exactly what the cheap end of film
-  publicity looks like.
+  THE WORDMARK, printed three times and struck in foil.
 
-  It is one indulgence and it is spent here, on the one word that names the
-  game. Nothing else on the page uses the device. The ghost passes are
-  aria-hidden in Chrome.js, so a screen reader hears the title once.
-*/
-/*
-  THE WORDMARK, set plainly. The three-pass off-register print is retired: it
-  was the loudest thing on the page and this direction has no room for a
-  flourish that says nothing.
+  Red and gold are laid down first, each a pixel or two out of true, then the
+  foil pass on top — a title card that missed its registration marks, which is
+  precisely what the cheap end of film publicity looks like. The effect was
+  built and then retired by an earlier direction for being the loudest thing on
+  a deliberately quiet page; this page is a hoarding, so it is back.
 
-  The ghost spans stay in Chrome.js and are simply not drawn, so restoring the
-  effect is one rule here and no markup change — the same way the marquee bulbs
-  are still waiting.
+  The foil itself is a gradient clipped to the glyphs, with a light band raked
+  across it. `color` is set first as the fallback: if background-clip:text is
+  unsupported the word is simply solid gold rather than invisible, which is the
+  failure mode that matters.
+
+  The ghost passes are aria-hidden in Chrome.js, so a screen reader hears the
+  title once.
 */
 .wordmark {
   position: relative;
   display: block;
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 400;          /* Anton ships one weight; 700 would synthesise. */
   font-size: var(--t-mega);
-  line-height: 1.1;
-  letter-spacing: -.02em;
-  margin: var(--s-2) 0 var(--s-3);
-  color: var(--on-paper);
+  line-height: .96;
+  letter-spacing: .005em;
+  text-transform: uppercase;
+  margin: var(--s-3) 0 var(--s-4);
+  color: var(--gold);
 }
-.wm-ghost { display: none; }
-.wm-main { position: static; }
+.wm-main {
+  display: block;
+  position: relative;
+  z-index: 2;
+  background-image: linear-gradient(
+    174deg,
+    #FFE9A8 0%,
+    #F0B429 30%,
+    #FFF6D8 47%,   /* the raked highlight */
+    #E09A12 62%,
+    #B87708 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 3px 14px rgba(240, 180, 41, .3));
+}
+/* The two misregistered passes, behind the foil. */
+.wm-ghost {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.wm-ghost--peacock { color: var(--red); transform: translate(-3px, 2px); opacity: .85; }
+.wm-ghost--magenta { color: #7A2FA8; transform: translate(3px, -2px); opacity: .5; }
+
+@media (max-width: 520px) {
+  .wm-ghost--peacock { transform: translate(-2px, 1px); }
+  .wm-ghost--magenta { transform: translate(2px, -1px); }
+}
 
 .tagline {
   color: var(--on-paper-dim);
   font-size: var(--t-body);
-  line-height: 1.5;
+  line-height: 1.55;
   margin: 0 auto;
-  max-width: 46ch;
+  max-width: 48ch;
 }
 .tagline b { color: var(--on-paper); font-weight: 600; }
 
@@ -213,12 +331,13 @@ footer.about {
   margin-top: var(--s-4);
   padding: var(--s-4);
   background: var(--paper);
+  border: var(--rule);
   border-radius: var(--radius);
   box-shadow: var(--shadow-card);
   text-align: center;
   font-size: var(--t-small);
   color: var(--on-paper-dim);
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .hidden { display: none !important; }
@@ -226,14 +345,15 @@ footer.about {
 /* --- Quality floor ------------------------------------------------------ */
 
 :focus-visible {
-  outline: 2px solid var(--peacock);
+  outline: 2px solid var(--gold);
   outline-offset: 2px;
 }
 
 /*
   Windows High Contrast replaces every colour with the system palette. Right
-  for text and chrome — but the rarity ramp and the depth gauge encode the
-  score itself, and a swatch stripped of its colour says nothing at all.
+  for text and chrome — but the rarity ramp, the depth gauge and the progress
+  bar encode the score itself, and a swatch stripped of its colour says
+  nothing at all.
 */
 @media (forced-colors: active) {
   .lr-bar i,
@@ -255,4 +375,7 @@ footer.about {
     animation-iteration-count: 1 !important;
     transition-duration: .001ms !important;
   }
+  /* The wall's drift is the one animation that would otherwise sit at its
+     start frame rather than its resting one. */
+  .poster-wall { animation: none; }
 }

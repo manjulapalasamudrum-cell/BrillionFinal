@@ -2,7 +2,7 @@
 
 import { h, useState } from './dom.js';
 import { TIERS, MAX_TIER_POINTS } from '../data/tiers.js';
-import { bankStats } from '../data/bank.js';
+import { bankStats, wallTitles } from '../data/bank.js';
 import { isMuted, setMuted } from '../lib/audio.js';
 import { CINEMA_START_YEAR } from '../game/eras.js';
 
@@ -34,12 +34,39 @@ function SoundToggle() {
   );
 }
 
+/**
+ * The wall outside a single-screen theatre, pasted over with what is showing.
+ *
+ * Every tile is a real title out of the answer bank, so the imagery behind the
+ * masthead is the game's own catalogue rather than decoration — the page
+ * advertises exactly what it contains. Actual poster art is under copyright
+ * and the shipped game is one self-contained file with no network, so there is
+ * nowhere for an image to come from; type on a painted ground is most of what
+ * a hoarding is anyway.
+ *
+ * aria-hidden as a whole: a screen reader should reach the page's heading, not
+ * two dozen film titles laid out as scenery.
+ */
+function PosterWall() {
+  // Enough to fill ten columns for four rows at desktop width; the masthead
+  // crops whatever it cannot show.
+  const titles = wallTitles(40);
+  return h(
+    'div',
+    { className: 'poster-wall', 'aria-hidden': 'true' },
+    titles.map((title, i) =>
+      h('div', { key: i, className: 'pw-tile' }, h('span', { className: 'pw-title' }, title))
+    )
+  );
+}
+
 export function TopHeader() {
   const { packs, answers } = bankStats();
 
   return h(
     'header',
     { className: 'top' },
+    h(PosterWall),
     h(SoundToggle),
     // The lit rail across the top of the frontage.
     h('div', { className: 'bulbs', 'aria-hidden': 'true' }),

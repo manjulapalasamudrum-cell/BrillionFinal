@@ -133,7 +133,7 @@ src/css/
   base.css                  reset, the ground, header, footer
   components.css            card surfaces, buttons, tiles, the input
   screen-start.css          masthead, rarity ladder, programme, archive
-  screen-game.css           the one dark surface: prompt, clock, feedback
+  screen-game.css           run bar, clock, the big prompt card, the verdict
   screen-result.css         depth gauge, score band, breakdown, share box
 src/js/
   main.js                   entry point; mounts <App> into #root
@@ -142,7 +142,8 @@ src/js/
   data/packs/*.js           one file per pack — 17 of them, ~1,120 answers
   data/dailies.js           the daily shows and their constraints
   data/schedule.js          hand-picked prompts for particular dates
-  data/bank.js              facts read off the bank: counts, the rarity ladder
+  data/bank.js              facts read off the bank: counts, the rarity ladder,
+                            the titles on the masthead's poster wall
   lib/random.js             seeded PRNG; the day runs midnight-to-midnight IST,
                             plus the archive's date keys
   lib/history.js            best score per day, in localStorage, for the archive
@@ -462,32 +463,74 @@ never break the game.
 
 ## The design
 
-**Current style: "The Archive."** A quiet, cool-toned instrument:
-near-monochrome slate, one muted steel accent, **Space Grotesk** for everything
-a person reads and **JetBrains Mono** for everything a machine counts.
+**Current style: "The Single Screen."** The darkened auditorium, the
+hand-painted hoarding outside it, and the gold foil of a printed title card.
+Warm near-black ground, two accents, **Anton** for anything a hoarding would
+shout, **Barlow** for everything a person reads and **JetBrains Mono** for
+everything a machine counts.
 
-**The one idea holding it together:** the chrome is almost colourless *on
-purpose*, because the rarity ramp is the only place on the page where colour
-carries meaning. A loud interface competes with it; a quiet one hands it the
-whole stage. Two earlier directions fought that — a hot-pink hoarding, then a
-cyan arcade terminal — and in both the ramp had to shout to be heard over the
-furniture. Here it can murmur.
+**The one idea holding it together — two accents, two jobs:**
+
+    gold = what a thing is WORTH   (scores, points, rarity, the foil wordmark)
+    red  = what you DO             (play, submit, the clock running out)
+
+They are never swapped and never used decoratively. That rule is the whole
+reason two saturated accents do not read as noise: every gold thing on the page
+is a number you earned, and every red thing is a control or a warning.
+
+The ground is warm black (`#0A0705`), not blue-black. A cool near-black is the
+reflexive choice for a dark interface and it fights every gold and red on top
+of it — the accents read as stickers on a slab. Warm black puts them all in the
+same light.
+
+### The poster wall
+
+The masthead sits on a wall of pasted bills, and every tile is a **real title
+out of the answer bank** (`wallTitles()` in `data/bank.js`), so the imagery is
+the game's own catalogue rather than decoration. It is built rather than
+photographed because actual poster art is under copyright and the shipped game
+is one self-contained file with no network — there is nowhere for an image to
+come from, and type on a painted ground is most of what a hoarding is anyway.
 
 ### The ramp is built from chroma, not lightness
 
 All five rungs sit at roughly the same brightness and ascend in **saturation**:
-near-grey slate for the answer everyone gives, through blue and violet, to gold
-and rose for the one nobody remembers. That is literally what "how much colour
-is spent on it" means, and it survives being desaturated in a way a
-dark-to-light ramp would not.
+near-grey for the answer everyone gives, through blue and violet, into the two
+accents — a deep cut is gold and a legendary rare is red. That is what makes
+the palette *state* the scoring model rather than sit beside it.
+
+It survived inverting the page, which is the point: moving from a pale ground
+to a black one flipped every rung from deep to bright, and the ladder still
+reads in the same order because the ORDER was never carried by lightness.
 
 It is also a hard accessibility requirement rather than a taste. `GameScreen`
 paints the tier swatch as the **background of a text chip**, so every rung has
-to carry dark text at 4.5:1. The mid-tone versions managed only 3.8 — a real
-failure on a label the player reads after every single answer.
+to clear 4.5:1 against its own text. On this ground all five rungs are *light*
+fills, so all five carry the dark ink — the reverse of the pale direction, where
+they carried white. `common` had to be lifted twice for exactly that; only
+`MISS`, the one deliberately dark swatch, keeps light text.
+
+### Two notes on setting a poster face
+
+Anton is not a drop-in replacement for a normal sans, and both traps cost time:
+
+- **Its glyphs overrun the em box**, so `line-height: 1` — tight leading that
+  looked deliberate on Space Grotesk — shears the flat top and bottom off every
+  digit. Anything set in Anton needs `1.05` or more.
+- **Its numeral counters are slits.** Below about 40px a `0` fills in solid and
+  reads as a cropped glyph rather than a digit. The live score in the run bar is
+  set in JetBrains Mono for that reason; the result screen's total stays in
+  Anton at 66px, where the counters are perfectly legible. A gold `text-shadow`
+  behind a gold digit does the same thing at any size — it bleeds through the
+  counter and fills it — so the figures carry no glow.
 
 ### Earlier directions, in order
 
+- **"The Archive"** — a pale cool-grey editorial layout, near-monochrome slate
+  and one muted steel accent, Space Grotesk throughout. Deliberately quiet so
+  the rarity ramp could carry the only colour on the page. The current
+  direction is the opposite bet: the ground is theatrical and the ramp is
+  brighter still.
 - **"The Descent"** — a VT323 pixel terminal with CRT scanlines and a hot cyan,
   matched to [Krillion.io](https://krillion.io), the sibling daily dive. Its
   year-marked depth scale down the right edge is the one thing kept, because it
@@ -497,8 +540,11 @@ failure on a label the player reads after every single answer.
 - **"Social"** — grey, white, and one blue.
 
 Each is mostly `tokens.css`, `base.css` and `components.css`. The markup never
-carried any of them: `.bulbs` and the two wordmark ghost spans are still in
-`Chrome.js`, hidden by one rule each in `base.css`.
+carried any of them: `.bulbs` and the two wordmark ghost spans have sat in
+`Chrome.js` through every direction, drawn or hidden by one rule each in
+`base.css`. The ghosts are drawn again now — the off-register red and violet
+passes behind the foil wordmark — which is exactly the payoff that arrangement
+was kept for.
 
 It replaced **"Social"**, a grey/white/one-blue card system whose own note
 described it as "the register Facebook made familiar". That is a perfectly good

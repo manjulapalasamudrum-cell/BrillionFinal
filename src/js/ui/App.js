@@ -215,7 +215,10 @@ export function App() {
       matched: matchedLabel,
       tier: tierInfo,
     }]);
-    setFeedback({ raw, tierInfo, matchedLabel, correction });
+    // tierIndex rides along so the feedback panel can tell a deep cut from an
+    // ordinary answer without re-deriving it — it is what decides whether the
+    // round gets the rare-answer celebration. MISS arrives as -1.
+    setFeedback({ raw, tierInfo, tierIndex, matchedLabel, correction });
   }
 
   function nextPrompt() {
@@ -278,6 +281,9 @@ export function App() {
     screen === 'game'
       ? h(GameScreen, {
           idx, totalPrompts, score, timeLeft, mode, roundPlan, cat, gameLabel,
+          // The run bar paints one pip per round in the colour of the tier it
+          // paid, so it needs the rounds already played, not just the total.
+          log,
           inputValue, setInputValue,
           onSubmit: attemptSubmit,
           onSkip: () => endPrompt('skip'),

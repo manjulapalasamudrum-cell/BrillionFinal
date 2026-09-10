@@ -154,7 +154,7 @@ $vendorJs = Read-Text 'src\vendor\mini-react.js'
 $fonts = @'
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 '@
 
 # Everything after the <head>: identical in both outputs.
@@ -212,7 +212,7 @@ $standalone = @"
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>BollyBuzz $EMDASH 10 Bollywood Trivia Games Where Rare Answers Win</title>
 <meta name="description" content="Name one answer per prompt. The rarer your answer, the deeper you dive into 113 years of Hindi cinema." />
-<meta name="theme-color" content="#EEF0F4">
+<meta name="theme-color" content="#0A0705">
 $fonts
 <style>
 $css

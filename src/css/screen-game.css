@@ -1,6 +1,5 @@
 /*
-   The game card. The only dark surface in the app: the lights are down
-   and the screen is lit.
+   The game card: the run bar, the clock, the prompt, and the verdict.
 
    Split out of a single 655-line screens.css. The cascade order in
    public/index.html and environment/build.ps1 is start, game, result --
@@ -8,37 +7,150 @@
 */
 
 /* ======================================================================
-   GAME — lights down
+   THE RUN BAR — where you are, what you have, what each round paid
    ====================================================================== */
 
-.hud {
+.runbar { margin-bottom: var(--s-4); }
+
+.runbar-head {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
+  gap: var(--s-3);
+  margin-bottom: var(--s-2);
+}
+
+.rb-round {
   font-family: var(--font-mono);
   font-size: var(--t-micro);
-  letter-spacing: .1em;
+  letter-spacing: var(--track);
   text-transform: uppercase;
-  color: var(--on-ink-dim);
-  margin-bottom: var(--s-3);
+  color: var(--on-paper-dim);
 }
-.hud b { color: var(--peacock); font-weight: 500; }
+.rb-round b { color: var(--on-paper); font-weight: 500; }
 
-/* The clock is a strip of film: it depletes, and the perforations show how
-   many seconds are left without you having to read the number. */
+/* The running total, in foil. It is the one number on this screen a player is
+   playing FOR, so it is the largest thing in the bar and the only gold one. */
+.rb-score {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+.rb-score i {
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: var(--t-micro);
+  letter-spacing: var(--track);
+  text-transform: uppercase;
+  color: var(--on-paper-dim);
+}
+/*
+  THE LIVE SCORE IS SET IN THE MONO FACE, NOT THE POSTER FACE — the one place
+  the two rules about figures pull against each other, resolved twice the wrong
+  way before this.
+
+  Anton is extremely condensed and very heavy, so its numeral counters are
+  slits. At the 32px this sits at, "0" came out as a solid gold slab with no
+  hole in it at all and read as a cropped glyph rather than a digit. (It was
+  not a crop: the box measured 15.8 x 38.4 with room to spare. The counter was
+  simply too narrow to survive at that size.) The first fix attempted was a
+  larger line-height, then removing a gold text-shadow that was ALSO filling
+  the counter in — both real problems, neither the cause.
+
+  So it goes to JetBrains Mono, which is what tokens.css says figures use, and
+  the split turns out to be worth having on its own terms: this is a live
+  instrument reading that changes every round, while the result screen's total
+  is the poster-sized payoff and stays in Anton at 66px, where the counters are
+  perfectly legible.
+*/
+.rb-score b {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 1.2;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+/*
+  The score kicks when a round is scored. `is-scored` is added by GameScreen
+  the moment feedback exists and removed when the next prompt clears it, so the
+  class genuinely changes on every round — which is what makes the animation
+  re-fire. (A keyframe on an element whose class never changes plays once, on
+  mount, and never again.)
+*/
+.runbar.is-scored .rb-score b { animation: score-kick .55s var(--ease-pop); }
+@keyframes score-kick {
+  0% { transform: scale(1); }
+  32% { transform: scale(1.28); color: #FFE9A8; }
+  100% { transform: scale(1); }
+}
+
+/*
+  The progress bar, segmented: one pip per round, painted in the colour of the
+  tier that round paid. This is the part worth the space — a running total says
+  "120", the bar says WHERE the 120 came from. Four commons and a legendary
+  reads completely differently from five knowns, and the rarity ramp's colours
+  are already the vocabulary for saying so.
+
+  It sits on the card as a real bar, not a row of dots: full width, 9px, with
+  the segments touching so they read as one object that is filling up.
+*/
+.runbar-pips {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 100px;
+  background: var(--ink);
+  border: 1px solid var(--paper-rule);
+}
+.pdot {
+  flex: 1;
+  height: 9px;
+  border-radius: 100px;
+  background: var(--ink-deep);
+  transition: background .3s var(--ease-press);
+}
+/* A scored round is lit from within — the segment carries its tier's colour as
+   an inline background, and this puts that colour back into the air around it
+   so a run of rare answers visibly glows. */
+.pdot.done {
+  background: var(--tier-common);   /* fallback; RunBar sets the real colour */
+  box-shadow: inset 0 1px 0 rgba(255, 240, 214, .3);
+}
+/* The round in play, before it has paid anything: an outline rather than a
+   fill, so it reads as waiting rather than as scored. */
+.pdot.now:not(.done) {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px var(--gold);
+  animation: pip-wait 1.6s ease-in-out infinite;
+}
+@keyframes pip-wait { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
+
+/* ======================================================================
+   THE CLOCK — a length of film running out
+   ====================================================================== */
+
 .timer { display: flex; align-items: center; gap: var(--s-3); margin-bottom: var(--s-5); }
 .timer-track {
   position: relative;
   flex: 1;
   height: 14px;
-  background: var(--ink-sunk);
+  border-radius: 3px;
+  background: var(--ink);
   border: 1px solid var(--paper-rule);
   overflow: hidden;
 }
+/*
+  BONE, NOT GOLD. The clock was gold at first and it was the loudest thing on
+  the card — a full-width bar of the one colour this palette reserves for what
+  a thing is WORTH, sitting directly above a score that had to compete with it.
+  Exposed film is the right material anyway: the strip is bone until the last
+  five seconds, when it goes red like everything else urgent here.
+*/
 .timer-fill {
   height: 100%;
-  background: var(--peacock);
-  transition: width 1s linear, background-color .3s ease;
+  background: linear-gradient(90deg, #6E5F52, #CDBBA6);
+  transition: width 1s linear, background .3s ease;
 }
 /* One perforation per second — one goes dark each tick, so the strip can be
    counted as well as read. `--tick` is 100/ROUND_SECONDS, set inline by
@@ -54,62 +166,116 @@
 .timer-count {
   font-family: var(--font-mono);
   font-size: var(--t-small);
-  color: var(--on-ink-dim);
+  color: var(--on-paper-dim);
   min-width: 4ch;
   text-align: right;
+  font-variant-numeric: tabular-nums;
 }
-.timer--low .timer-fill { background: var(--vermilion); }
-.timer--low .timer-count { color: var(--vermilion); }
+/* The last five seconds. Red is the action colour and this is the page's one
+   piece of urgency, so it also breathes — the only pulse in the interface. */
+.timer--low .timer-fill {
+  background: linear-gradient(90deg, var(--red-deep), var(--red-bright));
+  box-shadow: 0 0 14px rgba(255, 77, 99, .6);
+}
+.timer--low .timer-count { color: var(--red-bright); font-weight: 700; }
+.timer--low { animation: clock-urgent .9s ease-in-out infinite; }
+@keyframes clock-urgent { 0%, 100% { opacity: 1; } 50% { opacity: .72; } }
 
-.cat-label { text-align: center; }
-.cat-label .cl-kicker {
+/* ======================================================================
+   THE PROMPT — the big card
+   ====================================================================== */
+
+/*
+  The one thing on the screen a player has to read, so it gets a surface of its
+  own rather than sitting as centred text between a clock and an input. The
+  question is set in the poster face at up to 52px: this is a hoarding asking
+  you to name something, and it should read like one from across a room.
+*/
+.prompt-card {
+  position: relative;
+  text-align: center;
+  padding: var(--s-6) var(--s-5);
+  margin-bottom: var(--s-5);
+  border-radius: var(--radius);
+  border: 1px solid var(--paper-rule);
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(240, 180, 41, .07) 0%, transparent 62%),
+    linear-gradient(170deg, #241016 0%, #150C09 58%, #1F1405 100%);
+  overflow: hidden;
+  /* Each new prompt cuts in rather than appearing — the card is keyed on
+     nothing, so this fires on mount only; the round change re-renders it in
+     place, which is why the animation lives on the title instead. */
+  box-shadow: inset 0 1px 0 rgba(255, 226, 178, .06);
+}
+/* Corner marks, the way a printed card is trimmed. Two elements would be
+   needed for four corners; two opposite ones are enough to read. */
+.prompt-card::before,
+.prompt-card::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--gold);
+  opacity: .5;
+}
+.prompt-card::before { top: 10px; left: 10px; border-right: none; border-bottom: none; }
+.prompt-card::after { bottom: 10px; right: 10px; border-left: none; border-top: none; }
+
+.prompt-card .cl-kicker {
   font-family: var(--font-mono);
   font-size: var(--t-micro);
-  letter-spacing: .18em;
+  letter-spacing: .22em;
   text-transform: uppercase;
-  color: var(--peacock);
+  color: var(--gold);
 }
-.cat-label h2 {
+.prompt-card h2 {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 400;
   font-size: var(--t-prompt);
-  line-height: 1.2;
-  letter-spacing: -.01em;
-  margin: var(--s-3) 0 var(--s-2);
+  line-height: 1.02;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  margin: var(--s-3) 0 var(--s-3);
   color: var(--on-paper);
+  text-wrap: balance;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, .6);
 }
 /*
-  The round's restriction, given its own line and the accent colour. This is
-  the single most-missed thing on the screen: without it a player reads the
-  pack's "Any film..." hint, types a film that is genuinely valid for the pack
-  but wrong for this round, and concludes the game does not know it.
+  The round's restriction. This is the single most-missed thing on the screen:
+  without it a player reads the pack's "Any film..." hint, types a film that is
+  genuinely valid for the pack but wrong for this round, and concludes the game
+  does not know it. It wears the red outline because it is the rule that will
+  turn an answer away.
 */
-.cat-label .cl-limit {
+.prompt-card .cl-limit {
   display: inline-block;
-  margin: 0 auto var(--s-2);
-  padding: 5px var(--s-3);
-  border-radius: var(--radius);
-  /* A pale wash of the action colour. Retinted when peacock moved from blue to
-     teal — a blue chip beside a teal button read as a second, unrelated
-     accent. */
-  background: rgba(61, 110, 150, .1);
-  color: var(--peacock-deep);
+  margin: 0 auto var(--s-3);
+  padding: 6px var(--s-4);
+  border-radius: 100px;
+  border: 1px solid var(--red);
+  background: var(--red-wash);
+  color: var(--red-bright);
   font-size: var(--t-small);
   font-weight: 700;
 }
-.cat-label .cl-hint { color: var(--on-paper-dim); font-size: var(--t-small); }
+.prompt-card .cl-hint {
+  color: var(--on-paper-dim);
+  font-size: var(--t-small);
+  line-height: 1.5;
+  max-width: 42ch;
+  margin: 0 auto;
+}
 
-.answer-row { display: flex; gap: var(--s-2); margin-top: var(--s-5); }
+.answer-row { display: flex; gap: var(--s-2); }
 .skip-row { text-align: center; margin-top: var(--s-3); }
 
 .retry-note {
   margin-top: var(--s-4);
   padding: var(--s-3) var(--s-4);
-  border-left: 3px solid var(--vermilion);
-  background: rgba(184, 61, 92, .09);
-  /* The bright pink, not the deep one: this sits on a dark panel now, so the
-     deep shade that read well on white is barely legible. */
-  color: var(--magenta);
+  border-left: 3px solid var(--red);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--red-wash);
+  color: var(--red-bright);
   font-size: var(--t-small);
   line-height: 1.5;
   animation: nudge .3s var(--ease-press);
@@ -120,58 +286,189 @@
   100% { transform: translateX(0); }
 }
 
-/* --- Feedback ----------------------------------------------------------- */
+/* ======================================================================
+   THE VERDICT
+   ====================================================================== */
 
 .feedback {
+  position: relative;
   margin-top: var(--s-5);
   padding: var(--s-4);
+  border-radius: var(--radius);
   background: var(--ink-sunk);
   border: 1px solid var(--paper-rule);
   animation: settle .35s var(--ease-press) both;
 }
-@keyframes settle { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes settle { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* A rare answer lights its own panel: a gold edge and a warm bloom behind it,
+   so the celebration is not just a badge sitting on an ordinary box. */
+.feedback--rare {
+  border-color: var(--gold);
+  background:
+    radial-gradient(90% 130% at 50% 0%, rgba(240, 180, 41, .16) 0%, transparent 70%),
+    var(--ink-sunk);
+  box-shadow: var(--glow-gold);
+}
 
 .fb-top { display: flex; justify-content: space-between; align-items: center; gap: var(--s-3); }
+/* The tier chip is a stamp: it lands slightly over-rotated and settles. Its
+   background and text colour both arrive inline from GameScreen, because the
+   top two rungs are light fills that need dark text on them. */
 .fb-tier {
   font-family: var(--font-mono);
   font-size: var(--t-small);
   font-weight: 500;
   letter-spacing: .08em;
   text-transform: uppercase;
-  padding: 5px var(--s-3);
-  color: #FFFFFF;
+  padding: 6px var(--s-3);
+  border-radius: var(--radius-sm);
+  animation: stamp .4s var(--ease-pop) both;
+}
+@keyframes stamp {
+  from { transform: scale(1.5) rotate(-7deg); opacity: 0; }
+  to { transform: scale(1) rotate(0); opacity: 1; }
 }
 .fb-points {
   font-family: var(--font-display);
-  font-size: 34px;
-  line-height: 1;
-  color: var(--marigold);
+  font-weight: 400;
+  font-size: 42px;
+  line-height: 1.2;   /* see the note on .rb-score b — Anton crops at 1 */
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+  animation: points-rise .45s var(--ease-pop) both;
 }
+@keyframes points-rise {
+  from { transform: translateY(14px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
 .fb-matched { margin-top: var(--s-3); font-size: var(--t-body); line-height: 1.6; }
 .fb-matched span {
   font-family: var(--font-mono);
   font-size: var(--t-micro);
-  letter-spacing: .1em;
+  letter-spacing: var(--track);
   text-transform: uppercase;
-  color: var(--on-ink-dim);
+  color: var(--on-paper-dim);
 }
 .fb-correction {
   margin-top: var(--s-3);
   font-size: var(--t-small);
-  border-left: 3px solid var(--marigold);
-  background: rgba(138, 104, 7, .1);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--gold-wash);
   padding: var(--s-2) var(--s-3);
-  color: var(--marigold);
+  color: var(--gold);
   line-height: 1.5;
 }
 .fb-correction b { color: var(--on-paper); }
 .fb-actions { text-align: center; margin-top: var(--s-4); }
 
-/* --- Progress ----------------------------------------------------------- */
+/* ======================================================================
+   🔥 RARE ANSWER — the payoff
+   ======================================================================
 
-.progress-dots { display: flex; justify-content: center; gap: var(--s-1); margin-top: var(--s-5); }
-.pdot { width: 22px; height: 4px; border-radius: 2px; background: var(--ink-deep); }
-.pdot.done { background: var(--peacock); }
-.pdot.now { background: var(--magenta); }
+   The moment the scoring model exists to produce. A +40 and a +20 look alike
+   at a glance and only one of them is an achievement, so naming something
+   almost nobody remembers is announced rather than merely totalled.
 
-.back-row { text-align: center; margin-top: var(--s-4); }
+   Fires from tier index 3 (deep cut) up; the top rung gets the same burst with
+   louder wording and a red-hot flame. Marked role="status" in GameScreen so it
+   is announced to a screen reader too — the celebration is information, not
+   only decoration.
+*/
+.rare-burst {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-3);
+  margin: calc(var(--s-2) * -1) 0 var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-radius: 100px;
+  background: linear-gradient(100deg, var(--gold-deep) 0%, #FFD76A 48%, var(--gold) 100%);
+  color: var(--on-gold);
+  box-shadow: 0 6px 26px rgba(240, 180, 41, .45);
+  animation: burst-in .5s var(--ease-pop) both;
+}
+@keyframes burst-in {
+  from { transform: scale(.72) translateY(8px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+.rare-burst--legendary {
+  background: linear-gradient(100deg, var(--red-deep) 0%, #FF6B7E 46%, var(--red) 100%);
+  color: var(--on-red);
+  box-shadow: 0 6px 26px rgba(255, 77, 99, .5);
+}
+
+.rb-text {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+.rb-flame {
+  font-size: 22px;
+  line-height: 1;
+  animation: flame-flick .7s ease-in-out 3;
+}
+@keyframes flame-flick {
+  0%, 100% { transform: scale(1) rotate(0); }
+  30% { transform: scale(1.25) rotate(-8deg); }
+  65% { transform: scale(1.1) rotate(6deg); }
+}
+.rb-points {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--t-small);
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: rgba(0, 0, 0, .22);
+}
+
+/*
+  The sparks. Ten of them thrown from the centre of the badge, each with its
+  own angle and distance handed in as custom properties so a single keyframe
+  serves the lot. They land and disappear — nothing loops, because a permanent
+  sparkle would turn a moment into wallpaper.
+*/
+.rb-sparks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+.rb-sparks i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 8px rgba(255, 226, 140, .9);
+  opacity: 0;
+  animation: spark .62s var(--ease-press) var(--delay) both;
+}
+.rare-burst--legendary .rb-sparks i {
+  background: var(--red-bright);
+  box-shadow: 0 0 8px rgba(255, 120, 140, .9);
+}
+@keyframes spark {
+  0% { transform: rotate(var(--a)) translateX(0) scale(1); opacity: 1; }
+  100% { transform: rotate(var(--a)) translateX(var(--d)) scale(0); opacity: 0; }
+}
+
+.back-row { text-align: center; margin-top: var(--s-5); }
+
+@media (max-width: 520px) {
+  .prompt-card { padding: var(--s-5) var(--s-4); }
+  .rb-score b { font-size: 26px; }
+  .fb-points { font-size: 34px; }
+  .rb-text { font-size: 18px; }
+  /* Three items on one line push the badge past the card at 360px. */
+  .rare-burst { gap: var(--s-2); padding: var(--s-3); }
+}
