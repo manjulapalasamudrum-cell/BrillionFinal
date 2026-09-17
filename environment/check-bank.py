@@ -42,7 +42,7 @@ def year_windows(sources):
 # who played a policeman in 1973 played another in 2015, so there is no one year
 # to record; inventing one to satisfy the check below would be worse than having
 # none. Undated packs simply generate no era or decade rounds.
-UNDATED_PACKS = {"villain", "cop"}
+UNDATED_PACKS = {"villain", "cop", "aamirheroine"}
 
 # Packs where `year` identifies the answer rather than describing it: an annual
 # award has exactly one winner per ceremony, so a repeated year means an entry

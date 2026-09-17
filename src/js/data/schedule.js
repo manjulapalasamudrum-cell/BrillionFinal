@@ -171,62 +171,97 @@ export const SCHEDULE = {
   },
 
   /*
-    Rounds 1, 2, 3, 5 and 8 replaced, as asked.
+    All ten rounds written out, which is not how this day started.
 
-    Four of them keep their pack and ask it something else, which is the safe
-    shape. Round 5 is the exception and changes pack, because `wedding` had
-    exactly one question left unasked in the fortnight and it was another year
-    range — with rounds 4 and 6 already year ranges, keeping it would have run
-    three of them back to back. `ab` is not otherwise in this day, so the swap
-    is allowed; had it been, applyOverrides would have refused it and the round
-    would have played on unchanged.
+    Rounds 1 to 4 were asked for by name, wording and all, and no pack in the
+    bank could answer any of them — a round's answers come from a pack, so the
+    four arrived with four new packs behind them (abrekha, srkgrey, yashchopra,
+    aamirheroine). They are asked open: a constraint on top of a subject this
+    specific would cut a pack of ten down to nothing.
 
-    Every replacement was checked against the fourteen days behind this one, so
-    the no-repeat window still holds. No `label` is written out: constraintLabel
-    derives the chip from the spec for every type used here.
+    WHY `prompts` AND NOT `overrides`. The four were written as overrides first
+    and round 3 silently did not happen. Adding four packs to categories.js
+    changes the ring every generated day is drawn from, and the reshuffled draw
+    put `yashchopra` in round 9 by itself; an override may not name a pack the
+    day already holds, so it was refused exactly as designed and round 3 played
+    on as a generated 1990s question. `prompts` has no such failure mode — it
+    pins the day from the front, in order, and its packs are removed from the
+    pool before the rest is drawn.
+
+    That is also why rounds 5 to 10 are written out rather than left generated,
+    even though nobody asked for them to change. They are what the day already
+    held, pinned so that the NEXT pack added cannot quietly reshuffle them the
+    way this one did. The costs of pinning are real: this day no longer answers
+    to the rotation, and the packs listed here are spent for the fortnight around
+    it whatever else the generator would have preferred.
+
+    Round 6 carries its own `label`. Its pack dates a breakthrough rather than a
+    release, so the generic wording constraintLabel would fall back to — "Released
+    up to 2003" — would be wrong about a person. Every other spec here takes the
+    generic chip.
   */
   '2026-09-17': {
-    note: 'Generated day with rounds 1, 2, 3, 5 and 8 replaced.',
-    overrides: {
-      1: {
-        pack: 'remake',
-        text: 'Name a Hindi remake released in the 2000s.',
-        spec: { type: 'decade', value: 2000 },
+    note: 'Hand-picked day: four requested subjects, then the six it already had.',
+    prompts: [
+      {
+        pack: 'abrekha',
+        text: 'Name a Bollywood movie starring both Amitabh Bachchan and Rekha.',
+        spec: { type: 'open' },
       },
-      2: {
-        pack: 'biopic',
-        text: 'Name a Bollywood biopic whose title begins with “B”.',
-        spec: { type: 'initial', value: 'B' },
+      {
+        pack: 'srkgrey',
+        text: 'Name a movie in which Shah Rukh Khan played a negative/grey character.',
+        spec: { type: 'open' },
       },
-      3: {
-        pack: 'award',
-        text: 'Name a Filmfare Best Film winner released in the 2020s.',
-        spec: { type: 'decade', value: 2020 },
+      {
+        pack: 'yashchopra',
+        text: 'Name a Bollywood movie directed by Yash Chopra.',
+        spec: { type: 'open' },
+      },
+      {
+        pack: 'aamirheroine',
+        text: 'Name an actress who played opposite Aamir Khan in the 1990s.',
+        spec: { type: 'open' },
       },
       /*
-        Asked to be something simple, which the deep-cut round it replaces was
-        not: that one refused every answer under +30.
-
-        The plain "Name an Amitabh Bachchan movie" is what simple would ideally
-        mean here, and it is exactly what cannot be asked — 2026-09-14 asked it,
-        three days back, well inside the no-repeat window. Of what is left, the
-        letter is the friendlier kind of easy: 14 answers, the commonest worth
-        +10, and a player can check a title's first letter for themselves. The
-        era cut "up to 2002" admits far more (71 of 108) but rounds 4 and 6 are
-        already "up to" ranges, so it would have run three of the same shape
-        back to back, and a year is the one thing a player cannot check.
+        Asked to be something simple, which the deep-cut round it replaced was
+        not: that one refused every answer under +30. The plain "Name an Amitabh
+        Bachchan movie" is what simple would ideally mean and is exactly what
+        cannot be asked — 2026-09-14 asked it, inside the no-repeat window. The
+        letter is the friendlier kind of easy left: 14 answers, the commonest
+        worth +10, and a player can check a first letter without knowing years.
       */
-      5: {
+      {
         pack: 'ab',
         text: 'Name an Amitabh Bachchan movie whose title begins with “A”.',
         spec: { type: 'initial', value: 'A' },
       },
-      8: {
+      {
+        pack: 'actress',
+        text: 'Name a 2000s debut actress who broke through up to 2003.',
+        spec: { type: 'era', value: 'early', label: 'Broke through up to 2003' },
+      },
+      {
+        pack: 'director',
+        text: 'Name a Bollywood director whose name begins with “S”.',
+        spec: { type: 'initial', value: 'S' },
+      },
+      {
         pack: 'triangle',
         text: 'Name a love-triangle film released in the 1990s.',
         spec: { type: 'decade', value: 1990 },
       },
-    },
+      {
+        pack: 'villain',
+        text: 'Name a Bollywood villain — actor or character.',
+        spec: { type: 'open' },
+      },
+      {
+        pack: 'srk',
+        text: 'Name a Shah Rukh Khan movie whose title runs to four words or more.',
+        spec: { type: 'words', value: 'many' },
+      },
+    ],
   },
 };
 

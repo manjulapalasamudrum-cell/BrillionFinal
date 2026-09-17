@@ -1859,6 +1859,30 @@ const TIERS = [
 ];
 const MISS = { key: 'miss', label: 'No answer', points: 0, color: 'var(--tier-miss)', sq: '⬛' };
 const MAX_TIER_POINTS = TIERS[TIERS.length - 1].points;
+const PACK_AAMIRHEROINE = {
+id:'aamirheroine', kicker:'Name one…',
+title:'actress who played opposite Aamir Khan in the 1990s',
+shortTitle:'90s Aamir Khan heroine', noun:'name',
+hint:'Opposite him in a film released between 1990 and 1999.', icon:'💃',
+packDesc:'Name one of his 90s heroines. 5 rounds — no repeats.',
+domainHint:['bollywood','actress','aamir khan','1990s','hindi'],
+answers:[
+{name:'Juhi Chawla', aliases:['juhi'], tier:0},
+{name:'Karisma Kapoor', aliases:['karishma kapoor','karisma'], tier:0},
+{name:'Madhuri Dixit', aliases:['madhuri'], tier:1},
+{name:'Manisha Koirala', aliases:['manisha'], tier:1},
+{name:'Kajol', aliases:[], tier:1},
+{name:'Raveena Tandon', aliases:['raveena'], tier:2},
+{name:'Rani Mukerji', aliases:['rani mukherjee','rani'], tier:2},
+{name:'Pooja Bhatt', aliases:['puja bhatt'], tier:2},
+{name:'Mamta Kulkarni', aliases:['mamata kulkarni'], tier:3},
+{name:'Sonali Bendre', aliases:['sonali'], tier:3},
+{name:'Ayesha Jhulka', aliases:['aisha jhulka'], tier:3},
+{name:'Pooja Bedi', aliases:['puja bedi'], tier:4},
+{name:'Farheen', aliases:['farheen khan'], tier:4},
+{name:'Ramya Krishnan', aliases:['ramya krishna'], tier:4},
+],
+};
 const PACK_AB = {
 id:'ab', kicker:'Name one…', title:'Amitabh Bachchan movie', hint:'From any decade of his career.', icon:'🎩',
 packDesc:'Name a Big B film. 5 rounds — no repeats.',
@@ -1973,6 +1997,25 @@ answers:[
 {name:'Delhi 6', aliases:['delhi-6','delhi six','dilli 6'], tier:4, year:2009},
 {name:'Aladin', aliases:['aladdin'], tier:4, year:2009},
 ]
+};
+const PACK_ABREKHA = {
+id:'abrekha', kicker:'Name one…', title:'Bollywood movie starring Amitabh Bachchan and Rekha',
+shortTitle:'Amitabh-and-Rekha film',
+hint:'Both of them in the cast — all ten are from 1976 to 1981.', icon:'🎭',
+packDesc:'Name a film they made together. 5 rounds — no repeats.',
+domainHint:['film','bollywood','amitabh bachchan','rekha','hindi'],
+answers:[
+{name:'Silsila', aliases:[], tier:0, year:1981},
+{name:'Muqaddar Ka Sikandar', aliases:['muqaddar','mukaddar ka sikandar'], tier:0, year:1978},
+{name:'Do Anjaane', aliases:['do anjane'], tier:1, year:1976},
+{name:'Ram Balram', aliases:['ram-balram','ram aur balram'], tier:1, year:1980},
+{name:'Khoon Pasina', aliases:['khun pasina'], tier:2, year:1977},
+{name:'Alaap', aliases:['alap'], tier:2, year:1977},
+{name:'Mr Natwarlal', aliases:['mr. natwarlal','natwarlal'], tier:3, year:1979},
+{name:'Suhaag', aliases:['suhag'], tier:3, year:1979},
+{name:'Imaan Dharam', aliases:['iman dharam','imaan-dharam'], tier:4, year:1977},
+{name:'Ganga Ki Saugandh', aliases:['ganga ki saugand'], tier:4, year:1978},
+],
 };
 const PACK_ACTRESS = {
 id:'actress', kicker:'Name one…', title:'Bollywood actress who debuted in the 2000s', hint:'Her first Hindi film released between 2000 and 2009.', icon:'🌟',
@@ -3004,6 +3047,25 @@ answers:[
 {name:'Idiot', aliases:['idiot 1992'], tier:4, year:1992},
 ]
 };
+const PACK_SRKGREY = {
+id:'srkgrey', kicker:'Name one…', title:'movie where Shah Rukh Khan played a negative or grey role',
+shortTitle:'Shah Rukh Khan grey role',
+hint:'The villain, the stalker, the outlaw — not the romantic lead.', icon:'🖤',
+packDesc:'Name a film where he is the bad guy. 5 rounds — no repeats.',
+domainHint:['film','bollywood','shah rukh khan','villain','hindi'],
+answers:[
+{name:'Baazigar', aliases:['bazigar'], tier:0, year:1993},
+{name:'Darr', aliases:['dar'], tier:0, year:1993},
+{name:'Don', aliases:['don 2006'], tier:1, year:2006},
+{name:'Jawan', aliases:[], tier:1, year:2023},
+{name:'Don 2', aliases:['don two'], tier:2, year:2011},
+{name:'Fan', aliases:[], tier:2, year:2016},
+{name:'Raees', aliases:['rais'], tier:2, year:2017},
+{name:'Anjaam', aliases:['anjam'], tier:3, year:1994},
+{name:'Duplicate', aliases:[], tier:3, year:1998},
+{name:'Ram Jaane', aliases:['ram jane'], tier:4, year:1995},
+],
+};
 const PACK_TRIANGLE = {
 id:'triangle', kicker:'Name one…', title:'Bollywood love triangle', hint:'A film whose romance is built on three people, not two.', icon:'💔',
 packDesc:'Name a love triangle. 5 rounds — no repeats.',
@@ -3144,14 +3206,45 @@ answers:[
 {name:'Shubh Mangal Zyada Saavdhan', aliases:['smzs'], tier:4, year:2020},
 ]
 };
+const PACK_YASHCHOPRA = {
+id:'yashchopra', kicker:'Name one…', title:'Yash Chopra film',
+hint:'Directed by him — not merely produced by Yash Raj.', icon:'🎬',
+packDesc:'Name a film he directed. 5 rounds — no repeats.',
+domainHint:['film','bollywood','yash chopra','director','hindi'],
+answers:[
+{name:'Darr', aliases:['dar'], tier:0, year:1993},
+{name:'Veer-Zaara', aliases:['veer zaara','veerzaara'], tier:0, year:2004},
+{name:'Deewaar', aliases:['deewar','diwaar'], tier:1, year:1975},
+{name:'Chandni', aliases:[], tier:1, year:1989},
+{name:'Dil To Pagal Hai', aliases:['dil toh pagal hai','dtph'], tier:1, year:1997},
+{name:'Jab Tak Hai Jaan', aliases:['jab tak hai jan','jthj'], tier:1, year:2012},
+{name:'Kabhi Kabhie', aliases:['kabhi kabhi'], tier:2, year:1976},
+{name:'Trishul', aliases:[], tier:2, year:1978},
+{name:'Lamhe', aliases:['lamhen'], tier:2, year:1991},
+{name:'Waqt', aliases:['vaqt'], tier:2, year:1965},
+{name:'Silsila', aliases:[], tier:3, year:1981},
+{name:'Mashaal', aliases:['mashal'], tier:3, year:1984},
+{name:'Kaala Patthar', aliases:['kala patthar','kala pathar'], tier:3, year:1979},
+{name:'Daag', aliases:['dag','daag a poem of love'], tier:3, year:1973},
+{name:'Parampara', aliases:[], tier:3, year:1993},
+{name:'Ittefaq', aliases:['itefaq'], tier:4, year:1969},
+{name:'Faasle', aliases:['fasle'], tier:4, year:1985},
+{name:'Vijay', aliases:[], tier:4, year:1988},
+{name:'Joshila', aliases:['joshilaa'], tier:4, year:1973},
+{name:'Aadmi Aur Insaan', aliases:['admi aur insan'], tier:4, year:1969},
+{name:'Dharmputra', aliases:['dharam putra'], tier:4, year:1961},
+{name:'Dhool Ka Phool', aliases:['dhul ka phool'], tier:4, year:1959},
+],
+};
 // People and their filmographies.
+// Films grouped by who made them, or who is in them together.
 // Films grouped by when they came out.
 // Films grouped by what they are.
 const CATEGORIES = [
 PACK_SRK, PACK_AB, PACK_DIRECTOR, PACK_AWARD, PACK_NINETIES, PACK_DEEPIKA,
 PACK_BIOPIC, PACK_RAHMAN, PACK_VILLAIN, PACK_DILTITLE, PACK_BHANSALI,
 PACK_ACTRESS, PACK_TRIANGLE, PACK_NOUGHTIES, PACK_WEDDING, PACK_COP,
-PACK_REMAKE,
+PACK_REMAKE, PACK_ABREKHA, PACK_SRKGREY, PACK_YASHCHOPRA, PACK_AAMIRHEROINE,
 ];
 const DAILY_SHOWS = [
 {
@@ -3270,34 +3363,59 @@ spec: { type: 'open' },
 },
 },
 '2026-09-17': {
-note: 'Generated day with rounds 1, 2, 3, 5 and 8 replaced.',
-overrides: {
-1: {
-pack: 'remake',
-text: 'Name a Hindi remake released in the 2000s.',
-spec: { type: 'decade', value: 2000 },
+note: 'Hand-picked day: four requested subjects, then the six it already had.',
+prompts: [
+{
+pack: 'abrekha',
+text: 'Name a Bollywood movie starring both Amitabh Bachchan and Rekha.',
+spec: { type: 'open' },
 },
-2: {
-pack: 'biopic',
-text: 'Name a Bollywood biopic whose title begins with “B”.',
-spec: { type: 'initial', value: 'B' },
+{
+pack: 'srkgrey',
+text: 'Name a movie in which Shah Rukh Khan played a negative/grey character.',
+spec: { type: 'open' },
 },
-3: {
-pack: 'award',
-text: 'Name a Filmfare Best Film winner released in the 2020s.',
-spec: { type: 'decade', value: 2020 },
+{
+pack: 'yashchopra',
+text: 'Name a Bollywood movie directed by Yash Chopra.',
+spec: { type: 'open' },
 },
-5: {
+{
+pack: 'aamirheroine',
+text: 'Name an actress who played opposite Aamir Khan in the 1990s.',
+spec: { type: 'open' },
+},
+{
 pack: 'ab',
 text: 'Name an Amitabh Bachchan movie whose title begins with “A”.',
 spec: { type: 'initial', value: 'A' },
 },
-8: {
+{
+pack: 'actress',
+text: 'Name a 2000s debut actress who broke through up to 2003.',
+spec: { type: 'era', value: 'early', label: 'Broke through up to 2003' },
+},
+{
+pack: 'director',
+text: 'Name a Bollywood director whose name begins with “S”.',
+spec: { type: 'initial', value: 'S' },
+},
+{
 pack: 'triangle',
 text: 'Name a love-triangle film released in the 1990s.',
 spec: { type: 'decade', value: 1990 },
 },
+{
+pack: 'villain',
+text: 'Name a Bollywood villain — actor or character.',
+spec: { type: 'open' },
 },
+{
+pack: 'srk',
+text: 'Name a Shah Rukh Khan movie whose title runs to four words or more.',
+spec: { type: 'words', value: 'many' },
+},
+],
 },
 };
 function repeat(from, on) {

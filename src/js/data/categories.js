@@ -1,5 +1,5 @@
 /**
- * The answer bank: 17 themed packs of Bollywood trivia, one module each under
+ * The answer bank: 21 themed packs of Bollywood trivia, one module each under
  * `packs/`. This file is only the running order — the data lives next door.
  *
  * It was a single 1,500-line file until the bank outgrew it. Splitting it means
@@ -63,6 +63,12 @@ import { PACK_RAHMAN } from './packs/rahman.js';
 import { PACK_ACTRESS } from './packs/actress.js';
 import { PACK_VILLAIN } from './packs/villain.js';
 import { PACK_COP } from './packs/cop.js';
+import { PACK_AAMIRHEROINE } from './packs/aamirheroine.js';
+
+// Films grouped by who made them, or who is in them together.
+import { PACK_ABREKHA } from './packs/abrekha.js';
+import { PACK_SRKGREY } from './packs/srkgrey.js';
+import { PACK_YASHCHOPRA } from './packs/yashchopra.js';
 
 // Films grouped by when they came out.
 import { PACK_NINETIES } from './packs/nineties.js';
@@ -80,5 +86,5 @@ export const CATEGORIES = [
   PACK_SRK, PACK_AB, PACK_DIRECTOR, PACK_AWARD, PACK_NINETIES, PACK_DEEPIKA,
   PACK_BIOPIC, PACK_RAHMAN, PACK_VILLAIN, PACK_DILTITLE, PACK_BHANSALI,
   PACK_ACTRESS, PACK_TRIANGLE, PACK_NOUGHTIES, PACK_WEDDING, PACK_COP,
-  PACK_REMAKE,
+  PACK_REMAKE, PACK_ABREKHA, PACK_SRKGREY, PACK_YASHCHOPRA, PACK_AAMIRHEROINE,
 ];
