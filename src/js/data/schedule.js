@@ -169,6 +169,52 @@ export const SCHEDULE = {
       },
     },
   },
+
+  /*
+    Rounds 1, 2, 3, 5 and 8 replaced, as asked.
+
+    Four of them keep their pack and ask it something else, which is the safe
+    shape. Round 5 is the exception and changes pack, because `wedding` had
+    exactly one question left unasked in the fortnight and it was another year
+    range — with rounds 4 and 6 already year ranges, keeping it would have run
+    three of them back to back. `ab` is not otherwise in this day, so the swap
+    is allowed; had it been, applyOverrides would have refused it and the round
+    would have played on unchanged.
+
+    Every replacement was checked against the fourteen days behind this one, so
+    the no-repeat window still holds. No `label` is written out: constraintLabel
+    derives the chip from the spec for every type used here.
+  */
+  '2026-09-17': {
+    note: 'Generated day with rounds 1, 2, 3, 5 and 8 replaced.',
+    overrides: {
+      1: {
+        pack: 'remake',
+        text: 'Name a Hindi remake released in the 2000s.',
+        spec: { type: 'decade', value: 2000 },
+      },
+      2: {
+        pack: 'biopic',
+        text: 'Name a Bollywood biopic whose title begins with “B”.',
+        spec: { type: 'initial', value: 'B' },
+      },
+      3: {
+        pack: 'award',
+        text: 'Name a Filmfare Best Film winner released in the 2020s.',
+        spec: { type: 'decade', value: 2020 },
+      },
+      5: {
+        pack: 'ab',
+        text: 'Deep cut only: name an Amitabh Bachchan movie off the beaten track.',
+        spec: { type: 'rarity', minTier: 3 },
+      },
+      8: {
+        pack: 'triangle',
+        text: 'Name a love-triangle film released in the 1990s.',
+        spec: { type: 'decade', value: 1990 },
+      },
+    },
+  },
 };
 
 /*
