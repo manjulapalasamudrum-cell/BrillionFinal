@@ -3842,7 +3842,7 @@ let h = 0;
 for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
 return Math.abs(h);
 }
-function assignTypes(cats, rng, turn, avoid) {
+function assignTypes(cats, rng, turn, avoid, strict) {
 // 'open' starts one use in the hole, so it is only reached once a pack's
 // real questions have been. Left level with the others it wins ties early
 // and the game opens on "Name an Amitabh Bachchan movie" — the exact prompt
@@ -3856,6 +3856,8 @@ const stale = avoid || new Set();
 return cats.map((cat) => {
 const groups = viableTypes(cat);
 const phase = day + packPhase(cat.id);
+const hasFresh = strict &&
+groups.some((g) => g.specs.some((s) => !stale.has(specKey(cat.id, s))));
 let best = null;
 groups.forEach((g, gi) => {
 // Within a type, prefer a parameter this game has not used, so a second
@@ -3864,6 +3866,7 @@ groups.forEach((g, gi) => {
 const unused = g.specs.filter((s) => !specUse[specKey(cat.id, s)]);
 const candidates = unused.length ? unused : g.specs;
 const novel = candidates.filter((s) => !stale.has(specKey(cat.id, s)));
+if (hasFresh && !novel.length) return;
 const pool = novel.length ? novel : candidates;
 // A type with nothing left to ask that yesterday did not already ask is
 // a worse choice than one that has something — but only a preference, so
@@ -3968,6 +3971,72 @@ out.push({ cat, spec });
 return out.slice(0, MIXED_ROUNDS);
 }
 function buildDivePlan(date = new Date()) {
+const dayKey = puzzleDate(date);
+if (dayKey < NO_REPEAT_FROM) return rotatedDivePlan(date);
+const { plan } = plannedDay(dayKey);
+// A copy, so nothing a game does to its plan can reach the cached day.
+return { list: plan.list.slice(), total: plan.total, rounds: plan.rounds.slice() };
+}
+const REPEAT_WINDOW = ARCHIVE_DAYS;
+const NO_REPEAT_FROM = '2026-09-15';
+const plannedDays = new Map();
+function plannedDay(dayKey) {
+if (dayKey < NO_REPEAT_FROM) {
+if (!plannedDays.has(dayKey)) {
+const plan = rotatedDivePlan(dateFromKey(dayKey));
+plannedDays.set(dayKey, { plan, asked: askedIn(plan) });
+}
+} else {
+// A loop, not recursion, so a date a year out is not a year-deep stack.
+for (let k = NO_REPEAT_FROM; k <= dayKey; k = shiftKey(k, 1)) {
+if (!plannedDays.has(k)) plannedDays.set(k, buildFreshDay(k));
+}
+}
+return plannedDays.get(dayKey);
+}
+function buildFreshDay(dayKey) {
+const date = dateFromKey(dayKey);
+const recent = new Set();
+for (let n = 1; n <= REPEAT_WINDOW; n++) {
+plannedDay(shiftKey(dayKey, -n)).asked.forEach((q) => recent.add(q));
+}
+const rng = mulberry32(seedFor('dive', date));
+const fixed = scheduledPrompts(dayKey);
+const spoken = new Set(fixed.map((f) => f.cat.id));
+const ring = seededShuffle(CATEGORIES.filter((c) => !spoken.has(c.id)), mulberry32(RING_SEED));
+const turn = dayNumber(date);
+const need = MIXED_ROUNDS - fixed.length;
+// Enter the ring where rotation would, then pass over any pack whose every
+// question was asked inside the window. Those packs are only reached if too
+// few others are left to fill the day, which the bank's size keeps from
+// happening — but a short game would be the worse failure, so they stay.
+const start = (turn * need) % ring.length;
+const order = ring.slice(start).concat(ring.slice(0, start));
+const fresh = order.filter((c) => questionKeys(c).some((q) => !recent.has(q)));
+const filler = fresh.concat(order.filter((c) => fresh.indexOf(c) < 0)).slice(0, need);
+const plan = applyOverrides({
+list: fixed.map((f) => f.cat).concat(filler),
+total: fixed.length + filler.length,
+rounds: fixed.map((f) => f.spec).concat(assignTypes(filler, rng, turn, recent, true)),
+}, dayKey);
+return { plan, asked: askedIn(plan) };
+}
+const packQuestionKeys = new Map();
+function questionKeys(cat) {
+if (!packQuestionKeys.has(cat.id)) {
+const keys = [];
+viableTypes(cat).forEach((g) => g.specs.forEach((s) => keys.push(specKey(cat.id, s))));
+packQuestionKeys.set(cat.id, keys);
+}
+return packQuestionKeys.get(cat.id);
+}
+function askedIn(plan) {
+return new Set(plan.rounds.map((s, i) => specKey(plan.list[i].id, s)));
+}
+function shiftKey(key, days) {
+return puzzleDate(new Date(dateFromKey(key).getTime() + days * 86400000));
+}
+function rotatedDivePlan(date) {
 const rng = mulberry32(seedFor('dive', date));
 const fixed = scheduledPrompts(puzzleDate(date));
 const spoken = new Set(fixed.map((f) => f.cat.id));

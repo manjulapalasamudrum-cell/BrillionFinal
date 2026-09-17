@@ -328,8 +328,12 @@ function packPhase(id) {
  * building yesterday's plan needs the day before it, so the comparison ran
  * against a differently-built plan than the one players were served, and
  * silently missed most repeats.
+ *
+ * `avoid` holds questions asked recently. By default that is only a preference.
+ * With `strict` a pack never repeats one while it has anything fresh left to
+ * ask — the Daily Dive's no-repeat window depends on that being a rule.
  */
-export function assignTypes(cats, rng, turn, avoid) {
+export function assignTypes(cats, rng, turn, avoid, strict) {
   // 'open' starts one use in the hole, so it is only reached once a pack's
   // real questions have been. Left level with the others it wins ties early
   // and the game opens on "Name an Amitabh Bachchan movie" — the exact prompt
@@ -344,6 +348,8 @@ export function assignTypes(cats, rng, turn, avoid) {
   return cats.map((cat) => {
     const groups = viableTypes(cat);
     const phase = day + packPhase(cat.id);
+    const hasFresh = strict &&
+      groups.some((g) => g.specs.some((s) => !stale.has(specKey(cat.id, s))));
     let best = null;
     groups.forEach((g, gi) => {
       // Within a type, prefer a parameter this game has not used, so a second
@@ -352,6 +358,7 @@ export function assignTypes(cats, rng, turn, avoid) {
       const unused = g.specs.filter((s) => !specUse[specKey(cat.id, s)]);
       const candidates = unused.length ? unused : g.specs;
       const novel = candidates.filter((s) => !stale.has(specKey(cat.id, s)));
+      if (hasFresh && !novel.length) return;
       const pool = novel.length ? novel : candidates;
 
       // A type with nothing left to ask that yesterday did not already ask is

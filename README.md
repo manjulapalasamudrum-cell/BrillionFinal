@@ -339,13 +339,42 @@ The one thing rotation cannot see is a **hand-picked day**, because scheduled
 prompts never go through it. `yesterdaysFixedAsks` covers that — a static
 dictionary lookup on yesterday's key, no plan built and nothing recursive.
 
-**What is left is a data limit, not a logic one.** All six remaining repeats are
-packs too small to hold a second question: `bhansali` is ten films, his whole
-filmography, which supports no letter, no decade, no era bucket and no rarity
-floor — only "Name a Sanjay Leela Bhansali film". Drawn on consecutive days it
-must repeat. Growing the pack is impossible (it is already exhaustive); the
-options are to accept it, or to drop such packs from the Dive and keep them for
-the schedule and themed games.
+### Not asking the same thing within two weeks
+
+Rotation stopped back-to-back repeats but not repeats a few days apart. The ring
+and each pack's phase both cycle, so generated days came back round to earlier
+ones (09-01, 09-07 and 09-13 shared six questions), and the 09-02 set replayed on
+09-03 to 09-05 repeated all ten. The fifteen days ending 2026-09-15 asked 32
+questions more than once.
+
+From `NO_REPEAT_FROM` (2026-09-15) **no question is asked again within
+`REPEAT_WINDOW` days**, which is `ARCHIVE_DAYS`, so no day a player can open
+shares a question with another. A question is its `specKey` (pack, type and
+parameter), so a hand-picked prompt and a generated one asking the same thing
+count as the same question whatever their wording.
+
+- **It is a chain, built forward.** Whether a question is free depends on the
+  last fourteen days, and theirs on the days before. Rather than rebuild those
+  on demand (the trap described above), `plannedDay` walks from
+  `NO_REPEAT_FROM` to the date asked for and keeps each day, so every day is
+  built exactly one way and the plan is still a pure function of its date.
+- **Packs with nothing fresh are passed over.** The draw enters the ring where
+  rotation would, then skips any pack whose every question was asked in the
+  window. `assignTypes(..., strict)` then makes "not asked recently" a rule
+  rather than a preference. `bhansali`, with one question, now plays once a
+  fortnight instead of whenever the ring reaches it.
+- **Days before `NO_REPEAT_FROM` are untouched.** The archive rebuilds a day from
+  its date; re-planning days already played would make it show a set nobody saw.
+- **It fits the bank.** Seventeen packs offer 198 questions; at one per pack per
+  day a fifteen-day stretch holds 182 distinct ones against the 150 it needs.
+  Checked over a year of days: no repeats inside the window, every day ten
+  rounds. The cost is type spread on a few days: 8 in 366 put five or six rounds
+  on `era`, where 319 have no type more than three times. A cold load also builds
+  every day since the start, about 1.6 s for a year in the browser, so this is
+  the place to add a cutoff if the game is still running in 2028.
+- **Scheduled prompts are still served as written.** A day in `data/schedule.js`
+  that re-asks a recent question is honoured, since someone asked for it; the
+  generated rounds around it simply avoid it.
 
 Internally it is still `mode === 'practice'`, which is now a misleading name —
 it dates from when the draw really was random and unconstrained. `pickSession()`

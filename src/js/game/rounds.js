@@ -196,8 +196,119 @@ function scheduledPrompts(dayKey) {
  *
  * `total` comes from what was actually drawn rather than from the constant, so
  * removing a pack shortens the game instead of leaving a blank round.
+ *
+ * From NO_REPEAT_FROM on, no question is asked again inside REPEAT_WINDOW days.
  */
 export function buildDivePlan(date = new Date()) {
+  const dayKey = puzzleDate(date);
+  if (dayKey < NO_REPEAT_FROM) return rotatedDivePlan(date);
+  const { plan } = plannedDay(dayKey);
+  // A copy, so nothing a game does to its plan can reach the cached day.
+  return { list: plan.list.slice(), total: plan.total, rounds: plan.rounds.slice() };
+}
+
+/*
+  No Daily Dive question is asked again within REPEAT_WINDOW days.
+
+  Rotation alone does not deliver that. The ring and each pack's phase both
+  cycle, so a generated day comes back round to an earlier one — 09-01, 09-07
+  and 09-13 shared six questions — and a hand-picked set replayed on later days
+  repeats all ten. The fifteen days ending 2026-09-15 asked 32 questions more
+  than once.
+
+  The window is the archive's, so no day a player can open shares a question
+  with any other. It fits the bank: seventeen packs offer 198 questions, and at
+  one per pack per day a fifteen-day stretch can hold 182 distinct ones against
+  the 150 it needs.
+
+  NO_REPEAT_FROM is where the rule starts. Days before it are built exactly as
+  they were served, because the archive rebuilds a day from its date and
+  re-planning days already played would make it show a set nobody saw.
+*/
+export const REPEAT_WINDOW = ARCHIVE_DAYS;
+export const NO_REPEAT_FROM = '2026-09-15';
+
+/*
+  Why a chain rather than a lookup. Whether a question is free today depends on
+  the last REPEAT_WINDOW days, and theirs on the days before them. Rebuilding
+  those on demand is the trap the first "compare with yesterday" attempt fell
+  into: yesterday got built differently from how it was served. Walking forward
+  from NO_REPEAT_FROM builds every day exactly one way, whichever date is asked
+  for first, so the plan is still a pure function of the date. Each day is built
+  once and kept.
+*/
+const plannedDays = new Map();
+
+function plannedDay(dayKey) {
+  if (dayKey < NO_REPEAT_FROM) {
+    if (!plannedDays.has(dayKey)) {
+      const plan = rotatedDivePlan(dateFromKey(dayKey));
+      plannedDays.set(dayKey, { plan, asked: askedIn(plan) });
+    }
+  } else {
+    // A loop, not recursion, so a date a year out is not a year-deep stack.
+    for (let k = NO_REPEAT_FROM; k <= dayKey; k = shiftKey(k, 1)) {
+      if (!plannedDays.has(k)) plannedDays.set(k, buildFreshDay(k));
+    }
+  }
+  return plannedDays.get(dayKey);
+}
+
+function buildFreshDay(dayKey) {
+  const date = dateFromKey(dayKey);
+  const recent = new Set();
+  for (let n = 1; n <= REPEAT_WINDOW; n++) {
+    plannedDay(shiftKey(dayKey, -n)).asked.forEach((q) => recent.add(q));
+  }
+
+  const rng = mulberry32(seedFor('dive', date));
+  const fixed = scheduledPrompts(dayKey);
+  const spoken = new Set(fixed.map((f) => f.cat.id));
+  const ring = seededShuffle(CATEGORIES.filter((c) => !spoken.has(c.id)), mulberry32(RING_SEED));
+  const turn = dayNumber(date);
+  const need = MIXED_ROUNDS - fixed.length;
+
+  // Enter the ring where rotation would, then pass over any pack whose every
+  // question was asked inside the window. Those packs are only reached if too
+  // few others are left to fill the day, which the bank's size keeps from
+  // happening — but a short game would be the worse failure, so they stay.
+  const start = (turn * need) % ring.length;
+  const order = ring.slice(start).concat(ring.slice(0, start));
+  const fresh = order.filter((c) => questionKeys(c).some((q) => !recent.has(q)));
+  const filler = fresh.concat(order.filter((c) => fresh.indexOf(c) < 0)).slice(0, need);
+
+  const plan = applyOverrides({
+    list: fixed.map((f) => f.cat).concat(filler),
+    total: fixed.length + filler.length,
+    rounds: fixed.map((f) => f.spec).concat(assignTypes(filler, rng, turn, recent, true)),
+  }, dayKey);
+  return { plan, asked: askedIn(plan) };
+}
+
+/** Every question a pack can be asked, as specKeys. The bank is static. */
+const packQuestionKeys = new Map();
+function questionKeys(cat) {
+  if (!packQuestionKeys.has(cat.id)) {
+    const keys = [];
+    viableTypes(cat).forEach((g) => g.specs.forEach((s) => keys.push(specKey(cat.id, s))));
+    packQuestionKeys.set(cat.id, keys);
+  }
+  return packQuestionKeys.get(cat.id);
+}
+
+function askedIn(plan) {
+  return new Set(plan.rounds.map((s, i) => specKey(plan.list[i].id, s)));
+}
+
+function shiftKey(key, days) {
+  return puzzleDate(new Date(dateFromKey(key).getTime() + days * 86400000));
+}
+
+/**
+ * How every day before NO_REPEAT_FROM was built, left exactly as it was so the
+ * archive still serves those days as they were played.
+ */
+function rotatedDivePlan(date) {
   const rng = mulberry32(seedFor('dive', date));
 
   const fixed = scheduledPrompts(puzzleDate(date));
