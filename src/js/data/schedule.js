@@ -203,10 +203,23 @@ export const SCHEDULE = {
         text: 'Name a Filmfare Best Film winner released in the 2020s.',
         spec: { type: 'decade', value: 2020 },
       },
+      /*
+        Asked to be something simple, which the deep-cut round it replaces was
+        not: that one refused every answer under +30.
+
+        The plain "Name an Amitabh Bachchan movie" is what simple would ideally
+        mean here, and it is exactly what cannot be asked — 2026-09-14 asked it,
+        three days back, well inside the no-repeat window. Of what is left, the
+        letter is the friendlier kind of easy: 14 answers, the commonest worth
+        +10, and a player can check a title's first letter for themselves. The
+        era cut "up to 2002" admits far more (71 of 108) but rounds 4 and 6 are
+        already "up to" ranges, so it would have run three of the same shape
+        back to back, and a year is the one thing a player cannot check.
+      */
       5: {
         pack: 'ab',
-        text: 'Deep cut only: name an Amitabh Bachchan movie off the beaten track.',
-        spec: { type: 'rarity', minTier: 3 },
+        text: 'Name an Amitabh Bachchan movie whose title begins with “A”.',
+        spec: { type: 'initial', value: 'A' },
       },
       8: {
         pack: 'triangle',
