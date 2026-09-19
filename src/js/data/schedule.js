@@ -263,6 +263,47 @@ export const SCHEDULE = {
       },
     ],
   },
+
+  /*
+    Rounds 1 and 9 replaced, as asked. Both change pack, which was forced
+    rather than chosen.
+
+    `wedding` held round 1 and has nothing left to ask: all eight of its
+    questions fall inside the fortnight behind this day, so keeping the pack
+    meant repeating one. `actress` held round 9 and had only two questions
+    free, both year ranges — and round 7 is already a year range two rounds
+    away, which is the shape-repetition this schedule keeps having to dodge.
+
+    Round 9 is the train question. It was asked for by name and needed a pack
+    of its own, because nothing in the bank could answer it. It is asked open:
+    eighteen films is not a pack you can cut by letter or decade and still
+    have a question left behind the cut.
+
+    Round 1 was asked to change but no question was supplied for it, so it
+    takes the gentlest thing `ab` has free — seventy films, the commonest
+    worth +10. A title shape rather than a plain "name an Amitabh Bachchan
+    movie" because rounds 6 and 9 are both open, and three unconstrained
+    rounds in ten is a day asking the same question three times.
+
+    Neither `train` nor `ab` is otherwise in this day, so applyOverrides
+    accepts both; had either been, the swap would have been refused and the
+    round would have played on unchanged.
+  */
+  '2026-09-19': {
+    note: 'Generated day with rounds 1 and 9 replaced.',
+    overrides: {
+      1: {
+        pack: 'ab',
+        text: 'Name an Amitabh Bachchan movie with a one-word title.',
+        spec: { type: 'words', value: 'one' },
+      },
+      9: {
+        pack: 'train',
+        text: 'Name a Bollywood movie featuring a train.',
+        spec: { type: 'open' },
+      },
+    },
+  },
 };
 
 /*

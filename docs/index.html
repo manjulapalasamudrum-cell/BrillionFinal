@@ -3066,6 +3066,33 @@ answers:[
 {name:'Ram Jaane', aliases:['ram jane'], tier:4, year:1995},
 ],
 };
+const PACK_TRAIN = {
+id:'train', kicker:'Name one…', title:'Bollywood movie featuring a train',
+shortTitle:'Bollywood train film',
+hint:'The train is the setting, the set piece, or the reason for the plot.', icon:'🚂',
+packDesc:'Name a film built around a train. 5 rounds — no repeats.',
+domainHint:['film','bollywood','train','railway','hindi'],
+answers:[
+{name:'Dilwale Dulhania Le Jayenge', aliases:['ddlj','dilwale dulhaniya le jayenge'], tier:0, year:1995},
+{name:'Chennai Express', aliases:['chennai xpress'], tier:0, year:2013},
+{name:'Jab We Met', aliases:['jab we met 2007'], tier:0, year:2007},
+{name:'Sholay', aliases:[], tier:0, year:1975},
+{name:'The Burning Train', aliases:['burning train'], tier:1, year:1980},
+{name:'Dil Se', aliases:['dil se..','dilse'], tier:1, year:1998},
+{name:'Gadar Ek Prem Katha', aliases:['gadar','gadar ek prem katha 2001'], tier:1, year:2001},
+{name:'Ghulam', aliases:['gulam'], tier:1, year:1998},
+{name:'Ra.One', aliases:['ra one','raone'], tier:2, year:2011},
+{name:'Bhaag Milkha Bhaag', aliases:['bhag milkha bhag','bmb'], tier:2, year:2013},
+{name:'Barfi', aliases:['barfi!','burfi'], tier:2, year:2012},
+{name:'Swades', aliases:['swadesh'], tier:2, year:2004},
+{name:'Pakeezah', aliases:['pakiza','pakeeza'], tier:3, year:1972},
+{name:'The Train', aliases:['train 1970'], tier:3, year:1970},
+{name:'Train to Pakistan', aliases:['train to pakistan 1998'], tier:3, year:1998},
+{name:'Aradhana', aliases:['aradhna'], tier:3, year:1969},
+{name:'Ijaazat', aliases:['ijazat'], tier:4, year:1987},
+{name:'27 Down', aliases:['twenty seven down'], tier:4, year:1974},
+],
+};
 const PACK_TRIANGLE = {
 id:'triangle', kicker:'Name one…', title:'Bollywood love triangle', hint:'A film whose romance is built on three people, not two.', icon:'💔',
 packDesc:'Name a love triangle. 5 rounds — no repeats.',
@@ -3245,6 +3272,7 @@ PACK_SRK, PACK_AB, PACK_DIRECTOR, PACK_AWARD, PACK_NINETIES, PACK_DEEPIKA,
 PACK_BIOPIC, PACK_RAHMAN, PACK_VILLAIN, PACK_DILTITLE, PACK_BHANSALI,
 PACK_ACTRESS, PACK_TRIANGLE, PACK_NOUGHTIES, PACK_WEDDING, PACK_COP,
 PACK_REMAKE, PACK_ABREKHA, PACK_SRKGREY, PACK_YASHCHOPRA, PACK_AAMIRHEROINE,
+PACK_TRAIN,
 ];
 const DAILY_SHOWS = [
 {
@@ -3416,6 +3444,21 @@ text: 'Name a Shah Rukh Khan movie whose title runs to four words or more.',
 spec: { type: 'words', value: 'many' },
 },
 ],
+},
+'2026-09-19': {
+note: 'Generated day with rounds 1 and 9 replaced.',
+overrides: {
+1: {
+pack: 'ab',
+text: 'Name an Amitabh Bachchan movie with a one-word title.',
+spec: { type: 'words', value: 'one' },
+},
+9: {
+pack: 'train',
+text: 'Name a Bollywood movie featuring a train.',
+spec: { type: 'open' },
+},
+},
 },
 };
 function repeat(from, on) {

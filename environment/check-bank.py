@@ -68,7 +68,7 @@ NAME_RULES = {
 # release. A disagreement means one of the two is simply wrong.
 RELEASE_YEAR_PACKS = {"srk", "ab", "nineties", "deepika", "biopic", "rahman",
                       "diltitle", "bhansali", "triangle", "noughties", "wedding",
-                      "remake"}
+                      "remake", "train"}
 
 # Titles Hindi cinema has genuinely used more than once. A year disagreement on
 # these is two different films, not a mistake, so the cross-pack check skips
