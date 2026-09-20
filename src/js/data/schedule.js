@@ -304,6 +304,86 @@ export const SCHEDULE = {
       },
     },
   },
+
+  /*
+    Today plays the 2026-09-09 set, as asked.
+
+    `repeat()` at the foot of this file is the tool for exactly this and cannot
+    be used here: it points a second date at another day's `prompts`, and
+    2026-09-09 has none — it was a generated day, so there is nothing to point
+    at. The ten rounds are therefore transcribed, which is the only way to pin
+    a generated day.
+
+    Two things about that transcription are worth knowing. It is 09-09 AS THE
+    GAME REBUILDS IT NOW, not as it was served on the day: `yashchopra` and
+    `train` did not exist on 09-09, and a generated day is drawn from whatever
+    packs exist when it is built, so both have since worked their way into it.
+    And 09-09 is still inside the archive window for a few more days, so the
+    same ten questions are reachable twice — here, and at their own date.
+
+    No `label` is written out. Every chip here is the one constraintLabel
+    derives on its own, and the two era rounds have their buckets recomputed
+    from their packs. That last point is a live dependency rather than a
+    detail: the pinned wording says "up to 1993" and "up to 1998", and those
+    boundaries are a third of each pack. Add films to `train` or `yashchopra`
+    and the boundary moves while this text stays put, so the prompt and the
+    chip would start disagreeing.
+  */
+  '2026-09-20': {
+    note: 'The 2026-09-09 set, transcribed, because a generated day cannot be repeat()ed.',
+    prompts: [
+      {
+        pack: 'srk',
+        text: 'Name a Shah Rukh Khan movie whose title begins with “D”.',
+        spec: { type: 'initial', value: 'D' },
+      },
+      {
+        pack: 'remake',
+        text: 'Name a Hindi remake with a one-word title.',
+        spec: { type: 'words', value: 'one' },
+      },
+      {
+        pack: 'deepika',
+        text: 'Name a Deepika Padukone movie released in the 2020s.',
+        spec: { type: 'decade', value: 2020 },
+      },
+      {
+        pack: 'biopic',
+        text: 'Deep cut only: name a Bollywood biopic off the beaten track.',
+        spec: { type: 'rarity', minTier: 3 },
+      },
+      {
+        pack: 'villain',
+        text: 'Name a real actor known for playing Bollywood villains.',
+        spec: { type: 'role', value: 'actor' },
+      },
+      {
+        pack: 'yashchopra',
+        text: 'Name a Yash Chopra film, up to 1993.',
+        spec: { type: 'era', value: 'early' },
+      },
+      {
+        pack: 'triangle',
+        text: 'Name a love-triangle film released in the 2000s.',
+        spec: { type: 'decade', value: 2000 },
+      },
+      {
+        pack: 'award',
+        text: 'Name a Filmfare Best Film winner with a one-word title.',
+        spec: { type: 'words', value: 'one' },
+      },
+      {
+        pack: 'train',
+        text: 'Name a Bollywood movie featuring a train, up to 1998.',
+        spec: { type: 'era', value: 'early' },
+      },
+      {
+        pack: 'actress',
+        text: 'Name a Bollywood actress who debuted in the 2000s.',
+        spec: { type: 'open' },
+      },
+    ],
+  },
 };
 
 /*

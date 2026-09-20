@@ -3460,6 +3460,61 @@ spec: { type: 'open' },
 },
 },
 },
+'2026-09-20': {
+note: 'The 2026-09-09 set, transcribed, because a generated day cannot be repeat()ed.',
+prompts: [
+{
+pack: 'srk',
+text: 'Name a Shah Rukh Khan movie whose title begins with “D”.',
+spec: { type: 'initial', value: 'D' },
+},
+{
+pack: 'remake',
+text: 'Name a Hindi remake with a one-word title.',
+spec: { type: 'words', value: 'one' },
+},
+{
+pack: 'deepika',
+text: 'Name a Deepika Padukone movie released in the 2020s.',
+spec: { type: 'decade', value: 2020 },
+},
+{
+pack: 'biopic',
+text: 'Deep cut only: name a Bollywood biopic off the beaten track.',
+spec: { type: 'rarity', minTier: 3 },
+},
+{
+pack: 'villain',
+text: 'Name a real actor known for playing Bollywood villains.',
+spec: { type: 'role', value: 'actor' },
+},
+{
+pack: 'yashchopra',
+text: 'Name a Yash Chopra film, up to 1993.',
+spec: { type: 'era', value: 'early' },
+},
+{
+pack: 'triangle',
+text: 'Name a love-triangle film released in the 2000s.',
+spec: { type: 'decade', value: 2000 },
+},
+{
+pack: 'award',
+text: 'Name a Filmfare Best Film winner with a one-word title.',
+spec: { type: 'words', value: 'one' },
+},
+{
+pack: 'train',
+text: 'Name a Bollywood movie featuring a train, up to 1998.',
+spec: { type: 'era', value: 'early' },
+},
+{
+pack: 'actress',
+text: 'Name a Bollywood actress who debuted in the 2000s.',
+spec: { type: 'open' },
+},
+],
+},
 };
 function repeat(from, on) {
 const source = SCHEDULE[from];
