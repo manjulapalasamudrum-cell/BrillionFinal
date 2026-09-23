@@ -421,6 +421,13 @@ function repeat(from, on) {
 */
 repeat('2026-09-02', ['2026-09-03', '2026-09-04', '2026-09-05']);
 
+/*
+  The 2026-09-17 set again, as asked. It replays inside the no-repeat window on
+  purpose: fixed prompts are never filtered against recent days, only the
+  generated filler is. Days after the 24th rebuild around it on their own.
+*/
+repeat('2026-09-17', ['2026-09-23', '2026-09-24']);
+
 export function scheduleFor(key) {
   return SCHEDULE[key] || null;
 }
